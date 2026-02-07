@@ -43,8 +43,6 @@ package HEALIOS {
         part <MCC> Mission_Operations_Centre : MissionOperationsCentre;
     }
 
-    public part sunEntity : Sun;
-
     // --- 5. The Complete System ---
     public part def HEALIOS_System {
         part <SS> HEALIOS_Space_Segment : SpaceSegment;
@@ -56,9 +54,9 @@ package HEALIOS {
         perform action performScienceOps : PerformScienceOperations;
         perform action operateSystem : OperateSystem;
         perform action maintainOperability : MaintainOperability;
-
         connect sunEntity.sunSolarEnvironment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-    }
-    part HEALIOS_System_entity : HEALIOS_System;
 
+    }
+    
+    part HEALIOS_System_entity : HEALIOS_System;
 }

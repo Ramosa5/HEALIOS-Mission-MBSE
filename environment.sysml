@@ -26,4 +26,5 @@ package Environment {
     out port sunSolarEnvironment : SolarEnvironment;
   }
 
+  part sunEntity : Sun;
 }
