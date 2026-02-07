@@ -26,5 +26,5 @@ package Environment {
     out port sunSolarEnvironment : SolarEnvironment;
   }
 
-  part sunEntity : Sun;
+  part sunEntity : Sun; // do zmiany nazwa
 }
