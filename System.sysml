@@ -1,12 +1,9 @@
 package HEALIOS {
-    public import HEALIOS_Space_Functions::*;
     public import ScalarValues::*;
     public import ISQ::*;
-    public import Stakeholders::*;
+    public import Stakeholders_and_Concerns::*;
     public import Environment::*;
-    public import viewpoints::*;
     public import HEALIOS_Functions::*;
-
     public part def Software;
 
     public part def CommunicationSystem;
@@ -32,6 +29,12 @@ package HEALIOS {
         part <DAQ> SS_Data_Acquisition : DataAcquisition;
         part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
         part <SPL> SS_Satellite_Payload : Payload;
+
+        in port satelliteSolarEnvironment : SolarEnvironment{
+            in item measuredRadiation : Real;
+            in item measuredSpectrum : Real;
+            in item measuredAngleBeta : Real;
+        }
     }
 
     // --- 4. Ground Segment Placeholder ---
@@ -39,16 +42,23 @@ package HEALIOS {
         part <GST> Ground_Station : GroundStation;
         part <MCC> Mission_Operations_Centre : MissionOperationsCentre;
     }
-    
+
+    public part sunEntity : Sun;
+
     // --- 5. The Complete System ---
     public part def HEALIOS_System {
         part <SS> HEALIOS_Space_Segment : SpaceSegment;
         part <GS> HEALIOS_Ground_Segment : GroundSegment;
         attribute missionName : String = "HEALIOS";
-        attribute missionDuration : Natural = 1; // in years, to be refined
+        attribute missionDuration : Natural = 365 [SI::day]; // in years, to be refined
+        attribute Mass : Real = 2.0 [SI::kg];
 
         perform action performScienceOps : PerformScienceOperations;
         perform action operateSystem : OperateSystem;
         perform action maintainOperability : MaintainOperability;
+
+        connect sunEntity.sunSolarEnvironment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
     }
+    part HEALIOS_System_entity : HEALIOS_System;
+
 }
