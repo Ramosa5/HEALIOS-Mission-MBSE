@@ -4,11 +4,9 @@ package Stakeholders_and_Concerns {
 
     // 1. Stakeholders
 
-    //part def Gdansk_University_Of_Technology;
-    //part def HSB_Bremen;
     part def Academic_Institutions;
     part def European_Space_Agency;
-    part def Research_Institutes; // using data
+    part def Research_Institutes;
     part def Manufacturers;
     part def HEALIOS_Team;
     part def Regulatory_Bodies;
@@ -22,7 +20,7 @@ package Stakeholders_and_Concerns {
     part <HSB> HSB_Hochschule_Bremen : Academic_Institutions;
     
     part Perovskite_Research_Institutes : Research_Institutes;
-    part Perovskire_Solar_Cell_Manufacture : Manufacturers;
+    part Perovskite_Solar_Cell_Manufacturers : Manufacturers;
     
     part HEALIOS_Team_Community : HEALIOS_Team;
 
