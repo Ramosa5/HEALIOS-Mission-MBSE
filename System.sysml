@@ -174,9 +174,9 @@ package HEALIOS {
                 :>> envSensorsBlock {
                     :>> temperatureSensorAtEnvironment {
                         // TemperatureSensor jest z EPS (ma name/mass/power)
-                        :>> name = "TE TSYS03";
-                        :>> mass = 0.0 [SI::kg];
-                        :>> power = 0.0 [SI::W];
+                        :>> name = "PTC thin-film platinum Resistance Temperature Detector (Pt1k0)";
+                        :>> mass = 0.0025 [SI::kg];
+                        :>> power = 0.09 [SI::W];
                     }
 
                     :>> irradianceSensorBlock {
