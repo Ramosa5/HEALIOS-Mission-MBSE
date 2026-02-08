@@ -8,6 +8,9 @@ package HEALIOS {
     private import PayloadPackage::*;
     private import ThermalControlSystemPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
+    private import CommunicationsSystemPackage::*;
+    private import StructureSystemPackage::*;
+    private import AttitudeAndOrbitControlSystemPackage::*;
     public part def Software;
 
     // --- 3. Define the Detailed Space Segment ---
@@ -18,11 +21,11 @@ package HEALIOS {
 
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
-        part <COMMS> SS_Communication_System : CommunicationSystem;
+        part <COMMS> SS_Communication_System : CommunicationsSystem;
         part <EPS> SS_Electrical_Power_System
             : ElectricalPowerSystemPackage::ElectricalPowerSystem [1];
         part <OBDH> SS_On_Board_Data_Handling : OnBoardDataHandlingSystem;
-        part <STR> SS_Structure_And_Mechanisms : StructureAndMechanisms;
+        part <STR> SS_Structure_And_Mechanisms : StructureSystem;
         part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
         part <PL> SS_Satellite_Payload : Payload;
 
