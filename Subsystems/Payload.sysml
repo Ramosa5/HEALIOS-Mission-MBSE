@@ -1,34 +1,72 @@
 package PayloadPackage {
     private import HEALIOS::*;
     private import HEALIOS_Space_Functions::*;
+    private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
-
+    private import Environment::*;
     // (opcjonalnie) jeśli chcesz typować wejścia z EPS:
     // private import ElectricalPowerSystemPackage::*;
 
     // --- COTS blocks (definitions WITHOUT "name") ---
+    part def PerovskiteCellConnectorAndProtection {
+        attribute name : String;
+        attribute mass : ISQ::MassValue;
+    } 
+    part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
+    part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
+    part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent;
+    part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
+    part def IrradianceSensorBlock specializes GeneralElectricalComponent; 
+    part def RadiationDoseSensor specializes GeneralElectricalComponent;
+    part def SpectrometerPackage specializes GeneralElectricalComponent;
+    part def PowerFilteringUnit specializes GeneralElectricalComponent;
+    part def DigitalAnalogConverter specializes GeneralElectricalComponent;
+    
+    part def PerovskiteSolarArray specializes SolarArray {
+        attribute manufacturer : String;
+    }
 
-    part def PowerFilteringUnit { attribute name : String; } 
-    part def PerovskiteCellConnectorAndProtection { attribute name : String; } 
-    part def IVSweepLoad_ShuntResistor { attribute name : String; } 
-    part def IVSweepLoad_MOSFET { attribute name : String; } 
-    part def IVSweepLoad_OpAmp { attribute name : String; } 
-    part def IVSweepLoad_DAC { attribute name : String; } 
-    part def CellCurrentAndVoltageSensingBlock { attribute name : String; } 
-    part def TemperatureSensorAtSolarCellSamples { attribute name : String; } 
-    part def IrradianceSensorBlock { attribute name : String; } 
-    part def RadiationDoseSensor { attribute name : String; } 
-    part def SpectrometerPackage { attribute name : String; }
+    part def PowerFilteringBlock { 
+        port powerBusIn3V3 : ElectricalPowerSystemPackage::powerBus;
+        port powerBusIn5V : ElectricalPowerSystemPackage::powerBus;
+        port powerBusFiltered5V : ElectricalPowerSystemPackage::powerBus;
+        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
+
+        part powerFilter : PowerFilteringUnit; 
+    } 
+
+    part def SolarCellsBlock {
+        part perovskiteSolarArrayCoupon[1..*] : PerovskiteSolarArray;
+        part referenceSiliconSolarArrayCoupon[1..*] : SolarArray;
+        part pscConnectorAndProtection   : PerovskiteCellConnectorAndProtection;
+    }
+
+    part def MPPTBlock {
+        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
+        
+        part mpptController[1..*] : MPPTUnit;
+        part powerDumpResistor[1..*] : Resistor;
+    }
+
+    part def IVSweepAndReverseBiasBlock {
+        port powerBusFiltered5V : ElectricalPowerSystemPackage::powerBus;
+        part ivSweepLoadShuntResistor[1] : Resistor;
+        part ivSweepLoadMOSFET[1] : IVSweepLoad_MOSFET;
+        part ivSweepLoadOpAmp[1] : IVSweepLoad_OpAmp;
+        part ivSweepLoadDAC[1] : IVSweepLoad_DAC;
+        part currentAndVoltageSensingBlock[1] : CurrentAndVoltageSensingBlock;
+    }
 
     part def EnvironmentSensorsBlock {
         // Minimal sensor data outputs (you can refine types later)
+        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
         port tempOut : HEALIOS::OnBoardStatus;
         port irrOut  : HEALIOS::OnBoardStatus;
         port radOut  : HEALIOS::OnBoardStatus;
         port specOut : HEALIOS::OnBoardStatus;
 
         // instances (NO default names here)
-        part temperatureSensorsAtEnvironment : TemperatureSensorAtSolarCellSamples;
+        part temperatureSensorsAtEnvironment : TemperatureSensor;
         part irradianceSensorBlock          : IrradianceSensorBlock;
         part radiationDoseSensor            : RadiationDoseSensor;
         part spectrometer                   : SpectrometerPackage;
@@ -39,21 +77,16 @@ package PayloadPackage {
         port cmdIn     : HEALIOS::OnBoardCommand;
         port statusOut : HEALIOS::OnBoardStatus;
 
-        // Jeśli chcesz “jak EPS” (szyny zasilania), zamiast ISQ::PowerValue:
-        // port powerBus5VIn  : ElectricalPowerSystemPackage::powerBus;
-        // port powerBus3V3In : ElectricalPowerSystemPackage::powerBus;
-
         // Subparts (NO default names here)
-        part powerFilteringUnit          : PowerFilteringUnit;
-        part pscConnectorAndProtection   : PerovskiteCellConnectorAndProtection;
+        part powerFilteringBlock         : PowerFilteringBlock;
+        part solarCellsBlock             : SolarCellsBlock;
+        part mpptBlock                   : MPPTBlock;  
+        part ivSweepAndReverseBiasBlock  : IVSweepAndReverseBiasBlock;
+        part envSensorsBlock                  : EnvironmentSensorsBlock;
 
-        part ivSweepLoad_Shunt           : IVSweepLoad_ShuntResistor;
-        part ivSweepLoad_MOSFET          : IVSweepLoad_MOSFET;
-        part ivSweepLoad_OpAmp           : IVSweepLoad_OpAmp;
-        part ivSweepLoad_DAC             : IVSweepLoad_DAC;
-
-        part cellIVSensing               : CellCurrentAndVoltageSensingBlock;
-        part envSensors                  : EnvironmentSensorsBlock;
+        bind envSensorsBlock.powerBusFiltered3V3 = powerFilteringBlock.powerBusFiltered3V3;
+        bind ivSweepAndReverseBiasBlock.powerBusFiltered5V = powerFilteringBlock.powerBusFiltered5V;
+        bind mpptBlock.powerBusFiltered3V3 = powerFilteringBlock.powerBusFiltered3V3;
 
         // Actions (usages)
         perform action applyReverseBias : applyControlledReverseBiasToPSC;

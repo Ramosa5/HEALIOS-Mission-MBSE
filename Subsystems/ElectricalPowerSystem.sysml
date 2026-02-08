@@ -2,58 +2,51 @@ package ElectricalPowerSystemPackage {
     private import HEALIOS::*;
     private import HEALIOS_Space_Functions::*;
     private import ISQ::*;
+    private import Environment::*; 
 
     // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
-
-    part def TemperatureSensor { 
+    part def GeneralElectricalComponent {
         attribute name : String;
         attribute mass : ISQ::MassValue;
+    } 
+
+    part def Resistor specializes GeneralElectricalComponent {
+        attribute resistance : ISQ::ResistanceValue;
+    }
+
+    part def TemperatureSensor specializes GeneralElectricalComponent { 
         attribute power : ISQ::PowerValue;
     }
 
-    part def SolarArray {
-        attribute name : String;
-        attribute mass : ISQ::MassValue;
+    part def SolarArray specializes GeneralElectricalComponent {
         attribute powerGeneration : ISQ::PowerValue;
+        port electrodeConnection : solarArrayElectrodeConnection;
+        port solarEnvironment : HEALIOS::SolarEnvironment;
         }
 
     part def DeployableSolarArray specializes SolarArray {
         attribute deploymentMechanism : String;
     }
 
-    part def MPPTUnit {
-        attribute name : String;
-        attribute mass : ISQ::MassValue;
-    }
+    part def MPPTUnit specializes GeneralElectricalComponent;
 
-    part def KillSwitchUnit{
-        attribute name : String;
-        attribute mass : ISQ::MassValue;
-    }
+    part def KillSwitchUnit specializes GeneralElectricalComponent;
 
-    part def Connector {
-        attribute name : String;
-    }
+    part def Connector specializes GeneralElectricalComponent;
 
 
-    part def BatteryPack {
-        attribute name : String;
+    part def BatteryPack specializes GeneralElectricalComponent{
         attribute capacity : ISQ::EnergyValue;
         attribute maxPowerGeneration : ISQ::PowerValue;
-        attribute mass : ISQ::MassValue;
         part connector : Connector;
         part mainHeater : Heater;
         part tempSensor : TemperatureSensor;
         port heaterPowerBus : powerBus;
     }
 
-    part def PowerSupplyUnit {
-        attribute name : String;
-    }
+    part def PowerSupplyUnit specializes GeneralElectricalComponent;
 
-    part def Heater {
-        attribute name : String;
-        // attribute mass : ISQ::MassValue;
+    part def Heater specializes GeneralElectricalComponent{
         attribute power : ISQ::PowerValue;
     }
 
@@ -64,6 +57,11 @@ package ElectricalPowerSystemPackage {
 
     port def powerBus {
         out voltage : ISQ::SourceVoltageValue;
+    }
+
+    port def solarArrayElectrodeConnection {
+        out voltage : ISQ::SourceVoltageValue;
+        out current : ISQ::ElectricCurrentUnit;
     }
 
     // Electrical Power System

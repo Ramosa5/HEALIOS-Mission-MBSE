@@ -101,56 +101,97 @@ package HEALIOS {
                     }
                 }
             }
-            :>> SPL {
+            :>> SPL { //tba
                 :>> cmdIn;
                 :>> statusOut;
 
-                :>> powerFilteringUnit { :>> name = "TI TPS7A4501-SEP"; }
-
-                :>> pscConnectorAndProtection {
-                    :>> name = "Molex 43045-0600";
+                // --- POWER FILTERING BLOCK ---
+                :>> powerFilteringBlock {
+                    :>> powerFilter {
+                        attribute selectedPartNumber : String = "TI TPS7A4501-SEP";
+                    }
                 }
 
-                :>> ivSweepLoad_Shunt {
-                    :>> name = "WSL2512R1000FEA";
+                // --- SOLAR CELLS BLOCK ---
+                :>> solarCellsBlock {
+
+                    :>> pscConnectorAndProtection {
+                        :>> name = "Molex 43045-0600";
+                        // mass możesz dopisać jeśli znasz:
+                        // :>> mass = 0.0 [SI::kg];
+                    }
+
+                    // Jeśli chcesz też nazwać kupony (opcjonalnie – podałeś wcześniej tylko COTS dla DAQ)
+                    :>> perovskiteSolarArrayCoupon[1] {
+                        :>> name = "Perovskite sample coupon";
+                        :>> manufacturer = "TBD";
+                    }
+
+                    :>> referenceSiliconSolarArrayCoupon[1] {
+                        :>> name = "Reference silicon coupon";
+                        // SolarArray ma u Ciebie name/mass/powerGeneration w EPS pakiecie,
+                        // więc możesz wypełnić jeśli chcesz:
+                        // :>> mass = 0.0 [SI::kg];
+                        // :>> powerGeneration = 0.0 [SI::W];
+                    }
                 }
 
-                :>> ivSweepLoad_MOSFET {
-                    :>> name = "BSC320N20NS3G";
+                // --- MPPT BLOCK (jeśli masz konkretne MPPT i rezystory – możesz dopisać COTS) ---
+                :>> mpptBlock {
+                    :>> mpptController[1] { :>> name = "TBD MPPT"; :>> mass = 0.0 [SI::kg]; }
+                    :>> powerDumpResistor[1] { attribute selectedPartNumber : String = "TBD"; }
                 }
 
-                :>> ivSweepLoad_OpAmp {
-                    :>> name = "TI OPA197";
+                // --- IV SWEEP + REVERSE BIAS BLOCK ---
+                :>> ivSweepAndReverseBiasBlock {
+
+                    :>> ivSweepLoadShuntResistor[1] {
+                        attribute selectedPartNumber : String = "WSL2512R1000FEA";
+                    }
+
+                    :>> ivSweepLoadMOSFET[1] {
+                        attribute selectedPartNumber : String = "BSC320N20NS3G";
+                    }
+
+                    :>> ivSweepLoadOpAmp[1] {
+                        attribute selectedPartNumber : String = "TI OPA197";
+                    }
+
+                    :>> ivSweepLoadDAC[1] {
+                        attribute selectedPartNumber : String = "MCP4728";
+                    }
+
+                    :>> currentAndVoltageSensingBlock[1] {
+                        attribute selectedPartNumber : String = "INA226";
+                    }
                 }
 
-                :>> ivSweepLoad_DAC {
-                    :>> name = "MCP4728";
-                }
+                // --- ENVIRONMENT SENSORS BLOCK ---
+                :>> envSensorsBlock {
 
-                :>> cellIVSensing {
-                    :>> name = "INA226";
-                }
-
-                :>> envSensors {
                     :>> temperatureSensorsAtEnvironment {
+                        // TemperatureSensor jest z EPS (ma name/mass/power)
                         :>> name = "TE TSYS03";
+                        :>> mass = 0.0 [SI::kg];
+                        :>> power = 0.0 [SI::W];
                     }
 
                     :>> irradianceSensorBlock {
-                        :>> name = "Hamamatsu S1223-01";
+                        attribute selectedPartNumber : String = "Hamamatsu S1223-01";
                     }
 
                     :>> radiationDoseSensor {
-                        :>> name = "Varadis VT02 RADFET";
+                        attribute selectedPartNumber : String = "Varadis VT02 RADFET";
                     }
 
                     :>> spectrometer {
-                        :>> name = "Hamamatsu C12880MA";
+                        attribute selectedPartNumber : String = "Hamamatsu C12880MA";
                     }
                 }
             }
         }
     }
+
 
 
     // itemy tutaj ktore wystepuja w systemie
