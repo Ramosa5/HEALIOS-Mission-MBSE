@@ -5,17 +5,9 @@ package HEALIOS {
     public import Environment::*;
     public import HEALIOS_Functions::*;
     private import ElectricalPowerSystemPackage::*;
+    private import PayloadPackage::*;
+    private import TCSPackage::*;
     public part def Software;
-
-    public part def CommunicationSystem;
-    public part def OnBoardDataHandling;
-    public part def StructureAndMechanisms;
-    public part def DataAcquisition;
-    public part def AttitudeAndOrbitControlSystem;
-    public part def Payload;
-    public part def GroundStation;
-    public part def MissionOperationsCentre;
-    public part def ThermalControlSystem;
 
     // --- 3. Define the Detailed Space Segment ---
     public part def SpaceSegment {
@@ -106,6 +98,54 @@ package HEALIOS {
                         :>> name = "NanoPower BP4 - TE TMP121";
                         :>> mass = 0.00 [SI::kg];
                         :>> power = 0.0 [SI::W];
+                    }
+                }
+            }
+            :>> SPL {
+                :>> cmdIn;
+                :>> statusOut;
+
+                :>> powerFilteringUnit { :>> name = "TI TPS7A4501-SEP"; }
+
+                :>> pscConnectorAndProtection {
+                    :>> name = "Molex 43045-0600";
+                }
+
+                :>> ivSweepLoad_Shunt {
+                    :>> name = "WSL2512R1000FEA";
+                }
+
+                :>> ivSweepLoad_MOSFET {
+                    :>> name = "BSC320N20NS3G";
+                }
+
+                :>> ivSweepLoad_OpAmp {
+                    :>> name = "TI OPA197";
+                }
+
+                :>> ivSweepLoad_DAC {
+                    :>> name = "MCP4728";
+                }
+
+                :>> cellIVSensing {
+                    :>> name = "INA226";
+                }
+
+                :>> envSensors {
+                    :>> temperatureSensorsAtEnvironment {
+                        :>> name = "TE TSYS03";
+                    }
+
+                    :>> irradianceSensorBlock {
+                        :>> name = "Hamamatsu S1223-01";
+                    }
+
+                    :>> radiationDoseSensor {
+                        :>> name = "Varadis VT02 RADFET";
+                    }
+
+                    :>> spectrometer {
+                        :>> name = "Hamamatsu C12880MA";
                     }
                 }
             }
