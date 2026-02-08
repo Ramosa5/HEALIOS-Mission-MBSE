@@ -105,6 +105,8 @@ package OnBoardDataHandlingSystemPackage {
         // Redundancy synchronisation
         port syncTx         : HEALIOS::OnBoardStatus;
         port syncRx         : HEALIOS::OnBoardStatus;
+
+        perform action readOBCTemperature : ReadTemperature;
     }
 
     part def OBCarrierBoard {

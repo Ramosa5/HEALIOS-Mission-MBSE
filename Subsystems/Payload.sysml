@@ -66,10 +66,12 @@ package PayloadPackage {
         port specOut : HEALIOS::OnBoardStatus;
 
         // instances (NO default names here)
-        part temperatureSensorsAtEnvironment : TemperatureSensor;
+        part temperatureSensorAtEnvironment : TemperatureSensor;
         part irradianceSensorBlock          : IrradianceSensorBlock;
         part radiationDoseSensor            : RadiationDoseSensor;
         part spectrometer                   : SpectrometerPackage;
+
+        perform action readPLTemperature : ReadTemperature;
     }
 
     part def Payload {

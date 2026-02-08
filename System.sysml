@@ -171,7 +171,7 @@ package HEALIOS {
 
                 // --- ENVIRONMENT SENSORS BLOCK ---
                 :>> envSensorsBlock {
-                    :>> temperatureSensorsAtEnvironment {
+                    :>> temperatureSensorAtEnvironment {
                         // TemperatureSensor jest z EPS (ma name/mass/power)
                         :>> name = "TE TSYS03";
                         :>> mass = 0.0 [SI::kg];

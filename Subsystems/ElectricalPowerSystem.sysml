@@ -42,6 +42,8 @@ package ElectricalPowerSystemPackage {
         part mainHeater : Heater;
         part tempSensor : TemperatureSensor;
         port heaterPowerBus : powerBus;
+
+        perform action readEPSTemperature : ReadTemperature;
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent;
