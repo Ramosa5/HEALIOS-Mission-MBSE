@@ -45,6 +45,8 @@ package HEALIOS {
     public part def GroundSegment{
         part <GST> Ground_Station : GroundStation;
         part <MCC> Mission_Operations_Centre : MissionOperationsCentre;
+
+        attribute reusePriority : Boolean;
     }
 
     // --- 5. The Complete System ---
@@ -52,7 +54,9 @@ package HEALIOS {
         public part <SS> HEALIOS_Space_Segment : SpaceSegment {
             :>> totalMass = 1.81 [SI::kg];
         }
-        public part <GS> HEALIOS_Ground_Segment : GroundSegment;
+        public part <GS> HEALIOS_Ground_Segment : GroundSegment{
+            :>> reusePriority = true;
+        }
 
         attribute missionName : String = "HEALIOS";
         attribute missionDuration : ISQ::DurationValue = 365 [SI::day];

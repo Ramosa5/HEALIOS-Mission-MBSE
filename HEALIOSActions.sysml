@@ -1,7 +1,7 @@
 package HEALIOS_Space_Functions {
     // Ensuring explicit visibility as requested previously
     private import ScalarValues::*;
-    private import System::*;
+    private import HEALIOS::*;
     // Top-level definition for the Space Segment's behavior
     action def PerformSpaceSegmentMission {
     }
