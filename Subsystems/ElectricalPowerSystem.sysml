@@ -35,6 +35,7 @@ package ElectricalPowerSystemPackage {
         attribute name : String;
     }
 
+
     part def BatteryPack {
         attribute name : String;
         attribute capacity : ISQ::EnergyValue;
@@ -43,6 +44,7 @@ package ElectricalPowerSystemPackage {
         part connector : Connector;
         part mainHeater : Heater;
         part tempSensor : TemperatureSensor;
+        port heaterPowerBus : powerBus;
     }
 
     part def PowerSupplyUnit {
@@ -57,11 +59,11 @@ package ElectricalPowerSystemPackage {
 
     part def RegulatedPowerBus {
         attribute name : String;
-        port voltageOut : ISQ::voltage;
+        port voltageOut : ISQ::SourceVoltageValue;
     }
 
     port def powerBus {
-        out voltage : ISQ::voltage;
+        out voltage : ISQ::SourceVoltageValue;
     }
 
     // Electrical Power System
@@ -73,6 +75,7 @@ package ElectricalPowerSystemPackage {
         // Regulated rails commonly referenced in your DAQ chapter
         port powerBus5V : powerBus;
         port powerBus3V3 : powerBus;
+        port heaterPowerBus : powerBus;
 
         part batteryPackEPS : BatteryPack;
 
@@ -84,11 +87,12 @@ package ElectricalPowerSystemPackage {
 
         part bus5V : RegulatedPowerBus;
         part bus3V3 : RegulatedPowerBus;
-        part busHeater : RegulatedPowerBus;
 
         // Map internal bus outputs to EPS external ports
         bind powerBus5V = bus5V.voltageOut;
         bind powerBus3V3 = bus3V3.voltageOut;
+        bind heaterPowerBus = batteryPackEPS.heaterPowerBus;
+        
         // --- EPS actions (wired to EPS command/telemetry ports) ---
 
         perform action mppt : performMPPT;
@@ -112,43 +116,5 @@ package ElectricalPowerSystemPackage {
         bind epsTelemetryOut = loadMgmt.loadMgmtStatus;
         bind epsTelemetryOut = switchState.switchStatus;
         bind epsTelemetryOut = reportHealth.healthTelemetry;
-    }
-
-    part HEALIOS_EPS : ElectricalPowerSystem {
-        :>> epsCommandIn;
-        :>> epsTelemetryOut;
-        :>> powerBus5V;
-        :>> powerBus3V3;
-
-        :>>deployableSolarArrays[2] {
-            :>> name = "2-panel EXA DMSA";
-            :>> mass = 0.07 [SI::kg];
-            :>> powerGeneration = 20 [SI::W];  //tba
-        }
-
-        :>> mountedSolarCells[1] {
-            :>> name = "AZUR SPACE 3G30-Advanced 4x8";
-            :>> mass = 0.036 [SI::kg];
-            :>> powerGeneration = 5 [SI::W]; // tba
-        }
-         
-        :>> batteryPackEPS {
-            :>> name = "NanoPower BP4";
-            :>> capacity = 34 [SI::Wh]; // tbc
-            :>> maxPowerGeneration = 25 [SI::W]; // tba
-            :>> mass = 0.258 [SI::kg]; // tba
-            :>> mainHeater {
-                :>> name = "NanoPower BP4 - Resistance Heating Element";
-                :>> power = 3.5 [SI::W];
-            }
-            :>> connector {
-                :>> name = "Molex 43045-0600";
-            }   
-            :>> tempSensor {
-                :>> name = "NanoPower BP4 - TE TMP121";
-                :>> mass = 0.00 [SI::kg];
-                :>> power = 0.0 [SI::W];
-            }
-        }
     }
 }
