@@ -19,8 +19,11 @@ package HEALIOS {
 
     // --- 3. Define the Detailed Space Segment ---
     public part def SpaceSegment {
-        
-        // A. Subsystems
+
+        // A. Attributes
+        attribute maxMass : Real = 2.0 [SI::kg];
+
+        // B. Subsystems
         part SS_Thermal_Control_System : ThermalControlSystem;
         part <COMMS> SS_Communication_System : CommunicationSystem;
         part <EPS> SS_Electrical_Power_System : ElectricalPowerSystem;
@@ -49,7 +52,7 @@ package HEALIOS {
         part <GS> HEALIOS_Ground_Segment : GroundSegment;
         attribute missionName : String = "HEALIOS";
         attribute missionDuration : Natural = 365 [SI::day]; // in years, to be refined
-        attribute maxMass : Real = 2.0 [SI::kg];
+        attribute orbitType : String = "LEO";
 
         perform action performScienceOps : PerformScienceOperations;
         perform action operateSystem : OperateSystem;
