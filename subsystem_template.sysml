@@ -34,7 +34,7 @@ package Subsystems {
         // Ports for integration
         port cmdIn     : HEALIOS::OnBoardCommand;
         port statusOut : HEALIOS::OnBoardStatus;
-        port powerIn   : ISQ::power;
+        port powerIn   : ISQ::PowerValue;
 
         // Instances
         part powerFilteringUnit : PowerFilteringUnit { :>> name = "TI TPS7A4501-SEP"; }
@@ -49,8 +49,8 @@ package Subsystems {
         part envSensors : EnvironmentSensorsBlock;
 
         // External connections (now via ports / instances)
-        connect statusOut to SS_On_Board_Data_Handling.onBoardComputer; // if onBoardComputer is a port/feature
-        connect powerIn   to SS_Electrical_Power_System.powerBus;       // if powerBus is a port/feature
+        //connect statusOut to SS_On_Board_Data_Handling.onBoardComputer; // if onBoardComputer is a port/feature
+        //connect powerIn   to SS_Electrical_Power_System.powerBus;       // if powerBus is a port/feature
 
         // Actions (usages)
         perform action applyReverseBias : applyControlledReverseBiasToPSC;
