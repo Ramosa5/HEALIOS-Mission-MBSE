@@ -1,59 +1,51 @@
-private import HEALIOS::*;
-
 package Mission_Requirements{
+    private import HEALIOS::*;
 
     requirement def <R_M_001> Self_Healing_Experiments {
         doc /* The mission shall perform active self-healing experiments on designated PSC samples by applying a controlled reverse-bias voltage during orbital eclipse phases. */
 
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Perovskite_Research_Institutes;
         stakeholder Perovskite_Solar_Cell_Manufacturers;
 
-        requirement a : R_M_001_a;
-        requirement b : R_M_001_b;
-        requirement c : R_M_001_c;
-        requirement d : R_M_001_d;
+        requirement <R_M_001_a> PSC_Performance {
+            doc
+            /* The mission shall characterise the performance of Perovskite Solar Cells (PSC) by measuring open-circuit voltage and short-circuit current, what results in Current-Voltage (I-V) curves. */
 
-    }
+            subject Mission_Req : HEALIOS::HEALIOS_System;
+        }
 
-    requirement def <R_M_001_a> PSC_Performance {
-        doc
-        /* The mission shall characterise the performance of Perovskite Solar Cells (PSC) by measuring open-circuit voltage and short-circuit current, what results in Current-Voltage (I-V) curves. */
+        requirement <R_M_001_b> Control_Group_Benchmark {
+            doc /* The mission shall utilise traditional solar cells as a control group to benchmark the degradation rates of the perovskite payload. */
 
-        subject Mission : HEALIOS::HEALIOS_System;
-    }
+            subject Mission_Req : HEALIOS::HEALIOS_System;
+        }
+        requirement <R_M_001_c> Enivornment_Characterisation {
+            doc /* The mission shall characterise the space environment by measuring radiation, irradiance, and temperature related to Perovskite Solar Cells samples, to contextualise with observed degradation and self-healing phenomena. */
 
-    requirement def <R_M_001_b> Control_Group_Benchmark {
-        doc /* The mission shall utilise traditional solar cells as a control group to benchmark the degradation rates of the perovskite payload. */
+            subject Mission_Req : HEALIOS::HEALIOS_System;
+        }
+        requirement <R_M_001_d> Environmental_Repetitivity {
+            doc /* The mission scenarios shall enable repetitive environmental conditions for the perovskite solar cells and the benchmark group. */
 
-        subject Mission : HEALIOS::HEALIOS_System;
-    }
+            subject Mission_Req : HEALIOS::HEALIOS_System;
+        }
 
-    requirement def <R_M_001_c> Enivornment_Characterisation {
-        doc /* The mission shall characterise the space environment by measuring radiation, irradiance, and temperature related to Perovskite Solar Cells samples, to contextualise with observed degradation and self-healing phenomena. */
-
-        subject Mission : HEALIOS::HEALIOS_System;
-    }
-
-    requirement def <R_M_001_d> Environmental_Repetitivity {
-        doc /* The mission scenarios shall enable repetitive environmental conditions for the perovskite solar cells and the benchmark group. */
-
-        subject Mission : HEALIOS::HEALIOS_System;
     }
 
     requirement def <R_M_002> Orbit_Definition {
         doc
         /* The mission shall be operated in the Low Earth Orbit (LEO). */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
     }
 
     requirement def <R_M_003> Platform_Conformity {
         doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), that enables experiment performance. */
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder CubeSat_Community;
@@ -63,7 +55,7 @@ package Mission_Requirements{
     requirement def <R_M_004> Autonomous_Management {
         doc /* The mission shall autonomously manage experiment execution, including eclipse detection and data logging, to mitigate limited ground contact time. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Perovskite_Research_Institutes;
     }
@@ -71,7 +63,7 @@ package Mission_Requirements{
     requirement def <R_M_005> Dataset_Format {
         doc /* The mission shall provide experiment datasets in a format and with metadata completeness necessary to support post-flight comparison to pre-flight terrestrial testing, and published literature. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Perovskite_Research_Institutes;
     }
@@ -79,7 +71,7 @@ package Mission_Requirements{
     requirement def <R_M_006> ESA_Compliance {
         doc /* The mission shall comply with the programmatic and safety standards of the ESA "Fly Your Satellite!" programme. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
     }
@@ -87,7 +79,7 @@ package Mission_Requirements{
     requirement def <R_M_007> Mission_Duration {
         doc /* The mission shall operate in orbit for a duration sufficient to generate statistically significant degradation and recovery data (Target: 1 Year). */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Perovskite_Research_Institutes;
         stakeholder ESA_Fly_Your_Satellite;
@@ -97,7 +89,7 @@ package Mission_Requirements{
     requirement def <R_M_008> EOL_Plan {
         doc /* The mission documentation shall provide an EOL plan and update its relevance and applicability. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
     }
@@ -105,7 +97,7 @@ package Mission_Requirements{
     requirement def <R_M_009> Core_Team_Composition {
         doc /* The core mission team shall consist of at least 4 university students enrolled in a Master's or Bachelor's programme within an ESA Member State. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder HEALIOS_Team_Community;
@@ -114,7 +106,7 @@ package Mission_Requirements{
     requirement def <R_M_010> Academic_Supervision {
         doc /* The project shall be supervised by at least 2 academic professors or lecturers who provide formal endorsement and access to university facilities. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder Gdansk_University_of_Technology;
@@ -124,7 +116,7 @@ package Mission_Requirements{
 
     requirement def <R_M_011> Academic_Integration {
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder Gdansk_University_of_Technology;
@@ -134,14 +126,14 @@ package Mission_Requirements{
 
     requirement def <R_M_012> Test_Facility_Usage {
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
     }
 
     requirement def <R_M_013> Educational_Return {
         doc /* The mission shall demonstrate a clear educational return. */
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder Gdansk_University_of_Technology;
@@ -152,7 +144,7 @@ package Mission_Requirements{
     requirement def <R_M_014> Ground_Station_Support {
         doc /* The mission shall include at least one operational Ground Station capable of commanding and receiving telemetry from the CubeSat. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
@@ -163,7 +155,7 @@ package Mission_Requirements{
     requirement def <R_M_015> Safety_Implementation {
         doc /* The mission plan and procedures shall ensure the safety of personnel, equipment, and the launch vehicle by implementing hazard control measures and complying with the safety requirements of the launch provider and test facilities. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder ESA_Fly_Your_Satellite;
         stakeholder Gdansk_University_of_Technology;
@@ -174,7 +166,7 @@ package Mission_Requirements{
     requirement def <R_M_016> Launcher_Compliance {
         doc /* The mission architecture and organisation shall comply with the requirements of the selected launch service provider. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder Launch_Service_Provider;
         stakeholder HEALIOS_Team_Community;
@@ -183,7 +175,7 @@ package Mission_Requirements{
     requirement def <R_M_017> Telecommunication_Compliance {
         doc /* The mission architecture and organisation shall comply with International Telecommunication Union (ITU) and International Amatour Radio Union legislations. */
         
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder International_Telecommunication_Union;
         stakeholder International_Amateur_Radio_Union;
@@ -193,24 +185,205 @@ package Mission_Requirements{
 
     requirement def <R_M_018> UN_Registration {
         doc /* The mission shall be registration of the satellite in the United Nations Register of Objects Launched into Outer Space of UNOOSA, including national registers. */
-        subject Mission : HEALIOS::HEALIOS_System;
+        subject Mission_Req : HEALIOS::HEALIOS_System;
 
         stakeholder United_Nations_Office_for_Outer_Space_Affairs;
+    }
+
+    requirement def <R_M_019> FDIR_Implementation {
+        doc /* The mission shall implement a Fault Detection, Isolation, and Recovery (FDIR) strategy to enhance system reliability. */
+        subject Mission_Req : HEALIOS::HEALIOS_System;
+
+        stakeholder ESA_Fly_Your_Satellite;
     }
 }
 
 package SpaceSegmentRequirement {
+    private import HEALIOS::*;
+    private import Mission_Requirements::*;
 
-    requirement def <R_SS_001> Launch_Mass {
-        doc /* The mission should have a total launch mass not exceeding 2 kg within 0.001 kg tolerance. */
+    requirement def <R_SS_001> Payload_Accommodation specializes R_M_001 {
+        doc /* The Space Segment shall accommodate and support the operation of the perovskite solar cells payload. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
 
-        subject SpaceSegment : HEALIOS::SpaceSegment;
-        //subject system : HEALIOS::HEALIOS_System;
+    requirement def <R_SS_002> PV_Data_Gathering specializes R_M_001 {
+        doc /* The Space Segment shall autonomously gather, store, and timestamp electrical performance data (Voltage, Current) of all photovoltaic technologies onboard throughout the mission, with a frequency higher than once per orbit. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
 
-        stakeholder CubeSat_Community;
+    requirement def <R_SS_003> Environment_Logging specializes R_M_001 {
+        doc /* The Space Segment shall log orbital environment parameters: thermal state, illumination condition, time since deployment, with a frequency higher than once per orbit. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
 
-    constraint {
-        SpaceSegment.maxMass <= 2.0 [SI::kg]
+    requirement def <R_SS_004> Reverse_Bias_Control specializes R_M_001 {
+        doc /* The Space Segment shall be capable of applying a controlled reverse-bias voltage to selected perovskite solar cells. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+
+        requirement def <R_SS_004_a> Voltage_Range {
+            doc /* The Space Segment shall apply a reverse-bias voltage in the range of 0 to -5 V with a resolution of at least 0.1 V. */
+        }
+
+        requirement def <R_SS_004_b> Reverse_Bias_Safety {
+            doc /* The Space Segment shall ensure that reverse-bias conditions applied during self-healing cycles over the mission lifetime do not exceed material degradation thresholds. */
         }
     }
+
+    requirement def <R_SS_005> Sun_Pointing specializes R_M_001 {
+        doc /* The Space Segment shall maintain a sun-pointing attitude during the illuminated orbital phase to ensure consistent environmental conditions for the payload. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_006> Environmental_Survival specializes R_M_002, R_M_007 {
+        doc /* The Space Segment shall survive the launch and operate in the LEO environment for the mission duration. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+
+        requirement def <R_SS_006_a> Launch_Survival {
+            doc /* The Space Segment shall withstand the mechanical and thermal stresses of the launch environment, including vibrations, shocks, and acoustic loads. */
+        }
+        requirement def <R_SS_006_b> LEO_Survival {
+            doc /* The Space Segment shall withstand the thermal and radiation environment of Low Earth Orbit (LEO) for a minimum operational lifetime of one year. */
+        }
+    }
+    
+    requirement def <R_SS_007> Deployer_Compatibility specializes R_M_003, R_M_016 {
+        doc /* The Space Segment shall be compatible with the deployer environment. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_008> Eclipse_Trigger specializes R_M_004 {
+        doc /* The Space Segment shall detect the orbital eclipse phase to trigger the experiment. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_009> NonContact_Storage specializes R_M_004 {
+        doc /* The Space Segment shall include a system capable of storing experiment data during non-contact phases for later downlink. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_010> Autonomous_Execution specializes R_M_004 {
+        doc /* The Space Segment shall maintain autonomous execution of the experiment timeline such that temporary loss of ground communication does not interrupt scheduled phases. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_011> Deployment_Transition specializes R_M_004 {
+        doc /* The Space Segment shall perform a specific transition scenario from deployment configuration to nominal mode, initialising essential functions and starting mission timing sequences without requiring ground intervention. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_012> FYS_Config_Compatibility specializes R_M_006 {
+        doc /* The Space Segment shall maintain configuration compatibility with the Fly Your Satellite! testing flow, including environmental and functional test setups. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        stakeholder ESA_Fly_Your_Satellite;
+    }
+
+    requirement def <R_SS_013> Telemetry_Protocol specializes R_M_014 {
+        doc /* The Space Segment shall transmit telemetry data compatible with the defined Ground Segment protocols to enable correlation with terrestrial data. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+    }
+
+    requirement def <R_SS_014> Beacon_Signal specializes R_M_014 {
+        doc /* The Space Segment shall transmit a beacon signal to facilitate initial tracking and acquisition by the Ground Segment. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+    requirement def <R_SS_015> FDIR_Implementation specializes R_M_019 {
+        doc /* The Space Segment shall provide Foult Detection, Isolation, and Recovery (FDIR) capability to ensure spacecraft safety and experiment integrity. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+
+        requirement def <R_SS_015_a> Fault_Detection {
+            doc /* The Space Segment shall implement fault detection mechanisms or architecture. */
+        }
+        requirement def <R_SS_015_b> Fault_Isolation {
+            doc /* The Space Segment shall implement fault isolation mechanisms or architecture. */
+        }
+        requirement <R_SS_015_c> Fault_Recovery {
+            doc /* The Space Segment shall implement progressive fault recovery sequences that attempt subsystem restart before invoking full safe mode. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+        requirement <R_SS_015_d> Software_Updates {
+            doc /* The Space Segment shall provide the capability to apply software updates throught the mission. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement <R_SS_015_e> Safe_Mode {
+            doc /* The Space Segment shall implement a safe mode that maintains basic spacecraft health and beacon transmission while non-essential functions are suspended. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+    }
+
+    requirement def <R_SS_016> PFM_Campaign specializes R_M_006, R_M_012, R_M_015 {
+        doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign. */
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        stakeholder ESA_Fly_Your_Satellite;
+
+        requirement def <R_SS_016_a> PFM_Exclusions {
+            doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_b> Random_Vibration {
+            doc /* The Space Segment shall undergo a random vibration test on all three axes. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_c> Sinusoidal_Vibration {
+            doc /* The Space Segment shall undergo a sinusoidal vibration test. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_d> Quasi_Static_Load {
+            doc /* The Space Segment shall undergo a Quasi-static load test. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_e> Thermal_Cycling {
+            doc /* The Space Segment shall undergo thermal cycling ( TVAC). */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_f> Bakeout {
+            doc /* The Space Segment shall undergo a bakeout campaign. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+
+        requirement def <R_SS_016_g> PFM_Testing_Safety {
+            doc /* The Space Segment PFM test campaign shall be planned and executed to ensure the safety of personnel, equipment, and facilities. */
+            subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+        }
+    }
+
+    requirement def <R_SS_017> Launch_Mass specializes Mission_Requirements::R_M_003 {
+        doc /* The Space Segment should have a total launch mass not exceeding 2 kg within 0.001 kg tolerance. */
+
+        subject SpaceSegment_Req : HEALIOS::SpaceSegment;
+
+        attribute massLimit  : ISQ::MassValue = 2.0 [SI::kg];
+        attribute massTolerance : ISQ::MassValue = 0.001 [SI::kg];
+
+        require constraint {
+            SpaceSegment_Req.totalMass <= massLimit + massTolerance
+        }
+    }
+}
+
+package GroundSegmentRequirement {
+    private import HEALIOS::*;
+    private import Mission_Requirements::R_M_014;
+
+    requirement def <R_GS_001> Ground_Segment_Capabilities specializes Mission_Requirements::R_M_014 {
+        doc /* The Ground Segment shall be capable of commanding the CubeSat and receiving telemetry data. */
+
+        subject GroundStation : HEALIOS::GroundStation;
+        //subject system : HEALIOS::HEALIOS_System;
+        //stakeholder Gdansk_University_of_Technology;
+        //stakeholder HSB_Hochschule_Bremen;
+        //stakeholder HEALIOS_Team_Community;
+
+    require constraint {
+        // Placeholder
+        }
+    }
+
 }

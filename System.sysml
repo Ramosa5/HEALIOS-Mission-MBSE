@@ -21,7 +21,8 @@ package HEALIOS {
     public part def SpaceSegment {
 
         // A. Attributes
-        attribute maxMass : Real = 2.0 [SI::kg];
+        
+        attribute totalMass : ISQ::MassValue;
 
         // B. Subsystems
         part SS_Thermal_Control_System : ThermalControlSystem;
@@ -48,15 +49,17 @@ package HEALIOS {
 
     // --- 5. The Complete System ---
     public part def HEALIOS_System {
-        part <SS> HEALIOS_Space_Segment : SpaceSegment;
-        part <GS> HEALIOS_Ground_Segment : GroundSegment;
+        public part <SS> HEALIOS_Space_Segment : SpaceSegment;
+        public part <GS> HEALIOS_Ground_Segment : GroundSegment;
+
         attribute missionName : String = "HEALIOS";
-        attribute missionDuration : Natural = 365 [SI::day]; // in years, to be refined
+        attribute missionDuration : ISQ::DurationValue = 365 [SI::day];
         attribute orbitType : String = "LEO";
 
-        perform action performScienceOps : PerformScienceOperations;
+        perform action performScience : PerformScienceOperations;
         perform action operateSystem : OperateSystem;
         perform action maintainOperability : MaintainOperability;
+        
         connect sunEntity.sunSolarEnvironment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
 
     }
