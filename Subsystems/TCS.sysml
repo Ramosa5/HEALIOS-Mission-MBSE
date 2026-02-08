@@ -5,6 +5,8 @@ package ThermalControlSystemPackage {
     private import ISQ::*;
     private import SI::*;
 
+    abstract port temperatureIN;
+    
     // Configuration value for the system
     part def ThermalControlSystem {
         ref part epsHeater : Heater;

@@ -21,7 +21,7 @@ package HEALIOS_Space_Functions {
         flow from applyReverseBiasVoltage.reverseBiasVoltage to voltageApplicationStatus;
         action applyReverseBiasVoltage {
             in applyReverseBiasVoltageCommand;
-            out reverseBiasVoltage : ISQ::voltage;
+            out reverseBiasVoltage : ISQ::SourceVoltageValue;
         }
     }
 
