@@ -49,7 +49,9 @@ package HEALIOS {
 
     // --- 5. The Complete System ---
     public part def HEALIOS_System {
-        public part <SS> HEALIOS_Space_Segment : SpaceSegment;
+        public part <SS> HEALIOS_Space_Segment : SpaceSegment {
+            :>> totalMass = 1.81 [SI::kg];
+        }
         public part <GS> HEALIOS_Ground_Segment : GroundSegment;
 
         attribute missionName : String = "HEALIOS";
