@@ -1,4 +1,4 @@
-package TCS_Subsystem_Definition {
+package ThermalControlSystem {
     private import HEALIOS::*;
     private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
