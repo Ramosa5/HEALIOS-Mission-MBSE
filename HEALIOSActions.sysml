@@ -91,4 +91,97 @@ package HEALIOS_Space_Functions {
             out irradianceData : HEALIOS::OnBoardStatus;
         }
     }
+
+    //----------------------------------------------------------------------------------------------------------------EPS functions
+
+    
+    // EPS-level behavior (driven by telecommand, produces telemetry)
+    action def ManageElectricalPower specializes PerformSpaceSegmentMission {
+        in epsCommand [0..*] : HEALIOS::OnBoardCommand {:>> type = "PowerCommand";}
+        out epsTelemetry [0..*] : HEALIOS::OnBoardStatus;
+    }
+
+    // MPPT (Design Report: PMU performs MPPT internally)
+    action def performMPPT specializes ManageElectricalPower {
+        in mpptCommand redefines epsCommand;
+        out mpptStatus redefines epsTelemetry;
+
+        bind mpptController.mpptCommand = mpptCommand;
+        flow from mpptController.mpptTelemetry to mpptStatus;
+
+        action mpptController {
+            in mpptCommand : HEALIOS::OnBoardCommand;
+            out mpptTelemetry : HEALIOS::OnBoardStatus;
+        }
+    }
+
+    // Battery charge/discharge management (Requirements: rechargeable batteries, safe limits)
+    action def manageBatteryEnergy specializes ManageElectricalPower {
+        in batteryCommand redefines epsCommand;
+        out batteryStatus redefines epsTelemetry;
+
+        bind batteryManager.batteryCommand = batteryCommand;
+        flow from batteryManager.batteryTelemetry to batteryStatus;
+
+        action batteryManager {
+            in batteryCommand : HEALIOS::OnBoardCommand;
+            out batteryTelemetry : HEALIOS::OnBoardStatus;
+        }
+    }
+
+    // Power distribution to subsystems (Requirements: deliver power per scenario, ON state)
+    action def distributePowerToLoads specializes ManageElectricalPower {
+        in distributionCommand redefines epsCommand;
+        out distributionStatus redefines epsTelemetry;
+
+        bind powerDistributor.distributionCommand = distributionCommand;
+        flow from powerDistributor.distributionTelemetry to distributionStatus;
+
+        action powerDistributor {
+            in distributionCommand : HEALIOS::OnBoardCommand;
+            out distributionTelemetry : HEALIOS::OnBoardStatus;
+        }
+    }
+
+    // Load shedding / reactivation logic (Requirements: reactivate at all times based on battery level)
+    action def manageLoadSheddingAndReactivation specializes ManageElectricalPower {
+        in loadMgmtCommand redefines epsCommand;
+        out loadMgmtStatus redefines epsTelemetry;
+
+        bind loadManager.loadMgmtCommand = loadMgmtCommand;
+        flow from loadManager.loadMgmtTelemetry to loadMgmtStatus;
+
+        action loadManager {
+            in loadMgmtCommand : HEALIOS::OnBoardCommand;
+            out loadMgmtTelemetry : HEALIOS::OnBoardStatus;
+        }
+    }
+
+    // EPS state switching (Requirements: switch EPS ON/OFF via umbilical; enable ground control)
+    action def switchEPSState specializes ManageElectricalPower {
+        in switchCommand redefines epsCommand;
+        out switchStatus redefines epsTelemetry;
+
+        bind stateSwitch.switchCommand = switchCommand;
+        flow from stateSwitch.stateTelemetry to switchStatus;
+
+        action stateSwitch {
+            in switchCommand : HEALIOS::OnBoardCommand;
+            out stateTelemetry : HEALIOS::OnBoardStatus;
+        }
+    }
+
+    // EPS health reporting (Requirements: EPS health via telemetry)
+    action def reportEPSHealth specializes ManageElectricalPower {
+        in reportCommand redefines epsCommand;
+        out healthTelemetry redefines epsTelemetry;
+
+        bind healthReporter.reportCommand = reportCommand;
+        flow from healthReporter.healthData to healthTelemetry;
+
+        action healthReporter {
+            in reportCommand : HEALIOS::OnBoardCommand;
+            out healthData : HEALIOS::OnBoardStatus;
+        }
+    }
 }
