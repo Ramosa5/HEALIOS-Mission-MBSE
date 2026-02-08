@@ -364,4 +364,40 @@ package HEALIOS_Space_Functions {
         flow from rollbackDone to obdhTelemetry;
     }
 
+    //------------------------------------------------------------------------------------------------Thermal actions
+
+    action def ReadTemperature {
+        out temp : ISQ::TemperatureValue;
+    }
+
+    action def EvaluateThreshold {
+        in temp : ISQ::TemperatureValue;
+        in threshold : ISQ::TemperatureValue; 
+        out turnOn : Boolean;
+    }
+    
+    action def StartHeater {
+        in turnOn: HEALIOS::OnBoardCommand{
+            :>> type = "HeaterActivationCommand";
+        }
+        in heaterPower : ISQ::PowerValue;
+        out heaterOutput : ISQ::PowerValue;
+    }
+    
+    action def ControlTemperature {
+        in minimalTemperature : ISQ::TemperatureValue;
+        in heaterPower : ISQ::PowerValue;
+        action read : ReadTemperature;
+        action heat : StartHeater;
+        action evaluate : EvaluateThreshold if threshold < 0 {
+            perform action heat;
+        }
+
+        flow read.temp to evaluate.temp;
+        flow evaluate.turnOn to heat.turnOn;
+
+        bind evaluate.threshold = minimalTemperature;
+        bind heat.heaterPower = heaterPower;
+    }
+
 }

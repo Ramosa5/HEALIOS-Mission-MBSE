@@ -1,7 +1,8 @@
 package OnBoardDataHandlingSystemPackage {
     private import HEALIOS::*;
     private import HEALIOS_Space_Functions::*;
-    private import ISQ::*;
+    private import ISQ::*;   
+    private import ElectricalPowerSystemPackage::*;
 
     //------------------------------------------------------------------------------------------------
     // Generic data/command plumbing (abstracted physical buses)
@@ -82,7 +83,7 @@ package OnBoardDataHandlingSystemPackage {
 
         part nvm : NonVolatileMemory;
         part ram : VolatileMemory;
-
+        part obcTemperatureSensor : TemperatureSensor;
         // Interfaces to spacecraft subsystems (centralised OBDH routing concept)
         port toDAQ_i2c      : i2cBus;
         port fromDAQ_adc[0..*] : analogADCInput;

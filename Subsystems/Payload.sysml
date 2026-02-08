@@ -21,7 +21,7 @@ package PayloadPackage {
     part def SpectrometerPackage specializes GeneralElectricalComponent;
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;
-    
+
     part def PerovskiteSolarArray specializes SolarArray {
         attribute manufacturer : String;
     }
@@ -98,7 +98,7 @@ package PayloadPackage {
         bind applyReverseBias.applyReverseBiasVoltageCommand = cmdIn;
         bind measureIVCurves.measureIVCurvesOfPSCCommand     = cmdIn;
         bind maintainMPP.maintainMPPCommand                  = cmdIn;
-        bind collectData.collectExperimentalDataCommand       = cmdIn;
+        bind collectData.collectExperimentalDataCommand      = cmdIn;
 
         // Merge action outputs to payload status out
         bind statusOut = applyReverseBias.voltageApplicationStatus;

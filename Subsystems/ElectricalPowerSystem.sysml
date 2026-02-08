@@ -48,6 +48,7 @@ package ElectricalPowerSystemPackage {
 
     part def Heater specializes GeneralElectricalComponent{
         attribute power : ISQ::PowerValue;
+        attribute minimalTemperature : ISQ::TemperatureValue;
     }
 
     part def RegulatedPowerBus {
