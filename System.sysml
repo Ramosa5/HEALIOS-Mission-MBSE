@@ -65,4 +65,23 @@ package HEALIOS {
     }
     
     part HEALIOS_System_entity : HEALIOS_System;
+
+
+    // itemy tutaj ktore wystepuja w systemie
+    item def OnBoardCommand{
+        attribute type : String;
+    }
+
+    item def OnBoardStatus{
+        attribute type : String;
+    }
+
+    item def GroundCommand{
+        attribute type : String;
+    }
+
+    item def TelemetryData{
+        attribute type : String;
+    }
+
 }
