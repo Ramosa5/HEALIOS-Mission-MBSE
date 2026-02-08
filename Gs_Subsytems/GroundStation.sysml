@@ -1,4 +1,4 @@
-package GroundStationSubsystemPackage {
+package GroundStationPackage {
     private import HEALIOS::*;
     private import ISQ::*;
 
@@ -54,7 +54,7 @@ package GroundStationSubsystemPackage {
         out item record : ArchiveRecord;
     }
 
-    part def GroundStationSubsystem {
+    part def GroundStation {
 
         port tcFromMCC : tcPort;
         port tmToMCC : tmPort;
