@@ -2,22 +2,36 @@ package Stakeholders_and_Concerns {
     doc
     /* Stakeholders for the HEALIOS System */
 
-    part def Gdansk_University_Of_Technology;
-    part def HSB_Bremen;
+    // 1. Stakeholders
 
+    //part def Gdansk_University_Of_Technology;
+    //part def HSB_Bremen;
+    part def Academic_Institutions;
     part def European_Space_Agency;
-    part def Perovskite_Research_Institutes; // using data
-    part def Perovskite_Solar_Cell_Manufacturer; // provide psc payload
+    part def Research_Institutes; // using data
+    part def Manufacturers;
     part def HEALIOS_Team;
+    part def Regulatory_Bodies;
 
     part Fly_Your_Satellite_Programme : European_Space_Agency;
-    part Gdansk_University_Stakeholder : Gdansk_University_Of_Technology;
-    part HSB_Bremen_Stakeholder : HSB_Bremen;
-    part Perovskite_Research_Institutes_Stakeholder : Perovskite_Research_Institutes;
-    part Perovskire_Solar_Cell_Manufacturer_Stakeholder : Perovskite_Solar_Cell_Manufacturer;
-    part HEALIOS_Team_Stakeholder : HEALIOS_Team;
+    part CubeSat_Community : Manufacturers;
 
+    part Satellite_COTS_Manufacturers : Manufacturers;
     
+    part <GUT> Gdansk_University_of_Technology : Academic_Institutions;
+    part <HSB> HSB_Hochschule_Bremen : Academic_Institutions;
+    
+    part Perovskite_Research_Institutes : Research_Institutes;
+    part Perovskire_Solar_Cell_Manufacture : Manufacturers;
+    
+    part HEALIOS_Team_Community : HEALIOS_Team;
+
+    part <IARU> International_Amateur_Radio_Union : Regulatory_Bodies;
+    part <ITU> International_Telecommunication_Union : Regulatory_Bodies;
+    part <LSP> Launch_Service_Provider : Regulatory_Bodies;
+    part <UNOOSA> United_Nations_Office_for_Outer_Space_Affairs : Regulatory_Bodies;
+
+    // 2. Concerns - TBC: REMEMBER TO CHANGE!
     concern programmePhaseCompletion {
         subject HEALIOS_System;
         stakeholder Fly_Your_Satellite_Programme;
