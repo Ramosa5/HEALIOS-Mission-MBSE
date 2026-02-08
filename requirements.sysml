@@ -1,5 +1,7 @@
 package Mission_Requirements{
     private import HEALIOS::*;
+    private import Stakeholders_and_Concerns::*;
+
 
     requirement def <R_M_001> Self_Healing_Experiments {
         doc /* The mission shall perform active self-healing experiments on designated PSC samples by applying a controlled reverse-bias voltage during orbital eclipse phases. */
@@ -380,10 +382,6 @@ package GroundSegmentRequirement {
         stakeholder HEALIOS_Team_Community;
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
-
-        require constraint {
-            GroundStation_Req.reusePriority == true
-        }
 }
 
      requirement def <R_GS_002> Bidirectional_Communication specializes R_M_014 {
@@ -396,27 +394,27 @@ package GroundSegmentRequirement {
     }
 
     requirement def <R_GS_003> Real_Time_Health_Monitoring specializes R_M_014 {
-        doc /* The GS shall provide real-time monitoring of spacecraft health parameters during each visibility window. */
+        doc /* The Ground Segment shall provide real-time monitoring of spacecraft health parameters during each visibility window. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 
     requirement def <R_GS_004> Secure_Commanding_Authentication specializes R_M_014 {
-        doc /* The GS shall implement secure authentication for access to all commanding operations. */
+        doc /* The Ground Segment shall implement secure authentication for access to all commanding operations. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 
     requirement def <R_GS_005> Doppler_Compensation specializes R_M_014 {
-        doc /* The GS shall apply Doppler compensation for both uplink and downlink during LEO passes. */
+        doc /* The Ground Segment shall apply Doppler compensation for both uplink and downlink during LEO passes. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 
     requirement def <R_GS_006> TLE_Based_Pass_Prediction specializes R_M_014 {
-        doc /* The GS shall use pass prediction algorithms consistent with TLE-based orbital propagation models. */
+        doc /* The Ground Segment shall use pass prediction algorithms consistent with TLE-based orbital propagation models. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 
     requirement def <R_GS_007> Prelaunch_Link_Budget specializes R_M_014 {
-        doc /* The GS shall perform link-budget estimation and verification prior to launch using simulated orbital profiles. */
+        doc /* The Ground Segment shall perform link-budget estimation and verification prior to launch using simulated orbital profiles. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 
@@ -430,7 +428,7 @@ package GroundSegmentRequirement {
     }
 
     requirement def <R_GS_009> Data_Archive specializes R_M_005 {
-        doc /* The GS shall store all scientific and housekeeping data in a structured archive for mission lifetime for at least 2 years. */
+        doc /* The Ground Segment shall store all scientific and housekeeping data in a structured archive for mission lifetime for at least 2 years. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
 
         stakeholder Perovskite_Research_Institutes;
@@ -438,7 +436,7 @@ package GroundSegmentRequirement {
     }
 
     requirement def <R_GS_010> Data_Format_And_Range_Validation specializes R_M_005 {
-        doc /* The system shall automatically check if the format of the data adheres to the accepted logical grammar and if the values of the data adhere to the accepted logical type and range. */
+        doc /* The Ground Segment shall automatically check if the format of the data adheres to the accepted logical grammar and if the values of the data adhere to the accepted logical type and range. */
         subject GroundStation_Req : HEALIOS::GroundSegment;
     }
 

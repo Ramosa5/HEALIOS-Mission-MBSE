@@ -5,17 +5,9 @@ package HEALIOS {
     public import Environment::*;
     public import HEALIOS_Functions::*;
     private import ElectricalPowerSystemPackage::*;
+    private import PayloadPackage::*;
+    private import TCSPackage::*;
     public part def Software;
-
-    public part def CommunicationSystem;
-    public part def OnBoardDataHandling;
-    public part def StructureAndMechanisms;
-    public part def DataAcquisition;
-    public part def AttitudeAndOrbitControlSystem;
-    public part def Payload;
-    public part def GroundStation;
-    public part def MissionOperationsCentre;
-    public part def ThermalControlSystem;
 
     // --- 3. Define the Detailed Space Segment ---
     public part def SpaceSegment {
@@ -109,8 +101,97 @@ package HEALIOS {
                     }
                 }
             }
+            :>> SPL { //tba
+                :>> cmdIn;
+                :>> statusOut;
+
+                // --- POWER FILTERING BLOCK ---
+                :>> powerFilteringBlock {
+                    :>> powerFilter {
+                        attribute selectedPartNumber : String = "TI TPS7A4501-SEP";
+                    }
+                }
+
+                // --- SOLAR CELLS BLOCK ---
+                :>> solarCellsBlock {
+
+                    :>> pscConnectorAndProtection {
+                        :>> name = "Molex 43045-0600";
+                        // mass możesz dopisać jeśli znasz:
+                        // :>> mass = 0.0 [SI::kg];
+                    }
+
+                    // Jeśli chcesz też nazwać kupony (opcjonalnie – podałeś wcześniej tylko COTS dla DAQ)
+                    :>> perovskiteSolarArrayCoupon[1] {
+                        :>> name = "Perovskite sample coupon";
+                        :>> manufacturer = "TBD";
+                    }
+
+                    :>> referenceSiliconSolarArrayCoupon[1] {
+                        :>> name = "Reference silicon coupon";
+                        // SolarArray ma u Ciebie name/mass/powerGeneration w EPS pakiecie,
+                        // więc możesz wypełnić jeśli chcesz:
+                        // :>> mass = 0.0 [SI::kg];
+                        // :>> powerGeneration = 0.0 [SI::W];
+                    }
+                }
+
+                // --- MPPT BLOCK (jeśli masz konkretne MPPT i rezystory – możesz dopisać COTS) ---
+                :>> mpptBlock {
+                    :>> mpptController[1] { :>> name = "TBD MPPT"; :>> mass = 0.0 [SI::kg]; }
+                    :>> powerDumpResistor[1] { attribute selectedPartNumber : String = "TBD"; }
+                }
+
+                // --- IV SWEEP + REVERSE BIAS BLOCK ---
+                :>> ivSweepAndReverseBiasBlock {
+
+                    :>> ivSweepLoadShuntResistor[1] {
+                        attribute selectedPartNumber : String = "WSL2512R1000FEA";
+                    }
+
+                    :>> ivSweepLoadMOSFET[1] {
+                        attribute selectedPartNumber : String = "BSC320N20NS3G";
+                    }
+
+                    :>> ivSweepLoadOpAmp[1] {
+                        attribute selectedPartNumber : String = "TI OPA197";
+                    }
+
+                    :>> ivSweepLoadDAC[1] {
+                        attribute selectedPartNumber : String = "MCP4728";
+                    }
+
+                    :>> currentAndVoltageSensingBlock[1] {
+                        attribute selectedPartNumber : String = "INA226";
+                    }
+                }
+
+                // --- ENVIRONMENT SENSORS BLOCK ---
+                :>> envSensorsBlock {
+
+                    :>> temperatureSensorsAtEnvironment {
+                        // TemperatureSensor jest z EPS (ma name/mass/power)
+                        :>> name = "TE TSYS03";
+                        :>> mass = 0.0 [SI::kg];
+                        :>> power = 0.0 [SI::W];
+                    }
+
+                    :>> irradianceSensorBlock {
+                        attribute selectedPartNumber : String = "Hamamatsu S1223-01";
+                    }
+
+                    :>> radiationDoseSensor {
+                        attribute selectedPartNumber : String = "Varadis VT02 RADFET";
+                    }
+
+                    :>> spectrometer {
+                        attribute selectedPartNumber : String = "Hamamatsu C12880MA";
+                    }
+                }
+            }
         }
     }
+
 
 
     // itemy tutaj ktore wystepuja w systemie
