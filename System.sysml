@@ -49,7 +49,7 @@ package HEALIOS {
         part <GS> HEALIOS_Ground_Segment : GroundSegment;
         attribute missionName : String = "HEALIOS";
         attribute missionDuration : Natural = 365 [SI::day]; // in years, to be refined
-        attribute Mass : Real = 2.0 [SI::kg];
+        attribute maxMass : Real = 2.0 [SI::kg];
 
         perform action performScienceOps : PerformScienceOperations;
         perform action operateSystem : OperateSystem;
