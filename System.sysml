@@ -13,8 +13,8 @@ package HEALIOS {
     private import AttitudeAndOrbitControlSystemPackage::*;
     public part def Software;
     private import GroundStationPackage::*;
-    private import DataCenterPackage::*;
-    private import ControlCenterPackage::*;
+    private import DataCentrePackage::*;
+    private import MissionControlCentrePackage::*;
     
     // --- 3. Define the Detailed Space Segment ---
     public part def SpaceSegment {
@@ -43,8 +43,19 @@ package HEALIOS {
     // --- 4. Ground Segment Placeholder ---
     public part def GroundSegment{
         part <GST> Ground_Station : GroundStation;
-        part <MCC> Mission_Control_Centre : MissionControlCenter;
-        part <DT> Data_Centre : DataCenter;         
+        part <MCC> Mission_Control_Centre : MissionControlCentre;
+        part <DT> Data_Centre : DataCentre;
+
+        connect Mission_Control_Centre.tcToGS to Ground_Station.tcFromMCC;
+        connect Mission_Control_Centre.passPlanToGS to Ground_Station.passPlanFromMCC;
+
+        connect Ground_Station.tmToMCC to Mission_Control_Centre.tmFromGS;
+        connect Ground_Station.trackingToMCC to Mission_Control_Centre.trackingFromGS;
+
+        connect Ground_Station.tmToDataCentre to Data_Centre.tmFromGS;
+        connect Ground_Station.archiveOut to Data_Centre.recordsFromGS;
+
+        connect Data_Centre.tmProductsToMCC to Mission_Control_Centre.tmFromGS;         
     }
 
     // --- 5. The Complete System ---
