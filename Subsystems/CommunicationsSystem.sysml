@@ -55,7 +55,6 @@ package CommunicationsSystemPackage {
 
     part def CommunicationsSystem {
         port commsPowerIn : powerBus;
-
         port tcToOBDH : groundCommandPort;
         port hkFromOBDH : obdhStatusInPort;
         port hkStatusToOBDH : commsStatusOutPort;
