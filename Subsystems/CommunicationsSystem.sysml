@@ -1,31 +1,27 @@
 package CommunicationsSystemPackage {
     private import MissionPackage::*;
     private import ISQ::*;
+    private import SpaceActionsPackage::*;
 
-    // Power input from EPS (optional)
     port def powerBus {
         in voltage : ISQ::SourceVoltageValue;
     }
 
-    // Telecommand received from ground (to be forwarded to OBDH)
     port def groundCommandPort {
         out item cmdOut : MissionPackage::GroundCommand;
     }
 
-    // Downlink data coming from OBDH (housekeeping/status for now)
     port def obdhStatusInPort {
         in item hkIn : MissionPackage::OnBoardStatus;
     }
 
-    // COMMS health/status to OBDH (optional feedback)
     port def commsStatusOutPort {
         out item statusOut : MissionPackage::OnBoardStatus;
     }
 
-    // Abstract RF link
     port def rfLinkPort {
-        out item rfOut : Real;
-        in item rfIn : Real;
+        out item rfOut : MissionPackage::TelemetryData;
+        in item rfIn : MissionPackage::TelemetryData;
     }
 
     part def Antenna {
@@ -37,51 +33,62 @@ package CommunicationsSystemPackage {
     part def Transceiver {
         attribute name : String;
         attribute maxTxPower : ISQ::PowerValue;
+
         attribute supportsRx : Boolean = true;
         attribute supportsTx : Boolean = true;
+
+        attribute downlinkDataRate : MissionPackage::TelemetryData;
+        attribute uplinkDataRate : MissionPackage::GroundCommand;
+
+        attribute dopplerToleranceHz : Real;
+        attribute modulationCoding : String;
+        attribute packetFormat : String;
+
+        attribute fecEnabled : Boolean = true;
+        attribute crcEnabled : Boolean = true;
+
+        attribute reconfigurableInOrbit : Boolean = true;
     }
 
-    // --- Actions ---
-    action def TransmitStatusDownlink {
-        in item hkIn : MissionPackage::OnBoardStatus;
-        out item rfOut : Real;
-    }
+    item def CommsAnomaly { attribute type : String; }
+    port def commsAnomalyOutPort { out item anomalyOut : CommsAnomaly; }
 
-    action def ReceiveGroundTelecommand {
-        in item rfIn : Real;
-        out item cmdOut : MissionPackage::GroundCommand;
-    }
-
-    action def ReportCommsHealth {
-        out item status : MissionPackage::OnBoardStatus;
-    }
-
-    // --- COMMS subsystem ---
     part def CommunicationsSystem {
         port commsPowerIn : powerBus;
 
-        // to/from OBDH
-        port tcToOBDH : groundCommandPort;        // COMMS -> OBDH (GroundCommand)
-        port hkFromOBDH : obdhStatusInPort;       // OBDH -> COMMS (OnBoardStatus)
-        port hkStatusToOBDH : commsStatusOutPort; // COMMS -> OBDH (OnBoardStatus)
-
-        // RF to ground
+        port tcToOBDH : groundCommandPort;
+        port hkFromOBDH : obdhStatusInPort;
+        port hkStatusToOBDH : commsStatusOutPort;
         port rfLink : rfLinkPort;
+        port anomalyToOBDH : commsAnomalyOutPort;
 
         part antenna : Antenna;
         part trx : Transceiver;
 
+        attribute supportsAllMissionPhases : Boolean = true;
+        attribute hasRedundancyOrFailSafe : Boolean = false;
+        attribute worstCaseLinkMargin_dB : Real;
+        attribute rfEmissionsCompliant : Boolean = true;
+        attribute emcCompliant : Boolean = true;
+        attribute beaconEnabled : Boolean = true;
+        attribute beaconContainsVitalTelemetry : Boolean = true;
+        attribute supportsE2ETestWithEGSE : Boolean = true;
+        attribute supportsOverTheAirQualificationTest : Boolean = true;
+
+        // Actions
         perform action txHK : TransmitStatusDownlink;
         perform action rxTC : ReceiveGroundTelecommand;
         perform action health : ReportCommsHealth;
+        perform action beacon : TransmitBeacon;
+        perform action logAnomaly : LogCommsAnomaly;
 
-        // Binds
+        // Binds (keep your original wiring)
         bind txHK.hkIn = hkFromOBDH.hkIn;
         bind rfLink.rfOut = txHK.rfOut;
-
         bind rxTC.rfIn = rfLink.rfIn;
         bind tcToOBDH.cmdOut = rxTC.cmdOut;
-
         bind hkStatusToOBDH.statusOut = health.status;
+        bind anomalyToOBDH.anomalyOut = logAnomaly.anomaly;
+
     }
 }

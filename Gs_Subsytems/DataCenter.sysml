@@ -2,7 +2,7 @@ package DataCentrePackage {
     private import MissionPackage::*;
     private import ISQ::*;
     private import GroundStationPackage::*;
-
+    private import GroundActionsPackage::*;
 
     port def tmPort { in item tmIn : MissionPackage::TelemetryData; }
     port def archivePort { in item recordIn : ArchiveRecord; }
@@ -15,14 +15,6 @@ package DataCentrePackage {
 
     part def DataValidator {
         attribute name : String;
-    }
-
-    action def ValidateTelemetry {
-        in item tm : MissionPackage::TelemetryData;
-    }
-
-    action def StoreRecord {
-        in item record : ArchiveRecord;
     }
 
     part def DataCentre {

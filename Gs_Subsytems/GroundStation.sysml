@@ -1,6 +1,7 @@
 package GroundStationPackage {
     private import MissionPackage::*;
     private import ISQ::*;
+    private import GroundActionsPackage::*;
 
     item def PassPlan { attribute type : String; }
     item def TrackingData { attribute type : String; }
@@ -34,24 +35,6 @@ package GroundStationPackage {
 
     part def LinkBudgetTool {
         attribute name : String;              
-    }
-
-    action def ExecuteUplink {
-        in item uplinkTc : MissionPackage::GroundCommand;
-    }
-
-    action def ReceiveDownlink {
-        out item downlinkTm : MissionPackage::TelemetryData;
-    }
-
-    action def ComputeTracking {
-        in item plan : PassPlan;
-        out item tracking : TrackingData;
-    }
-
-    action def StreamToArchive {
-        in item tmIn : MissionPackage::TelemetryData;
-        out item record : ArchiveRecord;
     }
 
     part def GroundStation {
