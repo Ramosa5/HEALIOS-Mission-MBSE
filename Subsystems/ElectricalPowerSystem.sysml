@@ -9,6 +9,7 @@ package ElectricalPowerSystemPackage {
     part def GeneralElectricalComponent {
         attribute Name : String;
         attribute Mass : ISQ::MassValue;
+        attribute PowerConsumption : ISQ::PowerValue;
     }
 
     part def Resistor specializes GeneralElectricalComponent {

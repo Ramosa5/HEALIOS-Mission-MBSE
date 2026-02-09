@@ -87,7 +87,12 @@ package MissionPackage {
         connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block.Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
             to SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
 
+        connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Magnetorquer_Board_I2C
+            to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
 
+        // Power distribution
+        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
+        
 
         connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
         connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
