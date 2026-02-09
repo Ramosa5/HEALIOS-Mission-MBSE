@@ -92,6 +92,8 @@ package MissionPackage {
 
         // Power distribution
         connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
+        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.commsPowerIn;
+
         
 
         connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
