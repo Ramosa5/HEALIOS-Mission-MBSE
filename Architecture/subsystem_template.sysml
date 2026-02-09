@@ -1,6 +1,6 @@
 package Subsystems {
-    private import HEALIOS::*;
-    private import HEALIOS_Space_Functions::*;
+    private import MissionPackage::*;
+    private import SpaceActionsPackage::*;
     private import ISQ::*;
 
     part def PowerFilteringUnit { attribute name : String; }
@@ -18,10 +18,10 @@ package Subsystems {
 
     part def EnvironmentSensorsBlock {
         // Minimal sensor data outputs (you can refine types later)
-        port tempOut : HEALIOS::OnBoardStatus;
-        port irrOut  : HEALIOS::OnBoardStatus;
-        port radOut  : HEALIOS::OnBoardStatus;
-        port specOut : HEALIOS::OnBoardStatus;
+        port tempOut : MissionPackage::OnBoardStatus;
+        port irrOut  : MissionPackage::OnBoardStatus;
+        port radOut  : MissionPackage::OnBoardStatus;
+        port specOut : MissionPackage::OnBoardStatus;
 
         part temperatureSensorsAtEnvironment : TemperatureSensorAtSolarCellSamples { :>> name = "TE TSYS03"; }
         part irradianceSensorBlock : IrradianceSensorBlock { :>> name = "Hamamatsu S1223-01"; }
@@ -32,8 +32,8 @@ package Subsystems {
     part def DataAcquisitionSystem {
 
         // Ports for integration
-        port cmdIn     : HEALIOS::OnBoardCommand;
-        port statusOut : HEALIOS::OnBoardStatus;
+        port cmdIn     : MissionPackage::OnBoardCommand;
+        port statusOut : MissionPackage::OnBoardStatus;
         port powerIn   : ISQ::PowerValue;
 
         // Instances

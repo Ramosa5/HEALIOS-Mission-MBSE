@@ -15,7 +15,7 @@ package ElectricalPowerSystemPackage {
     }
 
     port def TemperaturePort {
-            out temp : ISQ::TemperatureValue;
+            out temp : ISQ::TemperatureValue [1..*];
         }
         
     part def TemperatureSensor specializes GeneralElectricalComponent { 
