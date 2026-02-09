@@ -24,6 +24,10 @@ package CommunicationsSystemPackage {
         in item rfIn : MissionPackage::TelemetryData;
     }
 
+    item def CommsAnomaly { attribute type : String; }
+    port def commsAnomalyOutPort { out item anomalyOut : CommsAnomaly; }
+
+
     part def Antenna {
         attribute name : String;
         attribute band : String;
@@ -50,10 +54,20 @@ package CommunicationsSystemPackage {
         attribute reconfigurableInOrbit : Boolean = true;
     }
 
-    item def CommsAnomaly { attribute type : String; }
-    port def commsAnomalyOutPort { out item anomalyOut : CommsAnomaly; }
+    part def CryptoUnit {
+        attribute name : String;
+
+        attribute uplinkAuthEnabled : Boolean = true;
+        attribute uplinkDecryptEnabled : Boolean = true;
+
+        attribute downlinkEncryptEnabled : Boolean = true;
+        attribute downlinkIntegrityEnabled : Boolean = true; // e.g., MAC/signature
+    }
+
+    
 
     part def CommunicationsSystem {
+        // Power + interface ports
         port commsPowerIn : powerBus;
         port tcToOBDH : groundCommandPort;
         port hkFromOBDH : obdhStatusInPort;
@@ -61,33 +75,39 @@ package CommunicationsSystemPackage {
         port rfLink : rfLinkPort;
         port anomalyToOBDH : commsAnomalyOutPort;
 
+        // Physical elements (lean)
         part antenna : Antenna;
         part trx : Transceiver;
+
+        // Security element
+        part crypto : CryptoUnit;
 
         attribute supportsAllMissionPhases : Boolean = true;
         attribute hasRedundancyOrFailSafe : Boolean = false;
         attribute worstCaseLinkMargin_dB : Real;
+
         attribute rfEmissionsCompliant : Boolean = true;
         attribute emcCompliant : Boolean = true;
+
         attribute beaconEnabled : Boolean = true;
         attribute beaconContainsVitalTelemetry : Boolean = true;
+
         attribute supportsE2ETestWithEGSE : Boolean = true;
         attribute supportsOverTheAirQualificationTest : Boolean = true;
 
-        // Actions
         perform action txHK : TransmitStatusDownlink;
-        perform action rxTC : ReceiveGroundTelecommand;
+        perform action decryptAuth : DecryptAndAuthenticateUplink;
+        perform action encryptDL : EncryptDownlinkTelemetry;
         perform action health : ReportCommsHealth;
         perform action beacon : TransmitBeacon;
         perform action logAnomaly : LogCommsAnomaly;
 
-        // Binds (keep your original wiring)
         bind txHK.hkIn = hkFromOBDH.hkIn;
-        bind rfLink.rfOut = txHK.rfOut;
-        bind rxTC.rfIn = rfLink.rfIn;
-        bind tcToOBDH.cmdOut = rxTC.cmdOut;
+        bind encryptDL.tmIn = txHK.tmOut;
+        bind rfLink.rfOut = encryptDL.rfOut;
+        bind decryptAuth.rfIn = rfLink.rfIn;
+        bind tcToOBDH.cmdOut = decryptAuth.cmdOut;
         bind hkStatusToOBDH.statusOut = health.status;
         bind anomalyToOBDH.anomalyOut = logAnomaly.anomaly;
-
     }
 }

@@ -26,16 +26,29 @@ package GroundStationPackage {
 
     part def PassPredictor {
         attribute name : String;
-        attribute usesTLE : Boolean = true;   
+        attribute usesTLE : Boolean = true;
     }
 
     part def DopplerCompensator {
-        attribute name : String;             
+        attribute name : String;
     }
 
     part def LinkBudgetTool {
-        attribute name : String;              
+        attribute name : String;
     }
+
+    part def CryptoUnit {
+        attribute name : String;
+
+        // Downlink: verify integrity / optional decrypt
+        attribute downlinkVerifyEnabled : Boolean = true;
+        attribute downlinkDecryptEnabled : Boolean = true;
+
+        // Uplink: authenticate / optional encrypt
+        attribute uplinkAuthEnabled : Boolean = true;
+        attribute uplinkEncryptEnabled : Boolean = true;
+    }
+
 
     part def GroundStation {
         port tcFromMCC : tcPort;
@@ -44,24 +57,28 @@ package GroundStationPackage {
         port passPlanFromMCC : passPlanPort;
         port trackingToMCC : trackingPort;
         port archiveOut : archivePort;
-
         part antenna : Antenna;
         part radio : RadioUnit;
         part predictor : PassPredictor;
         part doppler : DopplerCompensator;
         part linkBudget : LinkBudgetTool;
+        part crypto : CryptoUnit;
 
         perform action uplink : ExecuteUplink;
         perform action downlink : ReceiveDownlink;
         perform action tracking : ComputeTracking;
         perform action archive : StreamToArchive;
+        perform action verifyDecrypt : VerifyAndDecryptDownlink;
+        perform action authEncrypt : AuthenticateAndEncryptUplink;
 
-        bind uplink.uplinkTc = tcFromMCC.tcIn;
-        bind tmToMCC.tmOut = downlink.downlinkTm;
-        bind tmToDataCentre.tmOut = downlink.downlinkTm;
+        bind authEncrypt.tcIn = tcFromMCC.tcIn;
+        bind uplink.uplinkTc = authEncrypt.tcOut;
+        bind verifyDecrypt.tmIn = downlink.downlinkTm;
+        bind tmToMCC.tmOut = verifyDecrypt.tmOut;
+        bind tmToDataCentre.tmOut = verifyDecrypt.tmOut;
         bind tracking.plan = passPlanFromMCC.planIn;
         bind trackingToMCC.trackingOut = tracking.tracking;
-        bind archive.tmIn = downlink.downlinkTm;
+        bind archive.tmIn = verifyDecrypt.tmOut;
         bind archiveOut.recordOut = archive.record;
     }
 }

@@ -484,15 +484,19 @@ action def AcquireAndTimestampSubsystemData {
         }
     }
 
-
-    action def TransmitStatusDownlink {
+action def TransmitStatusDownlink {
         in item hkIn : MissionPackage::OnBoardStatus;
-        out item rfOut : MissionPackage::TelemetryData;
+        out item tmOut : MissionPackage::TelemetryData;
     }
 
-    action def ReceiveGroundTelecommand {
+    action def DecryptAndAuthenticateUplink {
         in item rfIn : MissionPackage::TelemetryData;
         out item cmdOut : MissionPackage::GroundCommand;
+    }
+
+    action def EncryptDownlinkTelemetry {
+        in item tmIn : MissionPackage::TelemetryData;
+        out item rfOut : MissionPackage::TelemetryData;
     }
 
     action def ReportCommsHealth {
@@ -532,6 +536,17 @@ package GroundActionsPackage{
         in item tmIn : MissionPackage::TelemetryData;
         out item record : ArchiveRecord;
     }
+
+        action def VerifyAndDecryptDownlink {
+        in item tmIn : MissionPackage::TelemetryData;
+        out item tmOut : MissionPackage::TelemetryData;
+    }
+
+    action def AuthenticateAndEncryptUplink {
+        in item tcIn : MissionPackage::GroundCommand;
+        out item tcOut : MissionPackage::GroundCommand;
+    }
+
 
     action def ValidateTelemetry {
         in item tm : MissionPackage::TelemetryData;
