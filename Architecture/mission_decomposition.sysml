@@ -45,7 +45,6 @@ package MissionPackage {
         attribute Channel : String;      // optional: "I2C0", "ADC1", ...
     }
 
-    // --- 3. Define the Detailed Space Segment ---
     public part def SpaceSegment {
         // A. Attributes
 

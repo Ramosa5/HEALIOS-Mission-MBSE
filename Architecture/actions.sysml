@@ -2,6 +2,7 @@ package SpaceActionsPackage{
     private import ScalarValues::*;
     private import MissionPackage::*;
     private import ISQ::*;
+    private import CommunicationsSystemPackage::*;
     
 
     // Top-level definition for the Space Segment's behavior
@@ -483,10 +484,11 @@ action def AcquireAndTimestampSubsystemData {
         }
     }
 
+
     action def TransmitStatusDownlink {
         in item hkIn : MissionPackage::OnBoardStatus;
         out item rfOut : MissionPackage::TelemetryData;
-        }
+    }
 
     action def ReceiveGroundTelecommand {
         in item rfIn : MissionPackage::TelemetryData;
@@ -496,6 +498,15 @@ action def AcquireAndTimestampSubsystemData {
     action def ReportCommsHealth {
         out item status : MissionPackage::OnBoardStatus;
     }
+
+    action def TransmitBeacon {
+        out item rfOut : MissionPackage::TelemetryData;
+    }
+
+    action def LogCommsAnomaly {
+        out item anomaly : CommsAnomaly;
+    }
+
 }
 
 package GroundActionsPackage{
