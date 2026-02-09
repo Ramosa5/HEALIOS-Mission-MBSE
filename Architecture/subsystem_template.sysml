@@ -59,20 +59,20 @@ package Subsystems {
         perform action collectData      : collectExperimentalData;
 
         // Bind DAQ command input to the action command inputs
-        bind applyReverseBias.applyReverseBiasVoltageCommand = cmdIn;
-        bind measureIVCurves.measureIVCurvesOfPSCCommand     = cmdIn;
-        bind maintainMPP.maintainMPPCommand                  = cmdIn;
-        bind collectData.collectExperimentalDataCommand       = cmdIn;
+        bind applyReverseBias.Apply_Reverse_Bias_Voltage_Command = cmdIn;
+        bind measureIVCurves.Measure_IV_Curves_Of_PSC_Command     = cmdIn;
+        bind maintainMPP.Maintain_MPP_Command                  = cmdIn;
+        bind collectData.Collect_Experimental_Data_Command       = cmdIn;
 
         // Merge action outputs to DAQ status out (simple pattern; refine later)
-        bind statusOut = applyReverseBias.voltageApplicationStatus;
-        bind statusOut = measureIVCurves.measuredIVCurvesStatus;
-        bind statusOut = maintainMPP.mppStatus;
+        bind statusOut = applyReverseBias.Voltage_Application_Status;
+        bind statusOut = measureIVCurves.Measured_IV_Curves_Status;
+        bind statusOut = maintainMPP.Mpp_Status;
 
         // Optionally also forward sensor results (collectData outputs) via statusOut
-        bind statusOut = collectData.measuredRadiationStatus;
-        bind statusOut = collectData.measuredTemperatureStatus;
-        bind statusOut = collectData.measuredSpectrumStatus;
-        bind statusOut = collectData.measuredIrradianceStatus;
+        bind statusOut = collectData.Measured_Radiation_Status;
+        bind statusOut = collectData.Measured_Temperature_Status;
+        bind statusOut = collectData.Measured_Spectrum_Status;
+        bind statusOut = collectData.Measured_Irradiance_Status;
     }
 }

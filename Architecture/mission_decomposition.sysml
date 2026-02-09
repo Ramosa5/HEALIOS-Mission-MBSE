@@ -24,25 +24,25 @@ package MissionPackage {
     
     // items that flow in the system
     item def OnBoardCommand {
-        attribute type : String;
+        attribute Type : String;
     }
 
     item def OnBoardStatus {
-        attribute type : String;
+        attribute Type : String;
     }
 
     item def GroundCommand {
-        attribute type : String;
+        attribute Type : String;
     }
 
     item def TelemetryData {
-        attribute type : String;
+        attribute Type : String;
     }
 
     item def TimeTaggedStatus specializes OnBoardStatus {
-        attribute timeTag : ISQ::TimeValue;
-        attribute source  : String;      // "EPS", "PL_RAD", "PL_SPEC", ...
-        attribute channel : String;      // optional: "I2C0", "ADC1", ...
+        attribute Time_Tag : ISQ::TimeValue;
+        attribute Source  : String;      // "EPS", "PL_RAD", "PL_SPEC", ...
+        attribute Channel : String;      // optional: "I2C0", "ADC1", ...
     }
 
     // --- 3. Define the Detailed Space Segment ---
@@ -180,7 +180,7 @@ package MissionPackage {
        // perform action operateSystem : OperateSystem;
         //perform action maintainOperability : MaintainOperability;
 
-        connect sunEntity.sunSolarEnvironment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
+        connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
 
     }
 

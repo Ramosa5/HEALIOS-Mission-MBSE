@@ -33,8 +33,8 @@ package AttitudeAndOrbitControlSystemPackage {
 
         perform action Activate_AOCS {
             in AOCS_Command : MissionPackage::OnBoardCommand;
-            
-            if AOCS_Command.type == "TurnOn" {
+
+            if AOCS_Command.Type == "TurnOn" {
                 loop {
                     perform action Read_Sun_Angle : ReadSunAngle {
                         bind Beta_Angle = Sun_Sensor.Beta_Angle;
@@ -44,7 +44,7 @@ package AttitudeAndOrbitControlSystemPackage {
                         bind Sun_Sensor_Reading = Read_Sun_Angle.Beta_Angle;
                         bind Force_Value = Nominal_Force;
                     }
-                    then assign Stop_Signal := AOCS_Command.type == "TurnOff";
+                    then assign Stop_Signal := AOCS_Command.Type == "TurnOff";
                 } until Stop_Signal;
             }
         }
