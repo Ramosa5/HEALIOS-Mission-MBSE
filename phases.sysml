@@ -20,7 +20,7 @@ package Mission_Phases {
 
     occurrence def DecommissioningPhase{
         assert constraint { 
-            duration < 24 * year
+            duration < 24 [My_Units::yr]
             }
     }
 
