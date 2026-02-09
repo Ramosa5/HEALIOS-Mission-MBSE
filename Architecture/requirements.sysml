@@ -385,7 +385,7 @@ package GroundSegmentRequirement {
 }
 
      requirement def <R_GS_002> Bidirectional_Communication specializes R_M_014 {
-        doc /* At least one ground station shall enable bidirectional communication with the spacecraft. */
+        doc /* At least one ground station shall enable communication with the spacecraft. */
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
         stakeholder HEALIOS_Team_Community;
