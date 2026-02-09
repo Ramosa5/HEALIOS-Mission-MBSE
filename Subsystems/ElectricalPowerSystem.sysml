@@ -16,6 +16,10 @@ package ElectricalPowerSystemPackage {
 
     part def TemperatureSensor specializes GeneralElectricalComponent { 
         attribute power : ISQ::PowerValue;
+
+        port temperatureOUT {
+            out temp : ISQ::TemperatureValue;
+        }
     }
 
     part def SolarArray specializes GeneralElectricalComponent {
@@ -43,7 +47,7 @@ package ElectricalPowerSystemPackage {
         part tempSensor : TemperatureSensor;
         port heaterPowerBus : powerBus;
 
-        perform action readEPSTemperature : ReadTemperature;
+        //perform action readEPSTemperature : ReadTemperature; -> OLD, now we just have the temp sensor port and bind it to TCS!
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent;

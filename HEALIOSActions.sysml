@@ -366,10 +366,6 @@ package HEALIOS_Space_Functions {
 
     //------------------------------------------------------------------------------------------------Thermal actions
 
-    action def ReadTemperature {
-        out temp : ISQ::TemperatureValue;
-    }
-
     action def EvaluateThreshold {
         in temp : ISQ::TemperatureValue;
         in threshold : ISQ::TemperatureValue; 
@@ -387,17 +383,18 @@ package HEALIOS_Space_Functions {
     action def ControlTemperature {
         in minimalTemperature : ISQ::TemperatureValue;
         in heaterPower : ISQ::PowerValue;
-        action read : ReadTemperature;
+        in tempReading : ISQ::TemperatureValue;
+        
         action heat : StartHeater;
         action evaluate : EvaluateThreshold if threshold < 0 {
             perform action heat;
         }
 
-        flow read.temp to evaluate.temp;
         flow evaluate.turnOn to heat.turnOn;
 
         bind evaluate.threshold = minimalTemperature;
         bind heat.heaterPower = heaterPower;
+        bind evaluate.temp = tempReading;
     }
 
 }
