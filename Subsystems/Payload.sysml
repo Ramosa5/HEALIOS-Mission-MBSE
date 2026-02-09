@@ -34,10 +34,10 @@ package PayloadPackage {
     }
 
     part def PowerFilteringBlock {
-        port Power_Bus_In_3V3 : ElectricalPowerSystemPackage::powerBus;
-        port Power_Bus_In_5V : ElectricalPowerSystemPackage::powerBus;
-        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::powerBus;
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_In_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port Power_Bus_In_5V : ElectricalPowerSystemPackage::PowerBus;
+        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
 
         part Power_Filter : PowerFilteringUnit;
     }
@@ -49,14 +49,14 @@ package PayloadPackage {
     }
 
     part def MPPTBlock {
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
 
         part Mppt_Controller : MPPTUnit [1..*];
         part Power_Dump_Resistor : Resistor [1..*];
     }
 
     part def IVSweepAndReverseBiasBlock {
-        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
 
         part Iv_Sweep_Load_Shunt_Resistor : Resistor [1];
         part Iv_Sweep_Load_MOSFET : IVSweepLoad_MOSFET [1];
@@ -66,8 +66,8 @@ package PayloadPackage {
     }
 
     part def EnvironmentSensorsBlock {
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
-
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
+    
         port Temp_Out : MissionPackage::OnBoardStatus;
         port Irr_Out : MissionPackage::OnBoardStatus;
         port Rad_Out : MissionPackage::OnBoardStatus;
