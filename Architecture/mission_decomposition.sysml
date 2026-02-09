@@ -1,7 +1,7 @@
 package MissionPackage {
     public import ScalarValues::*;
     public import ISQ::*;
-    public import Stakeholders_and_Concerns::*;
+    public import StakeholdersDefinition::*;
     public import Environment::*;
     private import ElectricalPowerSystemPackage::*;
     private import PayloadPackage::*;
@@ -48,9 +48,9 @@ package MissionPackage {
     public part def SpaceSegment {
         // A. Attributes
 
-        attribute totalMass : ISQ::MassValue;
-        attribute CubeSatformFactor : String;
-        attribute centerOfMass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
+        attribute Total_Mass : ISQ::MassValue;
+        attribute CubeSat_Form_Factor : String;
+        attribute Center_Of_Mass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
 
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
@@ -63,9 +63,9 @@ package MissionPackage {
         part <PL> SS_Satellite_Payload : Payload;
 
         in port satelliteSolarEnvironment : SolarEnvironment {
-            in item measuredRadiation : Real;
-            in item measuredSpectrum : Real;
-            in item measuredAngleBeta : Real;
+            in item Measured_Radiation : Real;
+            in item Measured_Spectrum : Real;
+            in item Measured_Beta_Angle : Real;
         }
 
         port Satellite_Command_Port : CommandPort;

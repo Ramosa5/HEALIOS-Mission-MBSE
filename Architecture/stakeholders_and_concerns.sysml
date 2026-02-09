@@ -1,88 +1,70 @@
-package Stakeholders_and_Concerns {
-    doc
-    /* Stakeholders for the HEALIOS System */
+package StakeholdersDefinition {
 
-    // 1. Stakeholders
+    part def AcademicInstitutions {
+        doc /* Universities involved directly in the HEALIOS mission. The core HEALIOS Team is composed of students enrolled in these institutions. Interested in providing academic supervision and resources to improve the institution visibility, qualification, and research capabilities. */
+    }
 
-    part def Academic_Institutions;
-    part def European_Space_Agency;
-    part def Research_Institutes;
-    part def Manufacturers;
-    part def HEALIOS_Team;
-    part def Regulatory_Bodies;
+    part def ResearchInstitutes {
+        doc /* Research institutions involved, directly and indirectly, in the HEALIOS mission. This includes private companies or government laboratories. Academic institutions may also be included, if their role is not directly conteted to the student status of the core Healios Team.*/
+    }
 
-    part Fly_Your_Satellite_Programme : European_Space_Agency;
-    part CubeSat_Community : Manufacturers;
+    part def EuropeanSpaceAgency {
+        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting univeristy engaement in space exploration and satellite technology development. */
+    }
 
-    part Satellite_COTS_Manufacturers : Manufacturers;
+    part def Manufacturers {
+        doc /* Companies manufacturing satellite components, including solar cells. Interested in providing components for space missions. */
+    }
+    part def HEALIOS_Team {
+        doc /* The core team responsible for the HEALIOS mission. Interested in successfully executing the mission objectives and advancing space technology. */
+    }
+    part def RegulatoryBodies {
+        doc /* Organizations that regulate space activities and satellite operations. Interested in ensuring compliance with international space law and safety standards. */
+    }
+
+    part def <FYS> ESAFlyYourSatelliteProgramme specializes EuropeanSpaceAgency {
+        doc /* The ESA program that supports university satellite projects. Interested in ensuring the success of the HEALIOS mission and fostering educational opportunities in space technology. */
+    }
+    part def <CSF> ESACubeSatSupportFacility specializes EuropeanSpaceAgency {
+        doc /* The ESA facility that provides support for CubeSat missions, including testing and integration services. Interested in ensuring the technical success and testing campaign of the HEALIOS mission. */
+    }
+    part def CubeSatCommunity specializes Manufacturers {
+        doc /* The community of manufacturers and developers focused on CubeSat technology. Interested in advancing CubeSat visibility in space sector; provide CubeSat Design Specification - guide for the HEALIOS mission. */
+    }
+
+    part def SatelliteCOTSManufacturers specializes Manufacturers {
+        doc /* Companies that provide commercial off-the-shelf (COTS) components for satellite construction. Interested in providing reliable and cost-effective components for space missions, including the HEALIOS mission. */
+    }
     
-    part <GUT> Gdansk_University_of_Technology : Academic_Institutions;
-    part <HSB> HSB_Hochschule_Bremen : Academic_Institutions;
+    part def <GUT> GdanskUniversityOfTechnology specializes AcademicInstitutions {
+        doc /* The university collaborating on the HEALIOS mission.*/
+    }
+
+    part def <HSB> HSBHochschuleBremen specializes AcademicInstitutions {
+        doc /* The university collaborating on the HEALIOS mission. */
+    }
     
-    part Perovskite_Research_Institutes : Research_Institutes;
-    part Perovskite_Solar_Cell_Manufacturers : Manufacturers;
-    
-    part HEALIOS_Team_Community : HEALIOS_Team;
-
-    part <IARU> International_Amateur_Radio_Union : Regulatory_Bodies;
-    part <ITU> International_Telecommunication_Union : Regulatory_Bodies;
-    part <LSP> Launch_Service_Provider : Regulatory_Bodies;
-    part <UNOOSA> United_Nations_Office_for_Outer_Space_Affairs : Regulatory_Bodies;
-
-    // 2. Concerns - TBC: REMEMBER TO CHANGE!
-    concern programmePhaseCompletion {
-        subject HEALIOS_System;
-        stakeholder Fly_Your_Satellite_Programme;
+    part def <HEALIOS> HEALIOSTeamCommunity specializes HEALIOS_Team {
+        doc /* The broader community of students, researchers, and professionals involved in the HEALIOS mission. Interested in the success of the mission and the advancement of space technology. Beside the core team, this includes collaborators and supporters. */
     }
 
-    concern educationalReturn {
-        subject HEALIOS_System;
-        stakeholder Fly_Your_Satellite_Programme;
+    part def PerovskiteResearchInstitutes specializes ResearchInstitutes {
+        doc /* Research institutions focused on perovskite solar cell technology. Interested in advancing the performance and space-readiness of perovskite solar cells. Benfit from data generated by the mission. */
     }
-
-    concern reviewProcessCompliance {
-        subject HEALIOS_System;
-        stakeholder Fly_Your_Satellite_Programme;
+    part def PerovskiteSolarCellManufacturers specializes Manufacturers {
+        doc /* Companies manufacturing perovskite solar cells. Interested in providing high-performance solar cells for space applications and advancing the commercial viability of perovskite technology. Benfit from maturing TRL of the perovskite solar cells in space. */
+    }    
+    part def <IARU> InternationalAmateurRadioUnion specializes RegulatoryBodies {
+        doc /* The international organization that coordinates amateur radio activities, including satellite communications. Interested in ensuring the proper use of radio frequencies and promoting amateur radio involvement in space missions. */
     }
-
-    concern UniversityEngagement {
-        subject HEALIOS_System;
-        stakeholder Gdansk_University_Stakeholder;
-        stakeholder HSB_Bremen_Stakeholder;
+    part def <ITU> InternationalTelecommunicationUnion specializes RegulatoryBodies {
+        doc /* The United Nations specialized agency for information and communication technologies, including satellite communications. Interested in regulating the use of radio frequencies and ensuring compliance with international telecommunications standards. */
     }
-
-    // 3. Viewpoints
-    // A Viewpoint defines the rules for constructing a view to address the concerns
-    viewpoint def ManagementViewpoint {
-        doc /* Viewpoint to address phase completion and review compliance. */
-        
-        // This is the critical link: FRAMING the concern
-        frame programmePhaseCompletion;
-        
-        // You can require specific content in views of this type
-        require constraint {
-            doc /* Must show project timeline and milestone status. */
-        }
+    part def <LSP> LaunchServiceProvider specializes RegulatoryBodies {
+        doc /* Companies or organizations that provide launch services for satellites. Interested in providing reliable and cost-effective launch options for space missions, including the HEALIOS mission. One of the most probable launch provider is currently SpaceX. */
     }
-
-    viewpoint def OutreachViewpoint {
-        doc /* Viewpoint focusing on educational value and university engagement. */
-        
-        frame educationalReturn;
-        // You can frame multiple concerns
-        // frame UniversityEngagement; 
+    part def <UNOOSA> UnitedNationsOfficeForOuterSpaceAffairs specializes RegulatoryBodies {
+        doc /* The United Nations office responsible for promoting international cooperation in the peaceful use and exploration of outer space. Interested in ensuring compliance with international space law and promoting the benefits of space activities. */
     }
-
-    // 4. Views
-    // The actual "product" (diagram, document, table) that satisfies the viewpoint
-    view phaseReviewReport : ManagementViewpoint {
-        doc /* The generated report for the Phase C review. */
-        
-        // Expose the parts of the system model relevant to this view
-        expose HEALIOS::*;
-        
-        // (Optional) Filter or render specific elements
-        // filter @Milestone;
-    }
-
 }
+

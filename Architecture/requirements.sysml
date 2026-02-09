@@ -1,6 +1,6 @@
 package Mission_Requirements{
     private import MissionPackage::*;
-    private import Stakeholders_and_Concerns::*;
+    private import StakeholdersDefinition::*;
 
 
     requirement def <R_M_001> Self_Healing_Experiments {
@@ -42,14 +42,14 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 
     requirement def <R_M_003> Platform_Conformity {
         doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), that enables experiment performance. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder CubeSat_Community;
         stakeholder Satellite_COTS_Providers;
     }
@@ -75,7 +75,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 
     requirement def <R_M_007> Mission_Duration {
@@ -84,7 +84,7 @@ package Mission_Requirements{
         subject Mission_Req : MissionPackage::MissionSegments;
 
         stakeholder Perovskite_Research_Institutes;
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder HEALIOS_Team_Community;
     }
 
@@ -93,7 +93,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 
     requirement def <R_M_009> Core_Team_Composition {
@@ -101,7 +101,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder HEALIOS_Team_Community;
     }
 
@@ -110,7 +110,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
         stakeholder HEALIOS_Team_Community;
@@ -120,7 +120,7 @@ package Mission_Requirements{
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
         stakeholder HEALIOS_Team_Community;
@@ -130,14 +130,14 @@ package Mission_Requirements{
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 
     requirement def <R_M_013> Educational_Return {
         doc /* The mission shall demonstrate a clear educational return. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
         stakeholder HEALIOS_Team_Community;
@@ -159,7 +159,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
         stakeholder Gdansk_University_of_Technology;
         stakeholder HSB_Hochschule_Bremen;
         stakeholder HEALIOS_Team_Community;
@@ -196,7 +196,7 @@ package Mission_Requirements{
         doc /* The mission shall implement a Fault Detection, Isolation, and Recovery (FDIR) strategy to enhance system reliability. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 }
 
@@ -277,7 +277,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_012> FYS_Config_Compatibility specializes R_M_006 {
         doc /* The Space Segment shall maintain configuration compatibility with the Fly Your Satellite! testing flow, including environmental and functional test setups. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
     }
 
     requirement def <R_SS_013> Telemetry_Protocol specializes R_M_014 {
@@ -318,7 +318,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_016> PFM_Campaign specializes R_M_006, R_M_012, R_M_015 {
         doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
 
         requirement def <R_SS_016_a> PFM_Exclusions {
             doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
@@ -361,11 +361,11 @@ package SpaceSegmentRequirement {
 
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
 
-        attribute massLimit  : ISQ::MassValue = 2.0 [SI::kg];
-        attribute massTolerance : ISQ::MassValue = 0.001 [SI::kg];
+        attribute Mass_Limit  : ISQ::MassValue = 2.0 [SI::kg];
+        attribute Mass_Tolerance : ISQ::MassValue = 0.001 [SI::kg];
 
         require constraint {
-            SpaceSegment_Req.totalMass <= massLimit + massTolerance
+            SpaceSegment_Req.Total_Mass <= Mass_Limit + Mass_Tolerance
         }
     }
 }
@@ -447,7 +447,7 @@ package GroundSegmentRequirement {
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
         stakeholder HEALIOS_Team_Community;
-        stakeholder ESA_Fly_Your_Satellite;
+        stakeholder ESA_Fly_Your_Satellite_Programme;
 
     }
 

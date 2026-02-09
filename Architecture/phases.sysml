@@ -1,4 +1,4 @@
-private import Stakeholders_and_Concerns;
+private import StakeholdersDefinition;
 private import Time;
 
 package Mission_Phases {
