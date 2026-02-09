@@ -92,6 +92,10 @@ package MissionPackage {
         connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
         connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
 
+        connect SS_Communication_System.tcToOBDH.cmdOut to SS_On_Board_Data_Handling.Telecommand_In;
+        connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.hkFromOBDH.hkIn;
+
+
         state Satellite_Mode {
             entry;
             then Commissioning_Mode;
