@@ -1,8 +1,10 @@
 package OnBoardDataHandlingSystemPackage {
     private import HEALIOS::*;
-    private import HEALIOS_Space_Functions::*;
-    private import ISQ::*;   
+    private import HEALIOS_Space_Functions::*; 
     private import ElectricalPowerSystemPackage::*;
+    public import ScalarValues::*;
+    private import ISQ::*;  
+    public import My_Units::*;
 
     //------------------------------------------------------------------------------------------------
     // Generic data/command plumbing (abstracted physical buses)
@@ -32,32 +34,34 @@ package OnBoardDataHandlingSystemPackage {
     // Memory & state types (sized per Design Report budgets)
     //------------------------------------------------------------------------------------------------
 
-    value def MemorySizeMB : Real;
-    value def MemorySizekB : Real;
+    //value def MemorySizeMB : Real;
+    //value def MemorySizekB : Real;
 
     part def NonVolatileMemory {
-        attribute norFlashTotal : MemorySizeMB;
 
-        // Budget elements from Design Report memory section:
-        attribute downlinkBuffer : MemorySizeMB;
-        attribute obsW_bankA     : MemorySizeMB;
-        attribute obsW_bankB     : MemorySizeMB;
-        attribute eventFdirLogs  : MemorySizeMB;
-        attribute fsMetadata     : MemorySizeMB;
-        attribute configData     : MemorySizeMB;
-        attribute obcSyncData    : MemorySizeMB;
-        attribute margin         : MemorySizeMB;
-    }
+    attribute norFlashTotal : Real; // later just go for: norFlashTotal = 256 [MB];
+
+    // Budget elements
+    attribute downlinkBuffer : Real;
+    attribute obsW_bankA     : Real;
+    attribute obsW_bankB     : Real;
+    attribute eventFdirLogs  : Real;
+    attribute fsMetadata     : Real;
+    attribute configData     : Real;
+    attribute obcSyncData    : Real;
+    attribute margin         : Real;
+}
+
 
     part def VolatileMemory {
-        attribute ramTotal : MemorySizeMB;
+        attribute ramTotal : Real;  // later just go for: ramTotal = 256 [MB];
 
-        attribute inputsReadBuffer   : MemorySizeMB;
-        attribute downlinkTxBuffer   : MemorySizeMB;
-        attribute logsTelemetryBuf   : MemorySizeMB;
-        attribute systemStateData    : MemorySizeMB;
-        attribute rtosObswOverhead   : MemorySizeMB;
-        attribute margin             : MemorySizeMB;
+        attribute inputsReadBuffer   : Real;
+        attribute downlinkTxBuffer   : Real;
+        attribute logsTelemetryBuf   : Real;
+        attribute systemStateData    : Real;
+        attribute rtosObswOverhead   : Real;
+        attribute margin             : Real;
     }
 
     // Explicit “synchronised subset” for warm redundancy takeover
