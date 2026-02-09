@@ -22,16 +22,16 @@ package ThermalControlSystemPackage {
         
         //attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 
-        attribute stopSignal : Boolean := false;
+        attribute Stop_Signal : Boolean := false;
 
-        ref part epsHeater[0..*] : Heater;
-        ref part payloadTemperatureSensor[0..*] : TemperatureSensor;
-        ref part obcTemperatureSensor[0..*] : TemperatureSensor;
-        ref part epsTemperatureSensor[0..*] : TemperatureSensor;
+        ref part EPS_Heater[0..*] : Heater;
+        ref part PL_Temperature_Sensor[0..*] : TemperatureSensor;
+        ref part OBC_Temperature_Sensor[0..*] : TemperatureSensor;
+        ref part EPS_Temperature_Sensor[0..*] : TemperatureSensor;
 
-        connect payloadTemperatureSensor.temperatureOUT to PL_Temperature_Port.temp;
-        connect obcTemperatureSensor.temperatureOUT to OBDH_Temperature_Port.temp;
-        connect epsTemperatureSensor.temperatureOUT to EPS_Temperature_Port.temp;
+        connect PL_Temperature_Sensor.temperatureOUT to PL_Temperature_Port.temp;
+        connect OBC_Temperature_Sensor.temperatureOUT to OBDH_Temperature_Port.temp;
+        connect EPS_Temperature_Sensor.temperatureOUT to EPS_Temperature_Port.temp;
         
         // In next iterations, add loop type action for OBDH control.
         perform action activateTCS {
@@ -42,12 +42,12 @@ package ThermalControlSystemPackage {
                     bind temp = EPS_Temperature_Port.temp;
                 }
                 then perform action ControlTemperatures : ControlTemperature {
-                    bind minimalTemperature = epsHeater.minimalTemperature;
-                    bind heatingPower = epsHeater.power;
+                    bind minimalTemperature = EPS_Heater.minimalTemperature;
+                    bind heatingPower = EPS_Heater.power;
                     bind tempReading = read.temp;
                 }
-                then assign stopSignal := (command.type == "Turn Off");
-            } until stopSignal;
+                then assign Stop_Signal := (command.type == "Turn Off");
+            } until Stop_Signal;
         }
     }
 }

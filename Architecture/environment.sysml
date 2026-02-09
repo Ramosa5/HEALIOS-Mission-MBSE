@@ -28,3 +28,23 @@ package Environment {
 
   part sunEntity : Sun; // do zmiany nazwa
 }
+
+package LaunchEnvironment {
+
+  port def DispenserContactInterface;
+
+  part def Launcher {
+        attribute name : String;
+        attribute payloadCapacity : ISQ::MassValue;
+        attribute launchSite : String;
+    }
+
+
+  part def CubeSatDispenser {
+          attribute Name : String;
+          attribute Status : String;
+
+          port Mounting_Interface : DispenserContactInterface;
+      }
+
+}

@@ -2,96 +2,112 @@ package StructureSystemPackage {
     private import MissionPackage::*;
     private import ISQ::*;
     private import SI::*;
+    private import LaunchEnvironment::*;
+    
+  
+   item def Separation;
+
+    // --- 2. Define the Behavior ---
+    state def SwitchBehavior {
+
+        attribute Switch_Status : String;
+        // entry point is the standard way to start a state machine
+        entry; then Stowed;
+        
+        state Stowed {
+            entry assign Switch_Status := "Stowed";
+        }
+
+        // Transition from Stowed to Deployed accepting the Separation signal
+        transition
+            first Stowed
+            accept Separation
+            then Deployed;
+
+        state Deployed {
+            entry assign Switch_Status := "Deployed";
+        }
+    }
+
+
 
     // --- Component Definitions ---
 
-    port def MechanicalInterface;
+    port def StructuralMountInterface;   
 
     part def MountingElement {
-        attribute type : String; // e.g., "Bolt", "Rivet", "Weld", "Separator", "Adhesive", "Adapter"
-        attribute material : String;
-        attribute quantity : Integer;
+        attribute Type : String;
+        attribute Material : String;
+        attribute Quantity : Integer;
     }
 
     part def Chassis {
-        attribute material : String;
-        attribute dimensions : String;
+        attribute Material : String;
+        attribute Dimensions : String;
 
-        // Mechanical interface for mounting components (e.g., PCBs, payload, solar arrays)
-        port mountingPoints : MechanicalInterface;
-        
-        // Mechanical interface for connecting to other structural elements (e.g., stack rods)
-        port structuralInterface : MechanicalInterface;
+        // Internal mounting
+        port Mounting_Points : StructuralMountInterface [0..*];
+        // Internal structural connections
+        port Structural_Interface : StructuralMountInterface [0..*];
+        // External mounting
+        port Rail_Interface : DispenserContactInterface [0..*];
     }
 
-    part def Mechanism {
-        attribute name : String;
-        attribute powerConsumption : ISQ::PowerValue;
-        attribute status : String; // e.g., "Stowed", "Deployed"
+    part def PCBStack {
+        attribute Material : String;
+        attribute Dimensions : String;
 
-        port mountingInterface : MechanicalInterface;
+        // Internal mounting
+        port Mounting_Points : StructuralMountInterface [0..*];
+        // Internal structural connections
+        port Structural_Interface : StructuralMountInterface [0..*];
     }
 
-    part def CubeSatDispenser {
-        attribute name : String;
-        attribute status : String; // e.g., "Stowed", "Deployed"
+    part def DeploymentMechanism {
+        attribute Name : String;
+        attribute Power_Consumption : ISQ::PowerValue;
+        attribute Status : String;
 
-        port mountingInterface : MechanicalInterface;
+        // Mounting interface for deployment switches
+        port Mounting_Interface : StructuralMountInterface [0..*];
+        // Optional interface for deployment mechanism actuation
+        port Plunger_Interface : DispenserContactInterface [0..*];
+
+        exhibit state Switch_State : SwitchBehavior {
+            bind Switch_Status = DeploymentMechanism::Status;
+        }
     }
 
     // --- The Main System Definition ---
 
     part def StructureSystem {
         
-        // A. Physical Attributes of the Structure Subsystem itself
-        attribute totalMass : ISQ::MassValue;
-        attribute material : String;
+        attribute Total_Mass : ISQ::MassValue;
+        attribute Material : String;
 
-        // B. Mechanical Parts
+        port Dispenser_Interface : DispenserContactInterface;
 
-        // The main frame of the satellite (Primary Structure)
-        part primaryStructure : Chassis {
-            //:>> material = "Aluminum Alloy";
-            //:>> dimensions = "1U form factor";
-
-            part internal_mounting : MountingElement {
-                //:>> type = "General";
-            }
+        // Primary structure
+        part Primary_Structure : Chassis {
+            part Internal_Mounting : MountingElement;
         }
 
-        // PCB-Stack Definition (Secondary Structure)
-        part secondaryStructure : Chassis {
-           // :>> material = "Aluminum Alloy";
-           // :>> dimensions = "PC-104 form factor";
-
-            part internal_mounting : MountingElement {
-               // :>> type = "General";
-            }
+        // Secondary structure (PCB stack)
+        part Secondary_Structure : PCBStack {
+            part Internal_Mounting : MountingElement;
         }
 
-        // Separation springs / Switches for the POD interface
-        part deploymentSwitches : Mechanism [2] {
-            //:>> name = "POD Separation Switch";
-            //:>> powerConsumption = 0 [SI::W];
-            //:>> status = "Stowed";
-        }
+        // Deployment switches
+        part Deployment_Switches : DeploymentMechanism [2];
 
-        // C. Internal Connections (The Assembly Logic)
+        // Internal connections
+        connect Secondary_Structure.Structural_Interface to Primary_Structure.Structural_Interface;
 
-        // Connect the Secondary Structure (Stack) to the Primary Structure (Frame)
-        connect secondaryStructure.structuralInterface to primaryStructure.structuralInterface;
+        // Switches mounted to structure
+        connect Deployment_Switches.Mounting_Interface to Primary_Structure.Mounting_Points;
 
-        // Connect the Deployment Switches to the Primary Structure
-        connect deploymentSwitches.mountingInterface to primaryStructure.mountingPoints;
-
-        // D. External Interfaces
-        
-        // Mechanical interface to the Launch Adapter (POD) - Connected to the Frame
-        port PPOD : CubeSatDispenser {
-            //:>> name = "PPOD Interface";
-            //:>> status = "Stowed";
-        }
-        connect PPOD.mountingInterface to primaryStructure.structuralInterface;
-        connect PPOD.mountingInterface to deploymentSwitches.mountingInterface;
+        // External connection to launcher dispenser
+        connect Primary_Structure.Rail_Interface to Dispenser_Interface;
+        connect Deployment_Switches.Plunger_Interface to Dispenser_Interface;
     }
 }
