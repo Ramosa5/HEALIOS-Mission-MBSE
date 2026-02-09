@@ -454,3 +454,38 @@ action def AcquireAndTimestampSubsystemData {
         out Temp : ISQ::TemperatureValue;
     }
 }
+    //------------------------------------------------------------------------------------------------
+    // ACTION DEFINITIONS aocs
+        //------------------------------------------------------------------------------------------------
+    action def ReadSunAngle {
+        out Beta_Angle : ISQ::AngularMeasureValue;
+    }
+
+    action def UseMagnetorquer {
+        in Beta_Angle : ISQ::AngularMeasureValue;
+        in Threshold : ISQ::AngularMeasureValue;
+        out Force : ISQ::ForceValue;
+    }
+
+    action def CorrectAttitude {
+        in Force_Value : ISQ::ForceValue;
+        in Sun_Sensor_Reading : ISQ::AngularMeasureValue;
+        in Threshold : ISQ::AngularMeasureValue; //0 to pi
+        out Force : ISQ::ForceValue;
+
+        then action Use_Magnetorquer : UseMagnetorquer {
+            bind UseMagnetorquer::Threshold = CorrectAttitude::Threshold;
+            bind UseMagnetorquer::Beta_Angle = Sun_Sensor_Reading;
+            bind UseMagnetorquer::Force = CorrectAttitude::Force;
+            if Beta_Angle > Threshold {
+                assign Force := Force_Value;
+            } else {
+                assign Force := 0 [SI::N];
+            }
+        }
+    }
+
+
+
+
+
