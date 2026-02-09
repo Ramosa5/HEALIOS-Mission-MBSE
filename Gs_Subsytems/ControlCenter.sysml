@@ -2,7 +2,7 @@ package MissionControlCentrePackage {
     private import MissionPackage::*;
     private import ISQ::*;
     private import GroundStationPackage::*;
-
+    private import GroundActionsPackage::*;
 
     item def OperatorRequest { attribute type : String; }
     item def AuthToken { attribute type : String; }
@@ -25,24 +25,6 @@ package MissionControlCentrePackage {
     part def PassPlanner {
         attribute name : String;
         attribute usesTLE : Boolean = true;
-    }
-
-    action def AuthorizeCommanding {
-        in item request : OperatorRequest;
-        out item token : AuthToken;
-    }
-
-    action def GenerateTelecommand {
-        in item token : AuthToken;
-        out item tc : MissionPackage::GroundCommand;
-    }
-
-    action def GeneratePassPlan {
-        out item plan : PassPlan;
-    }
-
-    action def MonitorTelemetryRealtime {
-        in item tm : MissionPackage::TelemetryData;
     }
 
     part def MissionControlCentre {

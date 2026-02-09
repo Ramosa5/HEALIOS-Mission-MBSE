@@ -1,6 +1,8 @@
 package SpaceActionsPackage{
     private import ScalarValues::*;
     private import MissionPackage::*;
+    private import ISQ::*;
+    
 
     // Top-level definition for the Space Segment's behavior
     action def PerformSpaceSegmentMission {
@@ -453,10 +455,6 @@ action def AcquireAndTimestampSubsystemData {
     action def ReadTemperature {
         out Temp : ISQ::TemperatureValue;
     }
-}
-    //------------------------------------------------------------------------------------------------
-    // ACTION DEFINITIONS aocs
-        //------------------------------------------------------------------------------------------------
     action def ReadSunAngle {
         out Beta_Angle : ISQ::AngularMeasureValue;
     }
@@ -484,6 +482,72 @@ action def AcquireAndTimestampSubsystemData {
             }
         }
     }
+
+    action def TransmitStatusDownlink {
+        in item hkIn : MissionPackage::OnBoardStatus;
+        out item rfOut : MissionPackage::TelemetryData;
+        }
+
+    action def ReceiveGroundTelecommand {
+        in item rfIn : MissionPackage::TelemetryData;
+        out item cmdOut : MissionPackage::GroundCommand;
+    }
+
+    action def ReportCommsHealth {
+        out item status : MissionPackage::OnBoardStatus;
+    }
+}
+
+package GroundActionsPackage{
+    private import MissionPackage::*;
+    private import ISQ::*;
+    private import GroundStationPackage::*;
+    private import MissionControlCentrePackage::*;
+
+    action def ExecuteUplink {
+        in item uplinkTc : MissionPackage::GroundCommand;
+    }
+
+    action def ReceiveDownlink {
+        out item downlinkTm : MissionPackage::TelemetryData;
+    }
+
+    action def ComputeTracking {
+        in item plan : PassPlan;
+        out item tracking : TrackingData;
+    }
+
+    action def StreamToArchive {
+        in item tmIn : MissionPackage::TelemetryData;
+        out item record : ArchiveRecord;
+    }
+
+    action def ValidateTelemetry {
+        in item tm : MissionPackage::TelemetryData;
+    }
+
+    action def StoreRecord {
+        in item record : ArchiveRecord;
+    }
+
+    action def AuthorizeCommanding {
+        in item request : OperatorRequest;
+        out item token : AuthToken;
+    }
+
+    action def GenerateTelecommand {
+        in item token : AuthToken;
+        out item tc : MissionPackage::GroundCommand;
+    }
+
+    action def GeneratePassPlan {
+        out item plan : PassPlan;
+    }
+
+    action def MonitorTelemetryRealtime {
+        in item tm : MissionPackage::TelemetryData;
+    }
+}
 
 
 
