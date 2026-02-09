@@ -6,12 +6,21 @@ package ThermalControlSystemPackage {
     private import SI::*;
 
     abstract port def temperatureIN {
-        in temp : ISQ::TemperatureValue [1..*];
+        in temp : ISQ::TemperatureValue;
     }
 
-    // Configuration value for the system
+    abstract port def OBDHcommandIN {
+        in cmd : OnBoardCommand;
+    }
+
     part def ThermalControlSystem {
-        port temperatureInformationIN : temperatureIN;
+        port temperatureInformationIN : temperatureIN [1..*];
+
+        port commandIN : OBDHcommandIN;
+        
+        attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
+
+        attribute stopSignal : Boolean := false;
 
         ref part epsHeater : Heater;
         ref part payloadTemperatureSensor : TemperatureSensor;
@@ -22,10 +31,19 @@ package ThermalControlSystemPackage {
         connect obcTemperatureSensor.temperatureOUT to temperatureInformationIN;
         connect epsTemperatureSensor.temperatureOUT to temperatureInformationIN;
         
-        perform action ControlTemperatures : ControlTemperature {
-            bind minimalTemperature = epsHeater.minimalTemperature;
-            bind heaterPower = epsHeater.power;
-            bind tempReading = epsTemperatureSensor.temperatureOUT.temp;
-            }
+        // In next iterations, add loop type action for OBDH control.
+        perform action activateTCS {
+            loop{
+                action read : ReadTemperature {
+                    bind temp = epsTemperatureSensor.temperatureOUT.temp;
+                }
+                then perform action ControlTemperatures : ControlTemperature {
+                    bind minimalTemperature = epsHeater.minimalTemperature;
+                    bind heatingPower = epsHeater.power;
+                    bind tempReading = read.temp;
+                }
+                then assign stopSignal := (TCSlastCommand.type == "Turn Off");
+            } until stopSignal;
         }
+    }
 }

@@ -369,32 +369,46 @@ package HEALIOS_Space_Functions {
     action def EvaluateThreshold {
         in temp : ISQ::TemperatureValue;
         in threshold : ISQ::TemperatureValue; 
-        out turnOn : Boolean;
+        out ref turnOn : Boolean;
+        
+        //assign turnOn := temp > threshold; // -> Also valid. For future reference.
+        if temp > threshold {
+            assign turnOn := false;
+        } else {
+            assign turnOn := true;
+        }
     }
     
     action def StartHeater {
-        in turnOn: HEALIOS::OnBoardCommand{
-            :>> type = "HeaterActivationCommand";
+        in enableSignal : Boolean;
+        in heaterPowerValue : ISQ::PowerValue;
+        out ref heaterOutput : ISQ::PowerValue;
+
+        if enableSignal {
+            assign heaterOutput := heaterPowerValue;
+        } else {
+            assign heaterOutput := 0 [SI::W];
         }
-        in heaterPower : ISQ::PowerValue;
-        out heaterOutput : ISQ::PowerValue;
     }
     
     action def ControlTemperature {
         in minimalTemperature : ISQ::TemperatureValue;
-        in heaterPower : ISQ::PowerValue;
+        in heatingPower : ISQ::PowerValue;
         in tempReading : ISQ::TemperatureValue;
+
         
-        action heat : StartHeater;
-        action evaluate : EvaluateThreshold if threshold < 0 {
-            perform action heat;
+        action evaluate : EvaluateThreshold {
+            bind temp = tempReading;
+            bind threshold = minimalTemperature;
         }
 
-        flow evaluate.turnOn to heat.turnOn;
-
-        bind evaluate.threshold = minimalTemperature;
-        bind heat.heaterPower = heaterPower;
-        bind evaluate.temp = tempReading;
+        then action heat : StartHeater {
+            bind heaterPowerValue = heatingPower;
+            bind enableSignal = evaluate.turnOn;
+        }
     }
 
+    action def ReadTemperature {
+        out temp : ISQ::TemperatureValue;
+    }
 }

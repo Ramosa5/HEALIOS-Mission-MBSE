@@ -14,11 +14,19 @@ package ElectricalPowerSystemPackage {
         attribute resistance : ISQ::ResistanceValue;
     }
 
+    port def TemperaturePort {
+            out temp : ISQ::TemperatureValue;
+        }
+        
     part def TemperatureSensor specializes GeneralElectricalComponent { 
         attribute power : ISQ::PowerValue;
+        attribute temperatureMeasurement : ISQ::TemperatureValue;
+        
+        port temperatureOUT : TemperaturePort;
+        bind temperatureOUT.temp = temperatureMeasurement;
 
-        port temperatureOUT {
-            out temp : ISQ::TemperatureValue;
+        perform action readTemperature : ReadTemperature {
+            bind temp = temperatureMeasurement;
         }
     }
 
@@ -47,7 +55,7 @@ package ElectricalPowerSystemPackage {
         part tempSensor : TemperatureSensor;
         port heaterPowerBus : powerBus;
 
-        //perform action readEPSTemperature : ReadTemperature; -> OLD, now we just have the temp sensor port and bind it to TCS!
+        //perform action readEPSTemperature : ReadTemperature; -> IN Temperature Sensor
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent;
