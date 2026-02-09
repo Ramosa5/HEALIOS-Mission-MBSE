@@ -46,25 +46,20 @@ package MissionControlCentrePackage {
     }
 
     part def MissionControlCentre {
-
-        // Interfaces to Ground Station
         port tcToGS : tcPort;
         port tmFromGS : tmPort;
         port passPlanToGS : passPlanPort;
         port trackingFromGS : trackingPort;
 
-        // Internal parts
         part auth : AuthenticationService;
         part console : OperationsConsole;
         part planner : PassPlanner;
 
-        // Actions
         perform action authorize : AuthorizeCommanding;
         perform action genTC : GenerateTelecommand;
         perform action planPasses : GeneratePassPlan;
         perform action monitor : MonitorTelemetryRealtime;
 
-        // Simple bindings (minimal)
         bind genTC.tc = tcToGS.tcOut;
         bind planPasses.plan = passPlanToGS.planOut;
         bind monitor.tm = tmFromGS.tmIn;

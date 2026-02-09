@@ -25,15 +25,15 @@ package GroundStationPackage {
 
     part def PassPredictor {
         attribute name : String;
-        attribute usesTLE : Boolean = true;   // maps to TLE-based prediction requirement
+        attribute usesTLE : Boolean = true;   
     }
 
     part def DopplerCompensator {
-        attribute name : String;              // maps to Doppler compensation requirement
+        attribute name : String;             
     }
 
     part def LinkBudgetTool {
-        attribute name : String;              // maps to link-budget requirement
+        attribute name : String;              
     }
 
     action def ExecuteUplink {
@@ -55,11 +55,9 @@ package GroundStationPackage {
     }
 
     part def GroundStation {
-
         port tcFromMCC : tcPort;
         port tmToMCC : tmPort;
         port tmToDataCentre : tmPort;
-
         port passPlanFromMCC : passPlanPort;
         port trackingToMCC : trackingPort;
         port archiveOut : archivePort;
@@ -69,8 +67,6 @@ package GroundStationPackage {
         part predictor : PassPredictor;
         part doppler : DopplerCompensator;
         part linkBudget : LinkBudgetTool;
-
-        attribute reusePriority : Boolean = true;
 
         perform action uplink : ExecuteUplink;
         perform action downlink : ReceiveDownlink;
