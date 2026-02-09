@@ -22,6 +22,8 @@ package HEALIOS {
         // A. Attributes
         
         attribute totalMass : ISQ::MassValue;
+        attribute CubeSatformFactor : String;
+        attribute centerOfMass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
 
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
@@ -62,6 +64,8 @@ package HEALIOS {
     public part def HEALIOS_System {
         public part <SS> HEALIOS_Space_Segment : SpaceSegment {
             :>> totalMass = 1.81 [SI::kg];
+            :>> CubeSatformFactor = "1U";
+            
         }
         public part <GS> HEALIOS_Ground_Segment : GroundSegment;
 
