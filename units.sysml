@@ -1,6 +1,57 @@
 package My_Units {
+
+    public import MeasurementReferences::*;
+    public import SIPrefixes::*;
     public import ISQ::*;
 
-    attribute year : TimeValue = 365 [SI::day];
-    attribute MB_reference = 1 [SI::mega * SI::byte];
+    // ---- TIME ----
+
+    // SI second usage
+
+    attribute yearConv : ConversionByConvention {
+        :>> referenceUnit = SI::second;
+        :>> conversionFactor = 31557600; // Julian year
+    }
+
+    attribute def year :> MeasurementUnit {
+        symbol = "yr";
+        :>> unitConversion = yearConv;
+    }
+
+    attribute yr : year;
+
+    // ---- INFORMATION ----
+    attribute def byte :> SimpleUnit {
+        symbol = "B";
+    }
+
+    attribute byte_usage : byte;
+
+    attribute mbConv : ConversionByPrefix {
+        :>> referenceUnit = byte_usage;
+        :>> prefix = SIPrefixes::mega;
+    }
+
+    attribute def megabyte :> MeasurementUnit {
+        symbol = "MB";
+        :>> unitConversion = mbConv;
+    }
+
+    attribute MB : megabyte;
+
+}
+
+package Example {
+
+    public import My_Units::*;
+    public import ScalarValues::*;
+
+    part def OnboardMemory {
+        attribute capacity = 256 [My_Units::MB];
+    }
+
+    part def time_to_launch {
+        attribute duration = 2 [My_Units::yr];
+    }
+
 }
