@@ -1,4 +1,5 @@
 private import ScalarValues::*;
+private import StructureSystemPackage::*;
 
 package Environment {
 
@@ -43,7 +44,7 @@ package LaunchEnvironment {
     attribute Name : String;
     attribute Status : String;
 
-    port Mounting_Interface : DispenserContactInterface;
+    port Mounting_Port : DispenserContactInterface;
   }
 
 }

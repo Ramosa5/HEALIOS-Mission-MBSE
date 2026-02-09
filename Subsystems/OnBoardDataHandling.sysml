@@ -23,6 +23,10 @@ package OnBoardDataHandlingSystemPackage {
         in Sample : MissionPackage::OnBoardStatus;
     }
 
+    port def OutCommandPort {
+        out Cmd : MissionPackage::OnBoardCommand;
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Memory & state types
     // ------------------------------------------------------------------------------------------------
@@ -84,9 +88,10 @@ package OnBoardDataHandlingSystemPackage {
     part def OnBoardDataHandlingSystem {
         port Telecommand_In : MissionPackage::GroundCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
+        port Out_Command_Port[0..*] : OutCommandPort;
 
-        port EPS_I2C : I2CPort;
-        port Magnetorquer_Board_I2C : I2CPort;
+        port EPS_I2C[1] : I2CPort;
+        port Magnetorquer_Board_I2C[0..2] : I2CPort;
         port Temperature_Sensor_I2C[0..*] : I2CPort;
         port Sun_Sensor_I2C[0..*] : I2CPort;
         port Irradiance_Sensor_I2C[0..*] : I2CPort;

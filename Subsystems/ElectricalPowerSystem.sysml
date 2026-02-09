@@ -56,7 +56,7 @@ package ElectricalPowerSystemPackage {
         part Main_Heater : Heater;
         part Temp_Sensor : TemperatureSensor;
 
-        port Heater_Power_Bus : powerBus;
+        port Heater_Power_Bus : PowerBus;
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent;
@@ -71,7 +71,7 @@ package ElectricalPowerSystemPackage {
         port Voltage_Out : ISQ::SourceVoltageValue;
     }
 
-    port def powerBus {
+    port def PowerBus {
         out Voltage : ISQ::SourceVoltageValue;
     }
 
@@ -90,9 +90,9 @@ package ElectricalPowerSystemPackage {
         port Eps_Telemetry_Out : MissionPackage::OnBoardStatus;
 
         // Regulated rails commonly referenced in your DAQ chapter
-        port Power_Bus_5V : powerBus;
-        port Power_Bus_3V3 : powerBus;
-        port Heater_Power_Bus : powerBus;
+        port Power_Bus_5V : PowerBus;
+        port Power_Bus_3V3 : PowerBus;
+        port Heater_Power_Bus : PowerBus;
 
         part Battery_Pack_EPS : BatteryPack;
 

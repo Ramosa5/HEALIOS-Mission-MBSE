@@ -48,9 +48,9 @@ package StructureSystemPackage {
         // Internal mounting
         port Mounting_Points : StructuralMountInterface [0..*];
         // Internal structural connections
-        port Structural_Interface : StructuralMountInterface [0..*];
+        port Structural_Port : StructuralMountInterface [0..*];
         // External mounting
-        port Rail_Interface : DispenserContactInterface [0..*];
+        port Rail_Port : ~DispenserContactInterface [0..*];
     }
 
     part def PCBStack {
@@ -60,7 +60,7 @@ package StructureSystemPackage {
         // Internal mounting
         port Mounting_Points : StructuralMountInterface [0..*];
         // Internal structural connections
-        port Structural_Interface : StructuralMountInterface [0..*];
+        port Structural_Port : StructuralMountInterface [0..*];
     }
 
     part def DeploymentMechanism {
@@ -69,9 +69,9 @@ package StructureSystemPackage {
         attribute Status : String;
 
         // Mounting interface for deployment switches
-        port Mounting_Interface : StructuralMountInterface [0..*];
+        port Mounting_Port : StructuralMountInterface [0..*];
         // Optional interface for deployment mechanism actuation
-        port Plunger_Interface : DispenserContactInterface [0..*];
+        port Plunger_Port : DispenserContactInterface [0..*];
 
         exhibit state Switch_State : SwitchBehavior {
             bind Switch_Status = DeploymentMechanism::Status;
@@ -84,8 +84,6 @@ package StructureSystemPackage {
         
         attribute Total_Mass : ISQ::MassValue;
         attribute Material : String;
-
-        port Dispenser_Interface : DispenserContactInterface;
 
         // Primary structure
         part Primary_Structure : Chassis {
@@ -101,13 +99,13 @@ package StructureSystemPackage {
         part Deployment_Switches : DeploymentMechanism [2];
 
         // Internal connections
-        connect Secondary_Structure.Structural_Interface to Primary_Structure.Structural_Interface;
+        connect Secondary_Structure.Structural_Port to Primary_Structure.Structural_Port;
 
         // Switches mounted to structure
-        connect Deployment_Switches.Mounting_Interface to Primary_Structure.Mounting_Points;
+        connect Deployment_Switches.Mounting_Port to Primary_Structure.Mounting_Points;
 
         // External connection to launcher dispenser
-        connect Primary_Structure.Rail_Interface to Dispenser_Interface;
-        connect Deployment_Switches.Plunger_Interface to Dispenser_Interface;
+        // connect Primary_Structure.Rail_Port to Dispenser_Port;
+        // connect Deployment_Switches.Plunger_Port to Dispenser_Port;
     }
 }

@@ -93,14 +93,19 @@ package MissionPackage {
         // Power distribution
         connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
         connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.commsPowerIn;
-
+        connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
         
-
+        // Telemetry
         connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
         connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
 
         connect SS_Communication_System.tcToOBDH.cmdOut to SS_On_Board_Data_Handling.Telecommand_In;
         connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.hkFromOBDH.hkIn;
+
+        //Commands
+        connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Thermal_Control_System.Command_IN;
+        connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
+
 
 
         state Satellite_Mode {
@@ -140,11 +145,17 @@ package MissionPackage {
                 accept Proceed_To_Nominal_Command : GroundCommand via Satellite_Command_Port
                 then Nominal_Sun_Mode; 
 
-            transition Nominal_To_Safe
+            transition Nominal_Sun_To_Safe
                 first Nominal_Sun_Mode
                 accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
-                do action Enter_Safe_Mode : Enter_Safe_Mode_Action;
-                then Safe_Mode;       
+                //do action Enter_Safe_Mode : Enter_Safe_Mode_Action;
+                then Safe_Mode;
+
+            transition Nominal_Eclipse_To_Safe
+                first Nominal_Eclipse_Mode
+                accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
+                //do action Enter_Safe_Mode : Enter_Safe_Mode_Action;
+                then Safe_Mode;         
         }
     }
     // --- 4. Ground Segment Placeholder ---
