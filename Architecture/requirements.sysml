@@ -429,6 +429,7 @@ package GroundSegmentRequirement {
 
     requirement def <R_GS_009> Data_Archive specializes R_M_005 {
         doc /* The Ground Segment shall store all scientific and housekeeping data in a structured archive for mission lifetime for at least 2 years. */
+        
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
         stakeholder Perovskite_Research_Institutes;
@@ -437,17 +438,25 @@ package GroundSegmentRequirement {
 
     requirement def <R_GS_010> Data_Format_And_Range_Validation specializes R_M_005 {
         doc /* The Ground Segment shall automatically check if the format of the data adheres to the accepted logical grammar and if the values of the data adhere to the accepted logical type and range. */
+        
         subject GroundStation_Req : MissionPackage::GroundSegment;
     }
 
-    requirement def <R_GS_011> HEALIOS_Operated_GS {
+    requirement def <R_GS_011> HEALIOS_Operated_GS specializes R_M_006, R_M_009 {
         doc /* The ground station should be fully controlled and operated by the HEALIOS team. */
         subject GroundStation_Req : MissionPackage::GroundSegment;
+
+        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite;
+
     }
 
-    requirement def <R_GS_012> MCC_Location {
+    requirement def <R_GS_012> MCC_Location specializes R_M_014 {
         doc /* The Mission Control Centre shall be located in at least one of the locations: HSB Hochschule Bremen - City University of Applied Sciences (Germany) and Gdańsk Univeristy of Technology (Poland). */
         subject GroundStation_Req : MissionPackage::GroundSegment;
+
+        stakeholder Gdansk_University_of_Technology;
+        stakeholder HSB_Hochschule_Bremen;
     }
 }
 
