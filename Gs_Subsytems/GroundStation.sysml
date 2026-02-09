@@ -1,13 +1,13 @@
 package GroundStationPackage {
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     private import ISQ::*;
 
     item def PassPlan { attribute type : String; }
     item def TrackingData { attribute type : String; }
     item def ArchiveRecord { attribute type : String; }
 
-    port def tcPort { in item tcIn : HEALIOS::GroundCommand; }
-    port def tmPort { out item tmOut : HEALIOS::TelemetryData; }
+    port def tcPort { in item tcIn : MissionPackage::GroundCommand; }
+    port def tmPort { out item tmOut : MissionPackage::TelemetryData; }
     port def passPlanPort { in item planIn : PassPlan; }
     port def trackingPort { out item trackingOut : TrackingData; }
     port def archivePort { out item recordOut : ArchiveRecord; }
@@ -37,11 +37,11 @@ package GroundStationPackage {
     }
 
     action def ExecuteUplink {
-        in item uplinkTc : HEALIOS::GroundCommand;
+        in item uplinkTc : MissionPackage::GroundCommand;
     }
 
     action def ReceiveDownlink {
-        out item downlinkTm : HEALIOS::TelemetryData;
+        out item downlinkTm : MissionPackage::TelemetryData;
     }
 
     action def ComputeTracking {
@@ -50,7 +50,7 @@ package GroundStationPackage {
     }
 
     action def StreamToArchive {
-        in item tmIn : HEALIOS::TelemetryData;
+        in item tmIn : MissionPackage::TelemetryData;
         out item record : ArchiveRecord;
     }
 

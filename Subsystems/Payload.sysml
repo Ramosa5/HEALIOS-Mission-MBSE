@@ -1,6 +1,6 @@
 package PayloadPackage {
-    private import HEALIOS::*;
-    private import HEALIOS_Space_Functions::*;
+    private import MissionPackage::*;
+    private import SpaceActionsPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
     private import Environment::*;
@@ -60,10 +60,10 @@ package PayloadPackage {
     part def EnvironmentSensorsBlock {
         // Minimal sensor data outputs (you can refine types later)
         port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
-        port tempOut : HEALIOS::OnBoardStatus;
-        port irrOut  : HEALIOS::OnBoardStatus;
-        port radOut  : HEALIOS::OnBoardStatus;
-        port specOut : HEALIOS::OnBoardStatus;
+        port tempOut : MissionPackage::OnBoardStatus;
+        port irrOut  : MissionPackage::OnBoardStatus;
+        port radOut  : MissionPackage::OnBoardStatus;
+        port specOut : MissionPackage::OnBoardStatus;
 
         // instances (NO default names here)
         part temperatureSensorAtEnvironment : TemperatureSensor;
@@ -76,8 +76,8 @@ package PayloadPackage {
 
     part def Payload {
         // Ports for integration
-        port cmdIn     : HEALIOS::OnBoardCommand;
-        port statusOut : HEALIOS::OnBoardStatus;
+        port cmdIn     : MissionPackage::OnBoardCommand;
+        port statusOut : MissionPackage::OnBoardStatus;
 
         // Subparts (NO default names here)
         part powerFilteringBlock         : PowerFilteringBlock;

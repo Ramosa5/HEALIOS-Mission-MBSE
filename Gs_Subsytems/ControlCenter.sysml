@@ -1,5 +1,5 @@
 package MissionControlCentrePackage {
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     private import ISQ::*;
     private import GroundStationPackage::*;
 
@@ -7,8 +7,8 @@ package MissionControlCentrePackage {
     item def OperatorRequest { attribute type : String; }
     item def AuthToken { attribute type : String; }
 
-    port def tcPort { out item tcOut : HEALIOS::GroundCommand; }
-    port def tmPort { in item tmIn : HEALIOS::TelemetryData; }
+    port def tcPort { out item tcOut : MissionPackage::GroundCommand; }
+    port def tmPort { in item tmIn : MissionPackage::TelemetryData; }
 
     port def passPlanPort { out item planOut : PassPlan; }
     port def trackingPort { in item trackingIn : TrackingData; }
@@ -34,7 +34,7 @@ package MissionControlCentrePackage {
 
     action def GenerateTelecommand {
         in item token : AuthToken;
-        out item tc : HEALIOS::GroundCommand;
+        out item tc : MissionPackage::GroundCommand;
     }
 
     action def GeneratePassPlan {
@@ -42,7 +42,7 @@ package MissionControlCentrePackage {
     }
 
     action def MonitorTelemetryRealtime {
-        in item tm : HEALIOS::TelemetryData;
+        in item tm : MissionPackage::TelemetryData;
     }
 
     part def MissionControlCentre {

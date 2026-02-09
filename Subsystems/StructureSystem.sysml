@@ -1,5 +1,5 @@
 package StructureSystemPackage {
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     private import ISQ::*;
     private import SI::*;
 

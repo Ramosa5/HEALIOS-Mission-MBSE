@@ -1,15 +1,15 @@
-package HEALIOS_Space_Functions {
+package SpaceActionsPackage{
     // Ensuring explicit visibility as requested previously
     private import ScalarValues::*;
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     // Top-level definition for the Space Segment's behavior
     action def PerformSpaceSegmentMission {
     }
 
     // 1. Provide scientific measurements
     action def provideScientificMeasurements specializes PerformSpaceSegmentMission {
-        in performScientificActionCommand [0..*] : HEALIOS::OnBoardCommand{:>> type = "MeasurementCommand";}
-        out measuredData [0..*] : HEALIOS::OnBoardStatus;
+        in performScientificActionCommand [0..*] : MissionPackage::OnBoardCommand{:>> type = "MeasurementCommand";}
+        out measuredData [0..*] : MissionPackage::OnBoardStatus;
         }
 
     // 1.1 Apply controlled reverse-bias voltage to perovskite solar cells
@@ -35,7 +35,7 @@ package HEALIOS_Space_Functions {
 
         action measureIVCurvesOfPSC{
             in measureIVCurvesOfPSCCommand;
-            out ivCurvesData : HEALIOS::OnBoardStatus;
+            out ivCurvesData : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -50,7 +50,7 @@ package HEALIOS_Space_Functions {
 
         action maintainMPP{
             in maintainMPPCommand;
-            out mppData : HEALIOS::OnBoardStatus;
+            out mppData : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -75,20 +75,20 @@ package HEALIOS_Space_Functions {
 
         // 1.2.1 - 1.2.4 Nested parameters/actions
         action measureRadiation{
-            in measureRadiationCommand : HEALIOS::OnBoardCommand;
-            out radiationData : HEALIOS::OnBoardStatus;
+            in measureRadiationCommand : MissionPackage::OnBoardCommand;
+            out radiationData : MissionPackage::OnBoardStatus;
         }
         action measureTemperature{
-            in measureTemperatureCommand : HEALIOS::OnBoardCommand;
-            out temperatureData : HEALIOS::OnBoardStatus;
+            in measureTemperatureCommand : MissionPackage::OnBoardCommand;
+            out temperatureData : MissionPackage::OnBoardStatus;
         }
         action measureSpectrum{
-            in measureSpectrumCommand : HEALIOS::OnBoardCommand;
-            out spectrumData : HEALIOS::OnBoardStatus;
+            in measureSpectrumCommand : MissionPackage::OnBoardCommand;
+            out spectrumData : MissionPackage::OnBoardStatus;
         }
         action measureIrradiance{
-            in measureIrradianceCommand : HEALIOS::OnBoardCommand;
-            out irradianceData : HEALIOS::OnBoardStatus;
+            in measureIrradianceCommand : MissionPackage::OnBoardCommand;
+            out irradianceData : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -97,8 +97,8 @@ package HEALIOS_Space_Functions {
     
     // EPS-level behavior (driven by telecommand, produces telemetry)
     action def ManageElectricalPower specializes PerformSpaceSegmentMission {
-        in epsCommand [0..*] : HEALIOS::OnBoardCommand {:>> type = "PowerCommand";}
-        out epsTelemetry [0..*] : HEALIOS::OnBoardStatus;
+        in epsCommand [0..*] : MissionPackage::OnBoardCommand {:>> type = "PowerCommand";}
+        out epsTelemetry [0..*] : MissionPackage::OnBoardStatus;
     }
 
     // MPPT (Design Report: PMU performs MPPT internally)
@@ -110,8 +110,8 @@ package HEALIOS_Space_Functions {
         flow from mpptController.mpptTelemetry to mpptStatus;
 
         action mpptController {
-            in mpptCommand : HEALIOS::OnBoardCommand;
-            out mpptTelemetry : HEALIOS::OnBoardStatus;
+            in mpptCommand : MissionPackage::OnBoardCommand;
+            out mpptTelemetry : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -124,8 +124,8 @@ package HEALIOS_Space_Functions {
         flow from batteryManager.batteryTelemetry to batteryStatus;
 
         action batteryManager {
-            in batteryCommand : HEALIOS::OnBoardCommand;
-            out batteryTelemetry : HEALIOS::OnBoardStatus;
+            in batteryCommand : MissionPackage::OnBoardCommand;
+            out batteryTelemetry : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -138,8 +138,8 @@ package HEALIOS_Space_Functions {
         flow from powerDistributor.distributionTelemetry to distributionStatus;
 
         action powerDistributor {
-            in distributionCommand : HEALIOS::OnBoardCommand;
-            out distributionTelemetry : HEALIOS::OnBoardStatus;
+            in distributionCommand : MissionPackage::OnBoardCommand;
+            out distributionTelemetry : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -152,8 +152,8 @@ package HEALIOS_Space_Functions {
         flow from loadManager.loadMgmtTelemetry to loadMgmtStatus;
 
         action loadManager {
-            in loadMgmtCommand : HEALIOS::OnBoardCommand;
-            out loadMgmtTelemetry : HEALIOS::OnBoardStatus;
+            in loadMgmtCommand : MissionPackage::OnBoardCommand;
+            out loadMgmtTelemetry : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -166,8 +166,8 @@ package HEALIOS_Space_Functions {
         flow from stateSwitch.stateTelemetry to switchStatus;
 
         action stateSwitch {
-            in switchCommand : HEALIOS::OnBoardCommand;
-            out stateTelemetry : HEALIOS::OnBoardStatus;
+            in switchCommand : MissionPackage::OnBoardCommand;
+            out stateTelemetry : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -180,8 +180,8 @@ package HEALIOS_Space_Functions {
         flow from healthReporter.healthData to healthTelemetry;
 
         action healthReporter {
-            in reportCommand : HEALIOS::OnBoardCommand;
-            out healthData : HEALIOS::OnBoardStatus;
+            in reportCommand : MissionPackage::OnBoardCommand;
+            out healthData : MissionPackage::OnBoardStatus;
         }
     }
 
@@ -193,21 +193,21 @@ package HEALIOS_Space_Functions {
     // Centralised cyclic acquisition + time-referencing.
     // Data acquisition is periodic; payload data preserved “as-is” (no numerical modification).
     action def AcquireAndTimestampSubsystemData {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
         // Inputs from subsystems (logical)
-        in  epsData   [0..*] : HEALIOS::OnBoardStatus;
-        in  aocsData  [0..*] : HEALIOS::OnBoardStatus;
-        in  tcsData   [0..*] : HEALIOS::OnBoardStatus;
+        in  epsData   [0..*] : MissionPackage::OnBoardStatus;
+        in  aocsData  [0..*] : MissionPackage::OnBoardStatus;
+        in  tcsData   [0..*] : MissionPackage::OnBoardStatus;
 
         // Payload / DAQ
-        in  daqHousekeeping [0..*] : HEALIOS::OnBoardStatus;
-        in  daqScienceRaw   [0..*] : HEALIOS::OnBoardStatus;
+        in  daqHousekeeping [0..*] : MissionPackage::OnBoardStatus;
+        in  daqScienceRaw   [0..*] : MissionPackage::OnBoardStatus;
 
         // Outputs (time-tagged records)
-        out timeTaggedHK [0..*] : HEALIOS::OnBoardStatus;
-        out timeTaggedScience [0..*] : HEALIOS::OnBoardStatus;
+        out timeTaggedHK [0..*] : MissionPackage::OnBoardStatus;
+        out timeTaggedScience [0..*] : MissionPackage::OnBoardStatus;
 
         // Conceptual flow: tag-and-forward into storage manager
         flow from epsData to timeTaggedHK;
@@ -223,14 +223,14 @@ package HEALIOS_Space_Functions {
 
     // Persistent storage & buffer management (NOR flash; survive resets; decouple from ground contact).
     action def ManagePersistentStorageAndBuffers {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  hkRecords      [0..*] : HEALIOS::OnBoardStatus;
-        in  scienceRecords [0..*] : HEALIOS::OnBoardStatus;
-        in  eventRecords   [0..*] : HEALIOS::OnBoardStatus;
+        in  hkRecords      [0..*] : MissionPackage::OnBoardStatus;
+        in  scienceRecords [0..*] : MissionPackage::OnBoardStatus;
+        in  eventRecords   [0..*] : MissionPackage::OnBoardStatus;
 
-        out storedOk       [0..*] : HEALIOS::OnBoardStatus;
+        out storedOk       [0..*] : MissionPackage::OnBoardStatus;
 
         // “store raw science + HK + events in NVM, retain until confirmed downlinked”
         flow from hkRecords to storedOk;
@@ -241,13 +241,13 @@ package HEALIOS_Space_Functions {
 
     // Data selection + prioritisation for constrained downlink windows.
     action def SelectAndPrioritizeDownlinkData {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  storedDataIndex [0..*] : HEALIOS::OnBoardStatus;
-        in  linkWindowInfo  [0..*] : HEALIOS::OnBoardStatus;
+        in  storedDataIndex [0..*] : MissionPackage::OnBoardStatus;
+        in  linkWindowInfo  [0..*] : MissionPackage::OnBoardStatus;
 
-        out downlinkQueue   [0..*] : HEALIOS::OnBoardStatus;
+        out downlinkQueue   [0..*] : MissionPackage::OnBoardStatus;
 
         // “critical telemetry and diagnostic info first”
         flow from storedDataIndex to downlinkQueue;
@@ -256,11 +256,11 @@ package HEALIOS_Space_Functions {
 
     // During contact: pull from NVM, feed comm subsystem, keep acquisition running.
     action def ForwardDownlinkFramesToComms {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  downlinkQueue [0..*] : HEALIOS::OnBoardStatus;
-        out commFrames    [0..*] : HEALIOS::OnBoardStatus;
+        in  downlinkQueue [0..*] : MissionPackage::OnBoardStatus;
+        out commFrames    [0..*] : MissionPackage::OnBoardStatus;
 
         flow from downlinkQueue to commFrames;
         flow from commFrames to obdhTelemetry;
@@ -268,17 +268,17 @@ package HEALIOS_Space_Functions {
 
     // Command ingest: decode, validate, dispatch to subsystem controllers (OBDH is central router).
     action def DecodeValidateAndDispatchCommands {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
         // Outputs to subsystems (logical)
-        out epsCmd   [0..*] : HEALIOS::OnBoardCommand;
-        out aocsCmd  [0..*] : HEALIOS::OnBoardCommand;
-        out tcsCmd   [0..*] : HEALIOS::OnBoardCommand;
-        out daqCmd   [0..*] : HEALIOS::OnBoardCommand;
+        out epsCmd   [0..*] : MissionPackage::OnBoardCommand;
+        out aocsCmd  [0..*] : MissionPackage::OnBoardCommand;
+        out tcsCmd   [0..*] : MissionPackage::OnBoardCommand;
+        out daqCmd   [0..*] : MissionPackage::OnBoardCommand;
 
-        out cmdAccepted [0..*] : HEALIOS::OnBoardStatus;
-        out cmdRejected [0..*] : HEALIOS::OnBoardStatus;
+        out cmdAccepted [0..*] : MissionPackage::OnBoardStatus;
+        out cmdRejected [0..*] : MissionPackage::OnBoardStatus;
 
         flow from cmdAccepted to obdhTelemetry;
         flow from cmdRejected to obdhTelemetry;
@@ -286,23 +286,23 @@ package HEALIOS_Space_Functions {
 
     // Execute commands at specified time (time-tagged execution requirement).
     action def ExecuteTimeTaggedCommands {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  scheduledCmds [0..*] : HEALIOS::OnBoardCommand;
-        out executed      [0..*] : HEALIOS::OnBoardStatus;
+        in  scheduledCmds [0..*] : MissionPackage::OnBoardCommand;
+        out executed      [0..*] : MissionPackage::OnBoardStatus;
 
         flow from executed to obdhTelemetry;
     }
 
     // Continuous health monitoring + FDIR triggers and event logging support.
     action def PerformOBDHHealthMonitoringAndFDIR {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  hkInputs      [0..*] : HEALIOS::OnBoardStatus;
-        out fdirEvents    [0..*] : HEALIOS::OnBoardStatus;
-        out safeModeReq   [0..*] : HEALIOS::OnBoardCommand;
+        in  hkInputs      [0..*] : MissionPackage::OnBoardStatus;
+        out fdirEvents    [0..*] : MissionPackage::OnBoardStatus;
+        out safeModeReq   [0..*] : MissionPackage::OnBoardCommand;
 
         flow from hkInputs to fdirEvents;
         flow from fdirEvents to obdhTelemetry;
@@ -310,39 +310,39 @@ package HEALIOS_Space_Functions {
 
     // Mode management (Deployment -> Commissioning -> Nominal; Safe Mode on anomaly).
     action def ManageSpacecraftModesAndAutonomy {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  powerState    [0..*] : HEALIOS::OnBoardStatus;
-        in  thermalState  [0..*] : HEALIOS::OnBoardStatus;
-        in  fdirEvents    [0..*] : HEALIOS::OnBoardStatus;
+        in  powerState    [0..*] : MissionPackage::OnBoardStatus;
+        in  thermalState  [0..*] : MissionPackage::OnBoardStatus;
+        in  fdirEvents    [0..*] : MissionPackage::OnBoardStatus;
 
-        out modeChange    [0..*] : HEALIOS::OnBoardCommand;
+        out modeChange    [0..*] : MissionPackage::OnBoardCommand;
 
         flow from modeChange to obdhTelemetry;
     }
 
     // Warm redundancy: secondary monitors heartbeat/sync; declares failure; assumes authority; enters Safe.
     action def ManageWarmRedundantAuthorityAndTakeover {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  primaryHeartbeat [0..*] : HEALIOS::OnBoardStatus;
-        in  syncUpdates      [0..*] : HEALIOS::OnBoardStatus;
+        in  primaryHeartbeat [0..*] : MissionPackage::OnBoardStatus;
+        in  syncUpdates      [0..*] : MissionPackage::OnBoardStatus;
 
-        out takeoverDeclared [0..*] : HEALIOS::OnBoardStatus;
-        out enterSafeMode    [0..*] : HEALIOS::OnBoardCommand;
+        out takeoverDeclared [0..*] : MissionPackage::OnBoardStatus;
+        out enterSafeMode    [0..*] : MissionPackage::OnBoardCommand;
 
         flow from takeoverDeclared to obdhTelemetry;
     }
 
     // Continuous sync of the “small subset” needed for deterministic takeover.
     action def SynchronizeRedundantOBCState {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  currentState [0..*] : HEALIOS::OnBoardStatus;
-        out syncPacket   [0..*] : HEALIOS::OnBoardStatus;
+        in  currentState [0..*] : MissionPackage::OnBoardStatus;
+        out syncPacket   [0..*] : MissionPackage::OnBoardStatus;
 
         flow from currentState to syncPacket;
         flow from syncPacket to obdhTelemetry;
@@ -350,14 +350,14 @@ package HEALIOS_Space_Functions {
 
     // Dual-bank bootloader update + rollback (in-orbit SW updates).
     action def PerformDualBankSoftwareUpdateAndRollback {
-        in  obdhCommand  [0..*] : HEALIOS::OnBoardCommand;
-        out obdhTelemetry[0..*] : HEALIOS::OnBoardStatus;
+        in  obdhCommand  [0..*] : MissionPackage::OnBoardCommand;
+        out obdhTelemetry[0..*] : MissionPackage::OnBoardStatus;
 
-        in  imagePackets [0..*] : HEALIOS::OnBoardStatus;
+        in  imagePackets [0..*] : MissionPackage::OnBoardStatus;
 
-        out imageVerified [0..*] : HEALIOS::OnBoardStatus;
-        out bankSwitched  [0..*] : HEALIOS::OnBoardStatus;
-        out rollbackDone  [0..*] : HEALIOS::OnBoardStatus;
+        out imageVerified [0..*] : MissionPackage::OnBoardStatus;
+        out bankSwitched  [0..*] : MissionPackage::OnBoardStatus;
+        out rollbackDone  [0..*] : MissionPackage::OnBoardStatus;
 
         flow from imageVerified to obdhTelemetry;
         flow from bankSwitched to obdhTelemetry;

@@ -1,4 +1,4 @@
-package My_Units {
+package UnitTypesPackage {
 
     public import MeasurementReferences::*;
     public import SIPrefixes::*;
@@ -43,15 +43,15 @@ package My_Units {
 
 package Example {
 
-    public import My_Units::*;
+    public import UnitTypesPackage::*;
     public import ScalarValues::*;
 
     part def OnboardMemory {
-        attribute capacity = 256 [My_Units::MB];
+        attribute capacity = 256 [UnitTypesPackage::MB];
     }
 
     part def time_to_launch {
-        attribute duration = 2 [My_Units::yr];
+        attribute duration = 2 [UnitTypesPackage::yr];
     }
 
 }

@@ -1,6 +1,6 @@
 package CommunicationsSystemPackage {
-    private import HEALIOS::*;
-    private import HEALIOS_Space_Functions::*;
+    private import MissionPackage::*;
+    private import SpaceActionsPackage::*;
     private import ISQ::*;
     private import Environment::*; 
 

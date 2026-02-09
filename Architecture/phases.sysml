@@ -4,7 +4,7 @@ private import Time;
 package Mission_Phases {
     public import ScalarValues::*;
     public import ISQ::*;
-    public import My_Units::*;
+    public import UnitTypesPackage::*;
 
     occurrence def LaunchPhase{
         duration : TimeValue = 3 [SI::hour];
@@ -20,7 +20,7 @@ package Mission_Phases {
 
     occurrence def DecommissioningPhase{
         assert constraint { 
-            duration < 24 [My_Units::yr]
+            duration < 24 [UnitTypesPackage::yr]
             }
     }
 

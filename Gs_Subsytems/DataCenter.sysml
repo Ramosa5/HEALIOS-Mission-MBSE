@@ -1,14 +1,14 @@
 package DataCentrePackage {
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     private import ISQ::*;
     private import GroundStationPackage::*;
 
 
-    port def tmPort { in item tmIn : HEALIOS::TelemetryData; }
+    port def tmPort { in item tmIn : MissionPackage::TelemetryData; }
     port def archivePort { in item recordIn : ArchiveRecord; }
 
     // Optional output port for validated/curated data products
-    port def tmProductPort { out item tmOut : HEALIOS::TelemetryData; }
+    port def tmProductPort { out item tmOut : MissionPackage::TelemetryData; }
 
     part def StructuredArchive {
         attribute name : String;
@@ -20,7 +20,7 @@ package DataCentrePackage {
     }
 
     action def ValidateTelemetry {
-        in item tm : HEALIOS::TelemetryData;
+        in item tm : MissionPackage::TelemetryData;
     }
 
     action def StoreRecord {

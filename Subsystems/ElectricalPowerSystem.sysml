@@ -1,6 +1,6 @@
 package ElectricalPowerSystemPackage {
-    private import HEALIOS::*;
-    private import HEALIOS_Space_Functions::*;
+    private import MissionPackage::*;
+    private import SpaceActionsPackage::*;
     private import ISQ::*;
     private import Environment::*; 
 
@@ -33,7 +33,7 @@ package ElectricalPowerSystemPackage {
     part def SolarArray specializes GeneralElectricalComponent {
         attribute powerGeneration : ISQ::PowerValue;
         port electrodeConnection : solarArrayElectrodeConnection;
-        port solarEnvironment : HEALIOS::SolarEnvironment;
+        port solarEnvironment : MissionPackage::SolarEnvironment;
         }
 
     part def DeployableSolarArray specializes SolarArray {
@@ -82,8 +82,8 @@ package ElectricalPowerSystemPackage {
     // Electrical Power System
     part def ElectricalPowerSystem {
         // Interfaces (telecommand/telemetry + power rails)
-        port epsCommandIn : HEALIOS::OnBoardCommand;
-        port epsTelemetryOut : HEALIOS::OnBoardStatus;
+        port epsCommandIn : MissionPackage::OnBoardCommand;
+        port epsTelemetryOut : MissionPackage::OnBoardStatus;
 
         // Regulated rails commonly referenced in your DAQ chapter
         port powerBus5V : powerBus;

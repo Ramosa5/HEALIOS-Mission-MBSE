@@ -1,7 +1,7 @@
 package ThermalControlSystemPackage {
-    private import HEALIOS::*;
+    private import MissionPackage::*;
     private import ElectricalPowerSystemPackage::*;
-    private import HEALIOS_Space_Functions::*;
+    private import SpaceActionsPackage::*;
     private import ISQ::*;
     private import SI::*;
 
@@ -22,10 +22,10 @@ package ThermalControlSystemPackage {
 
         attribute stopSignal : Boolean := false;
 
-        ref part epsHeater : Heater;
-        ref part payloadTemperatureSensor : TemperatureSensor;
-        ref part obcTemperatureSensor : TemperatureSensor;
-        ref part epsTemperatureSensor : TemperatureSensor;
+        ref part epsHeater[0..*] : Heater;
+        ref part payloadTemperatureSensor[0..*] : TemperatureSensor;
+        ref part obcTemperatureSensor[1..*] : TemperatureSensor;
+        ref part epsTemperatureSensor[0..*] : TemperatureSensor;
 
         connect payloadTemperatureSensor.temperatureOUT to temperatureInformationIN;
         connect obcTemperatureSensor.temperatureOUT to temperatureInformationIN;
@@ -36,7 +36,7 @@ package ThermalControlSystemPackage {
             in command : OnBoardCommand;
             bind command = commandIN.cmd;
             loop{
-                action read : ReadTemperature {
+                perform action read : ReadTemperature {
                     bind temp = epsTemperatureSensor.temperatureOUT.temp;
                 }
                 then perform action ControlTemperatures : ControlTemperature {
