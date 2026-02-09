@@ -4,10 +4,8 @@ package ThermalControlSystemPackage {
     private import SpaceActionsPackage::*;
     private import ISQ::*;
     private import SI::*;
+    private import OnBoardDataHandlingSystemPackage::*;
 
-    abstract port def OBDHcommandIN {
-        in Cmd : OnBoardCommand;
-    }
 
     abstract port def temperatureReadingPort {
         in Temp : ISQ::TemperatureValue;
@@ -18,7 +16,7 @@ package ThermalControlSystemPackage {
         port EPS_Temperature_Port : temperatureReadingPort [0..*];
         port PL_Temperature_Port : temperatureReadingPort [0..*];
         port OBDH_Temperature_Port : temperatureReadingPort [0..*];
-        port Command_IN : OBDHcommandIN [0..*];
+        port Command_IN : ~OutCommandPort; [0..*];
         
         //attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 
@@ -35,9 +33,9 @@ package ThermalControlSystemPackage {
         
         // In next iterations, add loop type action for OBDH control.
         perform action activateTCS {
-            in command : OnBoardCommand;
-            bind command = Command_IN.Cmd;
-            if command.type == "TurnOn" {
+            in Command : OnBoardCommand;
+            bind Command = Command_IN.Cmd;
+            if Command.Type == "TurnOn" {
                 loop{
                     perform action read : ReadTemperature {
                         bind Temp = EPS_Temperature_Port.Temp;
@@ -47,7 +45,7 @@ package ThermalControlSystemPackage {
                         bind Heating_Power = EPS_Heater.Power;
                         bind Temp_Reading = read.Temp;
                     }
-                    then assign Stop_Signal := (command.type == "TurnOff");
+                    then assign Stop_Signal := (Command.Type == "TurnOff");
                 } until Stop_Signal;
             }
 

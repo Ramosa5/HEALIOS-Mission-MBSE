@@ -1,130 +1,136 @@
 package HEALIOS {
-    private import MissionPackage::*;
+    // make the package itself appear as a member
 
-    part HEALIOS_System : MissionSegments {
+
+    // and still import its contents for unqualified use
+    public import MissionPackage::*;
+        public alias MissionPackagesd for MissionPackage;
+
+    public part HEALIOS_System : MissionPackage::MissionSegments {
         :>> HEALIOS_Space_Segment {
             :>> EPS {
-                :>> epsCommandIn;
-                :>> epsTelemetryOut;
-                :>> powerBus5V;
-                :>> powerBus3V3;
+                :>> Eps_Command_In;
+                :>> Eps_Telemetry_Out;
+                :>> Power_Bus_5V;
+                :>> Power_Bus_3V3;
 
-                :>> deployableSolarArrays [2] {
-                    :>> name = "2-panel EXA DMSA";
-                    :>> mass = 0.07 [SI::kg];
-                    :>> powerGeneration = 20 [SI::W]; // tba
+                :>> Deployable_Solar_Arrays [2] {
+                    :>> Name = "2-panel EXA DMSA";
+                    :>> Mass = 0.07 [SI::kg];
+                    :>> Power_Generation = 20 [SI::W]; // tba
                 }
 
-                :>> mountedSolarCells [1] {
-                    :>> name = "AZUR SPACE 3G30-Advanced 4x8";
-                    :>> mass = 0.036 [SI::kg];
-                    :>> powerGeneration = 5 [SI::W]; // tba
+                :>> Mounted_Solar_Cells [1] {
+                    :>> Name = "AZUR SPACE 3G30-Advanced 4x8";
+                    :>> Mass = 0.036 [SI::kg];
+                    :>> Power_Generation = 5 [SI::W]; // tba
                 }
 
-                :>> batteryPackEPS {
-                    :>> name = "NanoPower BP4";
-                    :>> capacity = 34 [SI::W * SI::h]; // tbc
-                    :>> maxPowerGeneration = 25 [SI::W]; // tba
-                    :>> mass = 0.258 [SI::kg]; // tba
-                    :>> mainHeater {
-                        :>> name = "NanoPower BP4 - Resistance Heating Element";
-                        :>> power = 3.5 [SI::W];
+                :>> Battery_Pack_EPS {
+                    :>> Name = "NanoPower BP4";
+                    :>> Capacity = 34 [SI::W * SI::h]; // tbc
+                    :>> Max_Power_Generation = 25 [SI::W]; // tba
+                    :>> Mass = 0.258 [SI::kg]; // tba
+
+                    :>> Main_Heater {
+                        :>> Name = "NanoPower BP4 - Resistance Heating Element";
+                        :>> Power = 3.5 [SI::W];
                     }
-                    :>> connector {
-                        :>> name = "Molex 43045-0600";
+
+                    :>> Battery_Pack_Connector {
+                        :>> Name = "Molex 43045-0600";
                     }
-                    :>> tempSensor {
-                        :>> name = "NanoPower BP4 - TE TMP121";
-                        :>> mass = 0.00 [SI::kg];
-                        :>> power = 0.0 [SI::W];
+
+                    :>> Temp_Sensor {
+                        :>> Name = "NanoPower BP4 - TE TMP121";
+                        :>> Mass = 0.00 [SI::kg];
+                        :>> Power = 0.0 [SI::W];
                     }
                 }
             }
+
             :>> PL { // tba
-                :>> cmdIn;
-                :>> statusOut;
+                :>> Cmd_In;
+                :>> Status_Out;
 
                 // --- POWER FILTERING BLOCK ---
-                :>> powerFilteringBlock {
-                    :>> powerFilter {
-                        attribute selectedPartNumber : String = "TI TPS7A4501-SEP";
+                :>> Power_Filtering_Block {
+                    :>> Power_Filter {
+                        attribute Selected_Part_Number : String = "TI TPS7A4501-SEP";
                     }
                 }
 
                 // --- SOLAR CELLS BLOCK ---
-                :>> solarCellsBlock {
-                    :>> pscConnectorAndProtection {
-                        :>> name = "Molex 43045-0600";
-                        // mass możesz dopisać jeśli znasz:
-                        // :>> mass = 0.0 [SI::kg];
+                :>> Solar_Cells_Block {
+                    :>> Psc_Connector_And_Protection {
+                        :>> Name = "Molex 43045-0600";
+                        // :>> Mass = 0.0 [SI::kg];
                     }
 
-                    // Jeśli chcesz też nazwać kupony (opcjonalnie – podałeś wcześniej tylko COTS dla DAQ)
-                    :>> perovskiteSolarArrayCoupon [1] {
-                        :>> name = "Perovskite sample coupon";
-                        :>> manufacturer = "TBD";
+                    :>> Perovskite_Solar_Array_Coupon [1] {
+                        :>> Name = "Perovskite sample coupon";
+                        :>> Manufacturer = "TBD";
                     }
 
-                    :>> referenceSiliconSolarArrayCoupon [1] {
-                        :>> name = "Reference silicon coupon";
-                        // SolarArray ma u Ciebie name/mass/powerGeneration w EPS pakiecie,
-                        // więc możesz wypełnić jeśli chcesz:
-                        // :>> mass = 0.0 [SI::kg];
-                        // :>> powerGeneration = 0.0 [SI::W];
+                    :>> Reference_Silicon_Solar_Array_Coupon [1] {
+                        :>> Name = "Reference silicon coupon";
+                        // :>> Mass = 0.0 [SI::kg];
+                        // :>> Power_Generation = 0.0 [SI::W];
                     }
                 }
 
-                // --- MPPT BLOCK (jeśli masz konkretne MPPT i rezystory – możesz dopisać COTS) ---
-                :>> mpptBlock {
-                    :>> mpptController [1] {
-                        :>> name = "TBD MPPT";
-                        :>> mass = 0.0 [SI::kg];
+                // --- MPPT BLOCK ---
+                :>> Mppt_Block {
+                    :>> Mppt_Controller [1] {
+                        :>> Name = "TBD MPPT";
+                        :>> Mass = 0.0 [SI::kg];
                     }
-                    :>> powerDumpResistor [1] { attribute selectedPartNumber : String = "TBD"; }
+                    :>> Power_Dump_Resistor [1] {
+                        attribute Selected_Part_Number : String = "TBD";
+                    }
                 }
 
                 // --- IV SWEEP + REVERSE BIAS BLOCK ---
-                :>> ivSweepAndReverseBiasBlock {
-                    :>> ivSweepLoadShuntResistor [1] {
-                        attribute selectedPartNumber : String = "WSL2512R1000FEA";
+                :>> Iv_Sweep_And_Reverse_Bias_Block {
+                    :>> Iv_Sweep_Load_Shunt_Resistor [1] {
+                        attribute Selected_Part_Number : String = "WSL2512R1000FEA";
                     }
 
-                    :>> ivSweepLoadMOSFET [1] {
-                        attribute selectedPartNumber : String = "BSC320N20NS3G";
+                    :>> Iv_Sweep_Load_MOSFET [1] {
+                        attribute Selected_Part_Number : String = "BSC320N20NS3G";
                     }
 
-                    :>> ivSweepLoadOpAmp [1] {
-                        attribute selectedPartNumber : String = "TI OPA197";
+                    :>> Iv_Sweep_Load_OpAmp [1] {
+                        attribute Selected_Part_Number : String = "TI OPA197";
                     }
 
-                    :>> ivSweepLoadDAC [1] {
-                        attribute selectedPartNumber : String = "MCP4728";
+                    :>> Iv_Sweep_Load_DAC [1] {
+                        attribute Selected_Part_Number : String = "MCP4728";
                     }
 
-                    :>> currentAndVoltageSensingBlock [1] {
-                        attribute selectedPartNumber : String = "INA226";
+                    :>> Current_And_Voltage_Sensing_Block [1] {
+                        attribute Selected_Part_Number : String = "INA226";
                     }
                 }
 
                 // --- ENVIRONMENT SENSORS BLOCK ---
-                :>> envSensorsBlock {
-                    :>> temperatureSensorAtEnvironment {
-                        // TemperatureSensor jest z EPS (ma name/mass/power)
-                        :>> name = "PTC thin-film platinum Resistance Temperature Detector (Pt1k0)";
-                        :>> mass = 0.0025 [SI::kg];
-                        :>> power = 0.09 [SI::W];
+                :>> Env_Sensors_Block {
+                    :>> Temperature_Sensor_At_Environment {
+                        :>> Name = "PTC thin-film platinum Resistance Temperature Detector (Pt1k0)";
+                        :>> Mass = 0.0025 [SI::kg];
+                        :>> Power = 0.09 [SI::W];
                     }
 
-                    :>> irradianceSensorBlock {
-                        attribute selectedPartNumber : String = "Hamamatsu S1223-01";
+                    :>> Irradiance_Sensor_Block {
+                        attribute Selected_Part_Number : String = "Hamamatsu S1223-01";
                     }
 
-                    :>> radiationDoseSensor {
-                        attribute selectedPartNumber : String = "Varadis VT02 RADFET";
+                    :>> Radiation_Dose_Sensor {
+                        attribute Selected_Part_Number : String = "Varadis VT02 RADFET";
                     }
 
-                    :>> spectrometer {
-                        attribute selectedPartNumber : String = "Hamamatsu C12880MA";
+                    :>> Spectrometer {
+                        attribute Selected_Part_Number : String = "Hamamatsu C12880MA";
                     }
                 }
             }
