@@ -10,170 +10,152 @@ package OnBoardDataHandlingSystemPackage {
     // Generic data/command plumbing (abstracted physical buses)
     // ------------------------------------------------------------------------------------------------
     port def I2CPort {
-        in data : MissionPackage::OnBoardStatus;
-        out cmd : MissionPackage::OnBoardCommand;
+        in Data : MissionPackage::OnBoardStatus;
+        out Cmd : MissionPackage::OnBoardCommand;
     }
 
     interface def I2CInterface {
-        end rx : ~I2CPort;
-        end tx : I2CPort;
+        end Rx : ~I2CPort;
+        end Tx : I2CPort;
     }
 
-    // For DAQ analog lines connected to OBC ADC inputs (DAQ chapter interface concept)
-    port def analogADCInput {
-        in sample : MissionPackage::OnBoardStatus;
+    port def AnalogADCInput {
+        in Sample : MissionPackage::OnBoardStatus;
     }
 
     // ------------------------------------------------------------------------------------------------
-    // Memory & state types (sized per Design Report budgets)
+    // Memory & state types
     // ------------------------------------------------------------------------------------------------
-
-    // value def MemorySizeMB : Real;
-    // value def MemorySizekB : Real;
     part def Memory {
-        attribute totalMemory : Real; // later just go for: norFlashTotal = 256 [MB];
+        attribute Total_Memory : Real;
     }
 
     part def NonVolatileMemory specializes Memory;
     part def VolatileMemory specializes Memory;
 
-
-
     // ------------------------------------------------------------------------------------------------
     // OBC building blocks
     // ------------------------------------------------------------------------------------------------
+    part def Magnetometer :> GeneralElectricalComponent {
+        attribute Force : Real;
+        attribute Axes : Integer;
+    }
+
+    part def Gyroscope :> GeneralElectricalComponent {
+        attribute Axes : Integer;
+    }
 
     part def OnBoardComputerUnit {
-        attribute name : String;
-        attribute role : String; // "Primary" / "Secondary"
-        attribute warmRedundant : Boolean;
+        attribute Name : String;
+        attribute Role : String;
+        attribute Warm_Redundant : Boolean;
 
-        part nvm : NonVolatileMemory;
-        part ram : VolatileMemory;
-        part obcTemperatureSensor : TemperatureSensor;
-        // Interfaces to spacecraft subsystems (centralised OBDH routing concept)
-        port toDAQ_i2c : i2cBus;
-        port fromDAQ_adc : analogADCInput [0..*];
+        part NVM : NonVolatileMemory;
+        part RAM : VolatileMemory;
+        part OBC_Temperature_Sensor : TemperatureSensor;
+        part OBC_Gyroscope : Gyroscope;
+        part OBC_Magnetometer : Magnetometer;
 
-        port toEPS_i2c : i2cBus;
-        port toAOCS_can : canBus;
-        port toTCS_i2c : i2cBus;
+        port Analog_ADC_Input[0..*] : AnalogADCInput;
+        port Command_In : MissionPackage::OnBoardCommand;
+        port Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        // FDIR/event interface (logical)
-        port fdirEventIn : uartLink;
+        port EPS_I2C : I2CPort;
+        //port TCS_I2C : I2CPort;
+        port Magnetorquer_Board_I2C : I2CPort;
+        port Temperature_Sensor_I2C[0..*] : I2CPort;
+        port Sun_Sensor_I2C[0..*] : I2CPort;
+        port Irradiance_Sensor_I2C[0..*] : I2CPort;
+        port Radiation_Sensor_I2C[0..*] : I2CPort;
+        port Spectrometer_I2C[0..*] : I2CPort;
+        port Voltage_Current_Sense_I2C[0..*] : I2CPort;
+        port UHF_I2C[0..1] : I2CPort;
 
-        // Communications subsystem interface (for command ingest + downlink forwarding)
-        port toCOMMS_uart : uartLink;
-
-        // Ground command/telemetry logical ports
-        port commandIn : MissionPackage::OnBoardCommand;
-        port telemetryOut : MissionPackage::OnBoardStatus;
-
-        // Redundancy synchronisation
-        port syncTx : MissionPackage::OnBoardStatus;
-        port syncRx : MissionPackage::OnBoardStatus;
-
-        perform action readOBCTemperature : ReadTemperature;
+        perform action Read_OBC_Temperature : ReadTemperature;
     }
 
     part def OBCarrierBoard {
-        attribute name : String; // NanoDock DMC-3 carrier concept
+        attribute Name : String;
     }
 
     // ------------------------------------------------------------------------------------------------
     // OBDH System (top-level)
     // ------------------------------------------------------------------------------------------------
-
     part def OnBoardDataHandlingSystem {
-        // Overall interfaces (space segment level)
-        port gsTelecommandIn : MissionPackage::OnBoardCommand;
-        port gsTelemetryOut : MissionPackage::OnBoardStatus;
+        port Telecommand_In : MissionPackage::GroundCommand;
+        port Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        // Subsystem links (OBDH is the hub; no direct subsystem-to-subsystem exchange)
-        port daqI2C : i2cBus;
-        port daqADC : analogADCInput [0..*];
+        port EPS_I2C : I2CPort;
+        port Magnetorquer_Board_I2C : I2CPort;
+        port Temperature_Sensor_I2C[0..*] : I2CPort;
+        port Sun_Sensor_I2C[0..*] : I2CPort;
+        port Irradiance_Sensor_I2C[0..*] : I2CPort;
+        port Radiation_Sensor_I2C[0..*] : I2CPort;
+        port Spectrometer_I2C[0..*] : I2CPort;
+        port Voltage_Current_Sense_I2C[0..*] : I2CPort;
+        port UHF_I2C[0..1] : I2CPort;
 
-        port epsI2C : i2cBus;
-        port aocsCAN : canBus;
-        port tcsI2C : i2cBus;
+        port Analog_ADC_Input[0..*] : AnalogADCInput;
 
-        port commUart : uartLink;
+        part Carrier : OBCarrierBoard;
 
-        // Redundant computing hardware
-        part carrier : OBCarrierBoard;
-        part primaryOBC : OnBoardComputerUnit {
-            :>> role = "Primary";
-            :>> warmRedundant = true;
-        }
-        part secondaryOBC : OnBoardComputerUnit {
-            :>> role = "Secondary";
-            :>> warmRedundant = true;
-        }
+        part Primary_OBC : OnBoardComputerUnit;
+        part Secondary_OBC : OnBoardComputerUnit;
 
-        // Persisted synchronised subset for takeover (stored in NVM per Design Report)
-        part syncState : SynchronizedState;
-
-        // Bind external ports to primary OBC (nominal authority)
-        bind primaryOBC.commandIn = gsTelecommandIn;
-        bind gsTelemetryOut = primaryOBC.telemetryOut;
-
-        // Bind subsystem buses to OBDH ports (routing through the OBC)
-        bind primaryOBC.toDAQ_i2c = daqI2C;
-        bind primaryOBC.fromDAQ_adc = daqADC;
-
-        bind primaryOBC.toEPS_i2c = epsI2C;
-        bind primaryOBC.toAOCS_can = aocsCAN;
-        bind primaryOBC.toTCS_i2c = tcsI2C;
-
-        bind primaryOBC.toCOMMS_uart = commUart;
-
-        // Secondary monitors primary via synchronisation & heartbeat concept
-        bind primaryOBC.syncTx = secondaryOBC.syncRx;
-        bind secondaryOBC.syncTx = primaryOBC.syncRx;
+        // Route primary OBC I2C controllers to system ports
+        connect Primary_OBC.EPS_I2C to EPS_I2C;
+        connect Primary_OBC.Temperature_Sensor_I2C to Temperature_Sensor_I2C;
+        connect Primary_OBC.Magnetorquer_Board_I2C to Magnetorquer_Board_I2C;
+        connect Primary_OBC.Sun_Sensor_I2C to Sun_Sensor_I2C;
+        connect Primary_OBC.Irradiance_Sensor_I2C to Irradiance_Sensor_I2C;
+        connect Primary_OBC.Radiation_Sensor_I2C to Radiation_Sensor_I2C;
+        connect Primary_OBC.Spectrometer_I2C to Spectrometer_I2C;
+        connect Primary_OBC.Voltage_Current_Sense_I2C to Voltage_Current_Sense_I2C;
+        connect Primary_OBC.UHF_I2C to UHF_I2C;
 
         // ------------------------------------------------------------------------------------------------
-        // OBDH Actions (functional concept: cyclic acquisition, state, persistent storage, downlink support)
+        // OBDH Actions
         // ------------------------------------------------------------------------------------------------
+        perform action Acquire_And_Time_Tag : AcquireAndTimestampSubsystemData;
+        perform action Manage_Persistent_Store : ManagePersistentStorageAndBuffers;
+        perform action Prioritize_For_Downlink : SelectAndPrioritizeDownlinkData;
+        perform action Route_Downlink_To_Comms : ForwardDownlinkFramesToComms;
 
-        perform action acquireAndTimeTag : AcquireAndTimestampSubsystemData;
-        perform action managePersistentStore : ManagePersistentStorageAndBuffers;
-        perform action prioritizeForDownlink : SelectAndPrioritizeDownlinkData;
-        perform action routeDownlinkToComms : ForwardDownlinkFramesToComms;
+        perform action Decode_And_Validate_Cmds : DecodeValidateAndDispatchCommands;
+        perform action Execute_Time_Tagged_Cmds : ExecuteTimeTaggedCommands;
 
-        perform action decodeAndValidateCmds : DecodeValidateAndDispatchCommands;
-        perform action executeTimeTaggedCmds : ExecuteTimeTaggedCommands;
+        perform action Monitor_Health_And_FDIR : PerformOBDHHealthMonitoringAndFDIR;
+        perform action Manage_Modes : ManageSpacecraftModesAndAutonomy;
 
-        perform action monitorHealthAndFDIR : PerformOBDHHealthMonitoringAndFDIR;
-        perform action manageModes : ManageSpacecraftModesAndAutonomy;
+        perform action Manage_Redundancy : ManageWarmRedundantAuthorityAndTakeover;
+        perform action Sync_Authority_State : SynchronizeRedundantOBCState;
 
-        perform action manageRedundancy : ManageWarmRedundantAuthorityAndTakeover;
-        perform action syncAuthorityState : SynchronizeRedundantOBCState;
+        perform action Update_Flight_Software : PerformDualBankSoftwareUpdateAndRollback;
 
-        perform action updateFlightSoftware : PerformDualBankSoftwareUpdateAndRollback;
+        // Bind command distribution
+        bind Acquire_And_Time_Tag.Obdh_Command = Telecommand_In;
+        bind Manage_Persistent_Store.Obdh_Command = Telecommand_In;
+        bind Prioritize_For_Downlink.Obdh_Command = Telecommand_In;
+        bind Route_Downlink_To_Comms.Obdh_Command = Telecommand_In;
+        bind Decode_And_Validate_Cmds.Obdh_Command = Telecommand_In;
+        bind Execute_Time_Tagged_Cmds.Obdh_Command = Telecommand_In;
+        bind Monitor_Health_And_FDIR.Obdh_Command = Telecommand_In;
+        bind Manage_Modes.Obdh_Command = Telecommand_In;
+        bind Manage_Redundancy.Obdh_Command = Telecommand_In;
+        bind Sync_Authority_State.Obdh_Command = Telecommand_In;
+        bind Update_Flight_Software.Obdh_Command = Telecommand_In;
 
-        // Bind common command/telemetry channels into actions
-        bind acquireAndTimeTag.obdhCommand = gsTelecommandIn;
-        bind managePersistentStore.obdhCommand = gsTelecommandIn;
-        bind prioritizeForDownlink.obdhCommand = gsTelecommandIn;
-        bind routeDownlinkToComms.obdhCommand = gsTelecommandIn;
-        bind decodeAndValidateCmds.obdhCommand = gsTelecommandIn;
-        bind executeTimeTaggedCmds.obdhCommand = gsTelecommandIn;
-        bind monitorHealthAndFDIR.obdhCommand = gsTelecommandIn;
-        bind manageModes.obdhCommand = gsTelecommandIn;
-        bind manageRedundancy.obdhCommand = gsTelecommandIn;
-        bind syncAuthorityState.obdhCommand = gsTelecommandIn;
-        bind updateFlightSoftware.obdhCommand = gsTelecommandIn;
-
-        bind gsTelemetryOut = acquireAndTimeTag.obdhTelemetry;
-        bind gsTelemetryOut = managePersistentStore.obdhTelemetry;
-        bind gsTelemetryOut = prioritizeForDownlink.obdhTelemetry;
-        bind gsTelemetryOut = routeDownlinkToComms.obdhTelemetry;
-        bind gsTelemetryOut = decodeAndValidateCmds.obdhTelemetry;
-        bind gsTelemetryOut = executeTimeTaggedCmds.obdhTelemetry;
-        bind gsTelemetryOut = monitorHealthAndFDIR.obdhTelemetry;
-        bind gsTelemetryOut = manageModes.obdhTelemetry;
-        bind gsTelemetryOut = manageRedundancy.obdhTelemetry;
-        bind gsTelemetryOut = syncAuthorityState.obdhTelemetry;
-        bind gsTelemetryOut = updateFlightSoftware.obdhTelemetry;
+        // Bind telemetry aggregation
+        bind Telemetry_Out = Acquire_And_Time_Tag.Obdh_Telemetry;
+        bind Telemetry_Out = Manage_Persistent_Store.Obdh_Telemetry;
+        bind Telemetry_Out = Prioritize_For_Downlink.Obdh_Telemetry;
+        bind Telemetry_Out = Route_Downlink_To_Comms.Obdh_Telemetry;
+        bind Telemetry_Out = Decode_And_Validate_Cmds.Obdh_Telemetry;
+        bind Telemetry_Out = Execute_Time_Tagged_Cmds.Obdh_Telemetry;
+        bind Telemetry_Out = Monitor_Health_And_FDIR.Obdh_Telemetry;
+        bind Telemetry_Out = Manage_Modes.Obdh_Telemetry;
+        bind Telemetry_Out = Manage_Redundancy.Obdh_Telemetry;
+        bind Telemetry_Out = Sync_Authority_State.Obdh_Telemetry;
+        bind Telemetry_Out = Update_Flight_Software.Obdh_Telemetry;
     }
 }

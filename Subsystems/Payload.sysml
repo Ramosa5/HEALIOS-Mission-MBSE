@@ -4,113 +4,123 @@ package PayloadPackage {
     private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
     private import Environment::*;
-    // (opcjonalnie) jeśli chcesz typować wejścia z EPS:
-    // private import ElectricalPowerSystemPackage::*;
 
     // --- COTS blocks (definitions WITHOUT "name") ---
     part def PerovskiteCellConnectorAndProtection {
-        attribute name : String;
-        attribute mass : ISQ::MassValue;
-    } 
+        attribute Name : String;
+        attribute Mass : ISQ::MassValue;
+    }
+
     part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
     part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
-    part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent;
+    part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent{
+        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+    }
     part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
-    part def IrradianceSensorBlock specializes GeneralElectricalComponent; 
-    part def RadiationDoseSensor specializes GeneralElectricalComponent;
-    part def SpectrometerPackage specializes GeneralElectricalComponent;
+    part def IrradianceSensorBlock specializes GeneralElectricalComponent {
+        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+    }
+    part def RadiationDoseSensor specializes GeneralElectricalComponent {
+        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+    }
+    part def SpectrometerPackage specializes GeneralElectricalComponent{
+        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+    }
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;
 
     part def PerovskiteSolarArray specializes SolarArray {
-        attribute manufacturer : String;
+        attribute Manufacturer : String;
     }
 
-    part def PowerFilteringBlock { 
-        port powerBusIn3V3 : ElectricalPowerSystemPackage::powerBus;
-        port powerBusIn5V : ElectricalPowerSystemPackage::powerBus;
-        port powerBusFiltered5V : ElectricalPowerSystemPackage::powerBus;
-        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
+    part def PowerFilteringBlock {
+        port Power_Bus_In_3V3 : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_In_5V : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::powerBus;
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
 
-        part powerFilter : PowerFilteringUnit; 
-    } 
+        part Power_Filter : PowerFilteringUnit;
+    }
 
     part def SolarCellsBlock {
-        part perovskiteSolarArrayCoupon[1..*] : PerovskiteSolarArray;
-        part referenceSiliconSolarArrayCoupon[1..*] : SolarArray;
-        part pscConnectorAndProtection   : PerovskiteCellConnectorAndProtection;
+        part Perovskite_Solar_Array_Coupon : PerovskiteSolarArray [1..*];
+        part Reference_Silicon_Solar_Array_Coupon : SolarArray [1..*];
+        part Psc_Connector_And_Protection : PerovskiteCellConnectorAndProtection;
     }
 
     part def MPPTBlock {
-        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
-        
-        part mpptController[1..*] : MPPTUnit;
-        part powerDumpResistor[1..*] : Resistor;
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
+
+        part Mppt_Controller : MPPTUnit [1..*];
+        part Power_Dump_Resistor : Resistor [1..*];
     }
 
     part def IVSweepAndReverseBiasBlock {
-        port powerBusFiltered5V : ElectricalPowerSystemPackage::powerBus;
-        part ivSweepLoadShuntResistor[1] : Resistor;
-        part ivSweepLoadMOSFET[1] : IVSweepLoad_MOSFET;
-        part ivSweepLoadOpAmp[1] : IVSweepLoad_OpAmp;
-        part ivSweepLoadDAC[1] : IVSweepLoad_DAC;
-        part currentAndVoltageSensingBlock[1] : CurrentAndVoltageSensingBlock;
+        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::powerBus;
+
+        part Iv_Sweep_Load_Shunt_Resistor : Resistor [1];
+        part Iv_Sweep_Load_MOSFET : IVSweepLoad_MOSFET [1];
+        part Iv_Sweep_Load_OpAmp : IVSweepLoad_OpAmp [1];
+        part Iv_Sweep_Load_DAC : IVSweepLoad_DAC [1];
+        part Current_And_Voltage_Sensing_Block : CurrentAndVoltageSensingBlock [1];
     }
 
     part def EnvironmentSensorsBlock {
-        // Minimal sensor data outputs (you can refine types later)
-        port powerBusFiltered3V3 : ElectricalPowerSystemPackage::powerBus;
-        port tempOut : MissionPackage::OnBoardStatus;
-        port irrOut  : MissionPackage::OnBoardStatus;
-        port radOut  : MissionPackage::OnBoardStatus;
-        port specOut : MissionPackage::OnBoardStatus;
+        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::powerBus;
+
+        port Temp_Out : MissionPackage::OnBoardStatus;
+        port Irr_Out : MissionPackage::OnBoardStatus;
+        port Rad_Out : MissionPackage::OnBoardStatus;
+        port Spec_Out : MissionPackage::OnBoardStatus;
 
         // instances (NO default names here)
-        part temperatureSensorAtEnvironment : TemperatureSensor;
-        part irradianceSensorBlock          : IrradianceSensorBlock;
-        part radiationDoseSensor            : RadiationDoseSensor;
-        part spectrometer                   : SpectrometerPackage;
+        part Temperature_Sensor_At_Environment : TemperatureSensor;
+        part Irradiance_Sensor_Block : IrradianceSensorBlock;
+        part Radiation_Dose_Sensor : RadiationDoseSensor;
+        part Spectrometer : SpectrometerPackage;
 
-        perform action readPLTemperature : ReadTemperature;
+        perform action Read_PL_Temperature : ReadTemperature;
     }
 
     part def Payload {
         // Ports for integration
-        port cmdIn     : MissionPackage::OnBoardCommand;
-        port statusOut : MissionPackage::OnBoardStatus;
+        port Cmd_In : MissionPackage::OnBoardCommand;
+        port Status_Out : MissionPackage::OnBoardStatus;
 
         // Subparts (NO default names here)
-        part powerFilteringBlock         : PowerFilteringBlock;
-        part solarCellsBlock             : SolarCellsBlock;
-        part mpptBlock                   : MPPTBlock;  
-        part ivSweepAndReverseBiasBlock  : IVSweepAndReverseBiasBlock;
-        part envSensorsBlock                  : EnvironmentSensorsBlock;
+        part Power_Filtering_Block : PowerFilteringBlock;
+        part Solar_Cells_Block : SolarCellsBlock;
+        part Mppt_Block : MPPTBlock;
+        part Iv_Sweep_And_Reverse_Bias_Block : IVSweepAndReverseBiasBlock;
+        part Env_Sensors_Block : EnvironmentSensorsBlock;
 
-        bind envSensorsBlock.powerBusFiltered3V3 = powerFilteringBlock.powerBusFiltered3V3;
-        bind ivSweepAndReverseBiasBlock.powerBusFiltered5V = powerFilteringBlock.powerBusFiltered5V;
-        bind mpptBlock.powerBusFiltered3V3 = powerFilteringBlock.powerBusFiltered3V3;
+        bind Env_Sensors_Block.Power_Bus_Filtered_3V3 =
+            Power_Filtering_Block.Power_Bus_Filtered_3V3;
+        bind Iv_Sweep_And_Reverse_Bias_Block.Power_Bus_Filtered_5V =
+            Power_Filtering_Block.Power_Bus_Filtered_5V;
+        bind Mppt_Block.Power_Bus_Filtered_3V3 = Power_Filtering_Block.Power_Bus_Filtered_3V3;
 
         // Actions (usages)
-        perform action applyReverseBias : applyControlledReverseBiasToPSC;
-        perform action measureIVCurves  : MeasureIVCurvesOfPSC;
-        perform action maintainMPP      : maintainMaximumPowerPoint;
-        perform action collectData      : collectExperimentalData;
+        perform action Apply_Reverse_Bias : applyControlledReverseBiasToPSC;
+        perform action Measure_Iv_Curves : MeasureIVCurvesOfPSC;
+        perform action Maintain_Mpp : maintainMaximumPowerPoint;
+        perform action Collect_Data : collectExperimentalData;
 
-        // Bind DAQ command input to the action command inputs
-        bind applyReverseBias.applyReverseBiasVoltageCommand = cmdIn;
-        bind measureIVCurves.measureIVCurvesOfPSCCommand     = cmdIn;
-        bind maintainMPP.maintainMPPCommand                  = cmdIn;
-        bind collectData.collectExperimentalDataCommand      = cmdIn;
+        // Bind command input to the action command inputs
+        bind Apply_Reverse_Bias.Apply_Reverse_Bias_Voltage_Command = Cmd_In;
+        bind Measure_Iv_Curves.Measure_IV_Curves_Of_PSC_Command = Cmd_In;
+        bind Maintain_Mpp.Maintain_MPP_Command = Cmd_In;
+        bind Collect_Data.Collect_Experimental_Data_Command = Cmd_In;
 
         // Merge action outputs to payload status out
-        bind statusOut = applyReverseBias.voltageApplicationStatus;
-        bind statusOut = measureIVCurves.measuredIVCurvesStatus;
-        bind statusOut = maintainMPP.mppStatus;
+        bind Status_Out = Apply_Reverse_Bias.Voltage_Application_Status;
+        bind Status_Out = Measure_Iv_Curves.Measured_IV_Curves_Status;
+        bind Status_Out = Maintain_Mpp.Mpp_Status;
 
         // Forward sensor results (collectData outputs) via statusOut
-        bind statusOut = collectData.measuredRadiationStatus;
-        bind statusOut = collectData.measuredTemperatureStatus;
-        bind statusOut = collectData.measuredSpectrumStatus;
-        bind statusOut = collectData.measuredIrradianceStatus;
+        bind Status_Out = Collect_Data.Measured_Radiation_Status;
+        bind Status_Out = Collect_Data.Measured_Temperature_Status;
+        bind Status_Out = Collect_Data.Measured_Spectrum_Status;
+        bind Status_Out = Collect_Data.Measured_Irradiance_Status;
     }
 }

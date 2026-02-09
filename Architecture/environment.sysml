@@ -3,30 +3,30 @@ private import ScalarValues::*;
 package Environment {
 
   item def SolarSpectrum {
-    wavelength : Real; // in nm
-    intensity : Real; // in W/m^2/nm
+    Wavelength : Real; // in nm
+    Intensity : Real;  // in W/m^2/nm
   }
 
   item def SolarRadiation {
-    value : Real; // in W/m^2
+    Value : Real; // in W/m^2
   }
 
   item def SolarAngle {
-    angle : Real; // in degrees
+    Angle : Real; // in degrees
   }
 
   port def SolarEnvironment {
-    out item radiation : SolarRadiation;
-    out item spectrum : SolarSpectrum;
-    out item angleBeta : SolarAngle;
+    out item Radiation : SolarRadiation;
+    out item Spectrum : SolarSpectrum;
+    out item Angle_Beta : SolarAngle;
   }
 
   part def Sun {
-    attribute visible : Boolean;
-    out port sunSolarEnvironment : SolarEnvironment;
+    attribute Visible : Boolean;
+    out port Sun_Solar_Environment : SolarEnvironment;
   }
 
-  part sunEntity : Sun; // do zmiany nazwa
+  part Sun_Entity : Sun;
 }
 
 package LaunchEnvironment {
@@ -34,17 +34,16 @@ package LaunchEnvironment {
   port def DispenserContactInterface;
 
   part def Launcher {
-        attribute name : String;
-        attribute payloadCapacity : ISQ::MassValue;
-        attribute launchSite : String;
-    }
-
+    attribute Name : String;
+    attribute Payload_Capacity : ISQ::MassValue;
+    attribute Launch_Site : String;
+  }
 
   part def CubeSatDispenser {
-          attribute Name : String;
-          attribute Status : String;
+    attribute Name : String;
+    attribute Status : String;
 
-          port Mounting_Interface : DispenserContactInterface;
-      }
+    port Mounting_Interface : DispenserContactInterface;
+  }
 
 }
