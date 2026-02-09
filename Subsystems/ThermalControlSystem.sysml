@@ -37,17 +37,20 @@ package ThermalControlSystemPackage {
         perform action activateTCS {
             in command : OnBoardCommand;
             bind command = Command_IN.Cmd;
-            loop{
-                perform action read : ReadTemperature {
-                    bind Temp = EPS_Temperature_Port.Temp;
-                }
-                then perform action ControlTemperatures : ControlTemperature {
-                    bind Minimal_Temperature = EPS_Heater.Minimal_Temperature;
-                    bind Heating_Power = EPS_Heater.Power;
-                    bind Temp_Reading = read.Temp;
-                }
-                then assign Stop_Signal := (command.type == "Turn Off");
-            } until Stop_Signal;
+            if command.type == "TurnOn" {
+                loop{
+                    perform action read : ReadTemperature {
+                        bind Temp = EPS_Temperature_Port.Temp;
+                    }
+                    then perform action ControlTemperatures : ControlTemperature {
+                        bind Minimal_Temperature = EPS_Heater.Minimal_Temperature;
+                        bind Heating_Power = EPS_Heater.Power;
+                        bind Temp_Reading = read.Temp;
+                    }
+                    then assign Stop_Signal := (command.type == "TurnOff");
+                } until Stop_Signal;
+            }
+
         }
     }
 }
