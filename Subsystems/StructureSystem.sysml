@@ -51,29 +51,29 @@ package StructureSystemPackage {
 
         // The main frame of the satellite (Primary Structure)
         part primaryStructure : Chassis {
-            :>> material = "Aluminum Alloy";
-            :>> dimensions = "1U form factor";
+            //:>> material = "Aluminum Alloy";
+            //:>> dimensions = "1U form factor";
 
             part internal_mounting : MountingElement {
-                :>> type = "General";
+                //:>> type = "General";
             }
         }
 
         // PCB-Stack Definition (Secondary Structure)
         part secondaryStructure : Chassis {
-            :>> material = "Aluminum Alloy";
-            :>> dimensions = "PC-104 form factor";
+           // :>> material = "Aluminum Alloy";
+           // :>> dimensions = "PC-104 form factor";
 
             part internal_mounting : MountingElement {
-                :>> type = "General";
+               // :>> type = "General";
             }
         }
 
         // Separation springs / Switches for the POD interface
         part deploymentSwitches : Mechanism [2] {
-            :>> name = "POD Separation Switch";
-            :>> powerConsumption = 0 [SI::W];
-            :>> status = "Stowed";
+            //:>> name = "POD Separation Switch";
+            //:>> powerConsumption = 0 [SI::W];
+            //:>> status = "Stowed";
         }
 
         // C. Internal Connections (The Assembly Logic)
@@ -88,8 +88,8 @@ package StructureSystemPackage {
         
         // Mechanical interface to the Launch Adapter (POD) - Connected to the Frame
         port PPOD : CubeSatDispenser {
-            :>> name = "PPOD Interface";
-            :>> status = "Stowed";
+            //:>> name = "PPOD Interface";
+            //:>> status = "Stowed";
         }
         connect PPOD.mountingInterface to primaryStructure.structuralInterface;
         connect PPOD.mountingInterface to deploymentSwitches.mountingInterface;

@@ -18,7 +18,7 @@ package ThermalControlSystemPackage {
 
         port commandIN : OBDHcommandIN;
         
-        attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
+        //attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 
         attribute stopSignal : Boolean := false;
 
@@ -33,6 +33,8 @@ package ThermalControlSystemPackage {
         
         // In next iterations, add loop type action for OBDH control.
         perform action activateTCS {
+            in command : OnBoardCommand;
+            bind command = commandIN.cmd;
             loop{
                 action read : ReadTemperature {
                     bind temp = epsTemperatureSensor.temperatureOUT.temp;
@@ -42,7 +44,7 @@ package ThermalControlSystemPackage {
                     bind heatingPower = epsHeater.power;
                     bind tempReading = read.temp;
                 }
-                then assign stopSignal := (TCSlastCommand.type == "Turn Off");
+                then assign stopSignal := (command.type == "Turn Off");
             } until stopSignal;
         }
     }
