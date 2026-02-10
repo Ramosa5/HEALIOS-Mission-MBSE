@@ -86,7 +86,9 @@ package PayloadPackage {
         // Ports for integration
         port Cmd_In : MissionPackage::OnBoardCommand;
         port Status_Out : MissionPackage::OnBoardStatus;
-
+        port Power_Bus_In_3V3 : ~PowerBus;
+        port Power_Bus_In_5V : ~PowerBus;
+        
         // Subparts (NO default names here)
         part Power_Filtering_Block : PowerFilteringBlock;
         part Solar_Cells_Block : SolarCellsBlock;
