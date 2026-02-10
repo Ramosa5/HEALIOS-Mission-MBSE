@@ -91,15 +91,15 @@ package MissionPackage {
 
         // Power distribution
         connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
-        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.commsPowerIn;
+        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.EPS_Power_Port;
         connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
         
         // Telemetry
         connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
         connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
 
-        connect SS_Communication_System.tcToOBDH.cmdOut to SS_On_Board_Data_Handling.Telecommand_In;
-        connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.hkFromOBDH.hkIn;
+        connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out to SS_On_Board_Data_Handling.Telecommand_In;
+        connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.OBDH_HK_Port.HK;
 
         //Commands
         connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Thermal_Control_System.Command_IN;
@@ -111,21 +111,21 @@ package MissionPackage {
     }
     // --- 4. Ground Segment Placeholder ---
     public part def GroundSegment {
-        part <GST> Ground_Station : GroundStation;
-        part <MCC> Mission_Control_Centre : MissionControlCentre;
-        part <DT> Data_Centre : DataCentre;
+    part <GST> Ground_Station : GroundStation;
+    part <MCC> Mission_Control_Centre : MissionControlCentre;
+    part <DT> Data_Centre : DataCentre;
 
-        connect Mission_Control_Centre.tcToGS to Ground_Station.tcFromMCC;
-        connect Mission_Control_Centre.passPlanToGS to Ground_Station.passPlanFromMCC;
+    connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
+    connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
 
-        connect Ground_Station.tmToMCC to Mission_Control_Centre.tmFromGS;
-        connect Ground_Station.trackingToMCC to Mission_Control_Centre.trackingFromGS;
+    connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+    connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
 
-        connect Ground_Station.tmToDataCentre to Data_Centre.tmFromGS;
-        connect Ground_Station.archiveOut to Data_Centre.recordsFromGS;
+    connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
+    connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
-        connect Data_Centre.tmProductsToMCC to Mission_Control_Centre.tmFromGS;
-    }
+    connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+}
 
     // --- 5. The Complete System ---
     public part def MissionSegments {

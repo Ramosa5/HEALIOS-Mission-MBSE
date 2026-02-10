@@ -3,111 +3,135 @@ package CommunicationsSystemPackage {
     private import ISQ::*;
     private import SpaceActionsPackage::*;
 
-    port def powerBus {
-        in voltage : ISQ::SourceVoltageValue;
+    port def PowerBusPort {
+        in Voltage : ISQ::SourceVoltageValue;
     }
 
-    port def groundCommandPort {
-        out item cmdOut : MissionPackage::GroundCommand;
+    port def OutCommandPort {
+        out item Cmd : MissionPackage::GroundCommand;
     }
 
-    port def obdhStatusInPort {
-        in item hkIn : MissionPackage::OnBoardStatus;
+    port def InHKPort {
+        in item HK : MissionPackage::OnBoardStatus;
     }
 
-    port def commsStatusOutPort {
-        out item statusOut : MissionPackage::OnBoardStatus;
+    port def OutStatusPort {
+        out item Status : MissionPackage::OnBoardStatus;
     }
 
-    port def rfLinkPort {
-        out item rfOut : MissionPackage::TelemetryData;
-        in item rfIn : MissionPackage::TelemetryData;
+    port def RFLinkPort {
+        out item RF_Out : MissionPackage::TelemetryData;
+        in item RF_In : MissionPackage::TelemetryData;
     }
 
-    item def CommsAnomaly { attribute type : String; }
-    port def commsAnomalyOutPort { out item anomalyOut : CommsAnomaly; }
+    item def CommsAnomaly {
+        attribute Type : String;
+    }
 
+    port def OutAnomalyPort {
+        out item Anomaly : CommsAnomaly;
+    }
 
     part def Antenna {
-        attribute name : String;
-        attribute band : String;
-        attribute gain : Real;
+        attribute Name : String;
+        attribute Band : String;
+        attribute Gain : Real;
     }
 
     part def Transceiver {
-        attribute name : String;
-        attribute maxTxPower : ISQ::PowerValue;
+        attribute Name : String;
+        attribute MaxTxPower : ISQ::PowerValue;
 
-        attribute supportsRx : Boolean;
-        attribute supportsTx : Boolean;
+        attribute SupportsRx : Boolean;
+        attribute SupportsTx : Boolean;
 
-        attribute downlinkDataRate : MissionPackage::TelemetryData;
-        attribute uplinkDataRate : MissionPackage::GroundCommand;
+        attribute DownlinkDataRate : MissionPackage::TelemetryData;
+        attribute UplinkDataRate : MissionPackage::GroundCommand;
 
-        attribute dopplerToleranceHz : Real;
-        attribute modulationCoding : String;
-        attribute packetFormat : String;
-
-        attribute fecEnabled : Boolean;
-        attribute crcEnabled : Boolean;
-
-        attribute reconfigurableInOrbit : Boolean;
+        attribute DopplerToleranceHz : Real;
+        attribute ModulationCoding : String;
+        attribute PacketFormat : String;
+        attribute FECEnabled : Boolean;
+        attribute CRCEnabled : Boolean;
+        attribute ReconfigurableInOrbit : Boolean;
     }
 
     part def CryptoUnit {
-        attribute name : String;
-
-        attribute uplinkAuthEnabled : Boolean;
-        attribute uplinkDecryptEnabled : Boolean;
-
-        attribute downlinkEncryptEnabled : Boolean;
-        attribute downlinkIntegrityEnabled : Boolean; // e.g., MAC/signature
+        attribute Name : String;
+        attribute UplinkAuthEnabled : Boolean;
+        attribute UplinkDecryptEnabled : Boolean;
+        attribute DownlinkEncryptEnabled : Boolean;
+        attribute DownlinkIntegrityEnabled : Boolean;
     }
 
-    
+    action def TransmitStatusDownlink {
+        in item HK_In : MissionPackage::OnBoardStatus;
+        out item TM_Out : MissionPackage::TelemetryData;
+    }
+
+    action def DecryptAndAuthenticateUplink {
+        in item RF_In : MissionPackage::TelemetryData;
+        out item Cmd_Out : MissionPackage::GroundCommand;
+    }
+
+    action def EncryptDownlinkTelemetry {
+        in item TM_In : MissionPackage::TelemetryData;
+        out item RF_Out : MissionPackage::TelemetryData;
+    }
+
+    action def ReportCommsHealth {
+        out item Status_Out : MissionPackage::OnBoardStatus;
+    }
+
+    action def TransmitBeacon {
+        out item Beacon_Out : MissionPackage::TelemetryData;
+    }
+
+    action def LogCommsAnomaly {
+        out item Anomaly_Out : CommsAnomaly;
+    }
 
     part def CommunicationsSystem {
-        // Power + interface ports
-        port commsPowerIn : powerBus;
-        port tcToOBDH : groundCommandPort;
-        port hkFromOBDH : obdhStatusInPort;
-        port hkStatusToOBDH : commsStatusOutPort;
-        port rfLink : rfLinkPort;
-        port anomalyToOBDH : commsAnomalyOutPort;
+        port EPS_Power_Port : PowerBusPort;
+        port OBDH_Command_Port : OutCommandPort;
+        port OBDH_HK_Port : InHKPort;
+        port OBDH_Status_Port : OutStatusPort;
+        port RF_Link_Port : RFLinkPort;
+        port OBDH_Anomaly_Port : OutAnomalyPort;
 
-        // Physical elements (lean)
-        part antenna : Antenna;
-        part trx : Transceiver;
 
-        // Security element
-        part crypto : CryptoUnit;
+        part Antenna_Part : Antenna;
+        part Transceiver_Part : Transceiver;
+        part Crypto_Part : CryptoUnit;
 
-        attribute supportsAllMissionPhases : Boolean;
-        attribute hasRedundancyOrFailSafe : Boolean;
-        attribute worstCaseLinkMargin_dB : Real;
+        attribute Supports_All_Mission_Phases : Boolean;
+        attribute Has_Redundancy_Or_Fail_Safe : Boolean;
+        attribute Worst_Case_Link_Margin_dB : Real;
 
-        attribute rfEmissionsCompliant : Boolean;
-        attribute emcCompliant : Boolean;
+        attribute Rf_Emissions_Compliant : Boolean;
+        attribute Emc_Compliant : Boolean;
 
-        attribute beaconEnabled : Boolean;
-        attribute beaconContainsVitalTelemetry : Boolean;
+        attribute Beacon_Enabled : Boolean;
+        attribute Beacon_Contains_Vital_Telemetry : Boolean;
 
-        attribute supportsE2ETestWithEGSE : Boolean;
-        attribute supportsOverTheAirQualificationTest : Boolean;
+        attribute Supports_E2E_Test_With_EGSE : Boolean;
+        attribute Supports_Over_The_Air_Qualification_Test : Boolean;
 
-        perform action txHK : TransmitStatusDownlink;
-        perform action decryptAuth : DecryptAndAuthenticateUplink;
-        perform action encryptDL : EncryptDownlinkTelemetry;
-        perform action health : ReportCommsHealth;
-        perform action beacon : TransmitBeacon;
-        perform action logAnomaly : LogCommsAnomaly;
+        perform action TX_HK_Action : TransmitStatusDownlink;
+        perform action DEC_AUTH_Action : DecryptAndAuthenticateUplink;
+        perform action ENC_DL_Action : EncryptDownlinkTelemetry;
+        perform action HEALTH_Action : ReportCommsHealth;
+        perform action BEACON_Action : TransmitBeacon;
+        perform action LOG_ANOM_Action : LogCommsAnomaly;
 
-        bind txHK.hkIn = hkFromOBDH.hkIn;
-        bind encryptDL.tmIn = txHK.tmOut;
-        bind rfLink.rfOut = encryptDL.rfOut;
-        bind decryptAuth.rfIn = rfLink.rfIn;
-        bind tcToOBDH.cmdOut = decryptAuth.cmdOut;
-        bind hkStatusToOBDH.statusOut = health.status;
-        bind anomalyToOBDH.anomalyOut = logAnomaly.anomaly;
+        bind TX_HK_Action.HK_In = OBDH_HK_Port.HK;
+        bind ENC_DL_Action.TM_In = TX_HK_Action.TM_Out;
+        bind RF_Link_Port.RF_Out = ENC_DL_Action.RF_Out;
+
+        bind DEC_AUTH_Action.RF_In = RF_Link_Port.RF_In;
+        bind OBDH_Command_Port.Cmd = DEC_AUTH_Action.Cmd_Out;
+
+        bind OBDH_Status_Port.Status = HEALTH_Action.Status_Out;
+        bind OBDH_Anomaly_Port.Anomaly = LOG_ANOM_Action.Anomaly_Out;
     }
 }

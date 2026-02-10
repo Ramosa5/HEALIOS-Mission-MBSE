@@ -135,7 +135,7 @@ package HealiosMissionInstancePackage {
                     part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
-
+                
                 // --- MIRROR CONNECTS from OnBoardDataHandling.sysml (for visibility) ---
                 connect Primary_OBC.EPS_I2C to EPS_I2C;
                 connect Primary_OBC.Temperature_Sensor_I2C to Temperature_Sensor_I2C;
@@ -148,49 +148,50 @@ package HealiosMissionInstancePackage {
                 connect Primary_OBC.UHF_I2C to UHF_I2C;
             }
 
-            // =========================
-            // COMMS
-            // =========================
-            part SS_Communication_System redefines SS_Communication_System {
-                port commsPowerIn redefines commsPowerIn;
-                port tcToOBDH redefines tcToOBDH;
-                port hkFromOBDH redefines hkFromOBDH;
-                port hkStatusToOBDH redefines hkStatusToOBDH;
-                port rfLink redefines rfLink;
-                port anomalyToOBDH redefines anomalyToOBDH;
+            
+        part SS_Communication_System redefines SS_Communication_System {
+            // top-level comms ports (usage names with underscores)
+            port EPS_Power_Port redefines EPS_Power_Port;
+            port OBDH_Command_Port redefines OBDH_Command_Port;
+            port OBDH_HK_Port redefines OBDH_HK_Port;
+            port OBDH_Status_Port redefines OBDH_Status_Port;
+            port RF_Link_Port redefines RF_Link_Port;
+            port OBDH_Anomaly_Port redefines OBDH_Anomaly_Port;
 
-                attribute supportsAllMissionPhases redefines supportsAllMissionPhases = true;
-                attribute hasRedundancyOrFailSafe redefines hasRedundancyOrFailSafe = false;
-                attribute worstCaseLinkMargin_dB redefines worstCaseLinkMargin_dB = 3.0;
+            // attributes (usage names with underscores)
+            attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
+            attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
+            attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
-                attribute beaconEnabled redefines beaconEnabled = true;
-                attribute beaconContainsVitalTelemetry redefines beaconContainsVitalTelemetry = true;
+            attribute Beacon_Enabled redefines Beacon_Enabled = true;
+            attribute Beacon_Contains_Vital_Telemetry redefines Beacon_Contains_Vital_Telemetry = true;
 
-                part antenna redefines antenna {
-                    attribute name redefines name = "UHF Antenna";
-                    attribute band redefines band = "UHF";
-                    attribute gain redefines gain = 2.0;
-                }
-
-                part trx redefines trx {
-                    attribute name redefines name = "UHF Transceiver";
-                    attribute maxTxPower redefines maxTxPower = 1.0 [SI::W];
-                    attribute dopplerToleranceHz redefines dopplerToleranceHz = 20000.0;
-                    attribute modulationCoding redefines modulationCoding = "GMSK (TBD)";
-                    attribute packetFormat redefines packetFormat = "AX.25 (TBD)";
-                    attribute fecEnabled redefines fecEnabled = true;
-                    attribute crcEnabled redefines crcEnabled = true;
-                    attribute reconfigurableInOrbit redefines reconfigurableInOrbit = true;
-                }
-
-                part crypto redefines crypto {
-                    attribute name redefines name = "Comms Crypto/Integrity";
-                    attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
-                    attribute uplinkDecryptEnabled redefines uplinkDecryptEnabled = true;
-                    attribute downlinkEncryptEnabled redefines downlinkEncryptEnabled = true;
-                    attribute downlinkIntegrityEnabled redefines downlinkIntegrityEnabled = true;
-                }
+            // parts (usage names with underscores)
+            part Antenna_Part redefines Antenna_Part {
+                attribute Name redefines Name = "UHF Antenna";
+                attribute Band redefines Band = "UHF";
+                attribute Gain redefines Gain = 2.0;
             }
+
+            part Transceiver_Part redefines Transceiver_Part {
+                attribute Name redefines Name = "UHF Transceiver";
+                attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
+                attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
+                attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
+                attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
+                attribute FECEnabled redefines FECEnabled = true;
+                attribute CRCEnabled redefines CRCEnabled = true;
+                attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
+            }
+
+            part Crypto_Part redefines Crypto_Part {
+                attribute Name redefines Name = "Comms Crypto/Integrity";
+                attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
+                attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
+                attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
+                attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
+            }
+        }
 
             // =========================
             // STRUCTURE
@@ -386,16 +387,9 @@ package HealiosMissionInstancePackage {
                 to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
 
             connect SS_Electrical_Power_System.Power_Bus_5V
-                to SS_Communication_System.commsPowerIn;
+                to SS_Communication_System.EPS_Power_Port;
 
-            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_On_Board_Data_Handling.Power_Bus_In_3V3;
-            connect SS_Electrical_Power_System.Power_Bus_5V to SS_On_Board_Data_Handling.Power_Bus_In_5V;
-            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Satellite_Payload.Power_Bus_In_3V3;
-            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Satellite_Payload.Power_Bus_In_5V;
-            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Attitude_And_Orbit_Control_System.Power_Bus_In_3V3;
-            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V;
-
-            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_3V3
+            connect SS_Electrical_Power_System.Power_Bus_3V3
                 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
             connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V
                 to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
@@ -405,10 +399,10 @@ package HealiosMissionInstancePackage {
             connect Satellite_Command_Port.Telemetry
                 to SS_On_Board_Data_Handling.Telemetry_Out;
 
-            connect SS_Communication_System.tcToOBDH.cmdOut
+            connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
                 to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.hkFromOBDH.hkIn;
+                to SS_Communication_System.OBDH_HK_Port.HK;
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
@@ -458,43 +452,95 @@ package HealiosMissionInstancePackage {
             }
         }
 
-        // ==========================
-        // Ground segment refinements
-        // ==========================
-        part HEALIOS_Ground_Segment redefines Ground_Segment {
-            part Ground_Station redefines Ground_Station {
-                port tcFromMCC redefines tcFromMCC;
-                port tmToMCC redefines tmToMCC;
-                port tmToDataCentre redefines tmToDataCentre;
-                port passPlanFromMCC redefines passPlanFromMCC;
-                port trackingToMCC redefines trackingToMCC;
-                port archiveOut redefines archiveOut;
+       
+       part HEALIOS_Ground_Segment redefines Ground_Segment {
+                part Ground_Station redefines Ground_Station {
+                    port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
+                    port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
+                    port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
+                    port Mission_Control_Centre_Pass_Plan_Port redefines Mission_Control_Centre_Pass_Plan_Port;
+                    port Mission_Control_Centre_Tracking_Port redefines Mission_Control_Centre_Tracking_Port;
+                    port Data_Centre_Archive_Port redefines Data_Centre_Archive_Port;
+
+                    part Antenna_Part redefines Antenna_Part {
+                        attribute name redefines name = "UHF Ground Antenna";
+                        attribute band redefines band = "UHF";
+                        attribute gain redefines gain = 12.0;
+                    }
+
+                    part Radio_Unit_Part redefines Radio_Unit_Part {
+                        attribute name redefines name = "SDR Ground Radio";
+                        attribute supportedBands redefines supportedBands = "UHF/VHF";
+                    }
+
+                    part Pass_Predictor_Part redefines Pass_Predictor_Part {
+                        attribute name redefines name = "Pass Predictor";
+                        attribute usesTLE redefines usesTLE = true;
+                    }
+
+                    part Doppler_Compensator_Part redefines Doppler_Compensator_Part {
+                        attribute name redefines name = "Doppler Compensator";
+                    }
+
+                    part Link_Budget_Tool_Part redefines Link_Budget_Tool_Part {
+                        attribute name redefines name = "Link Budget Tool";
+                    }
+
+                    part Crypto_Unit_Part redefines Crypto_Unit_Part {
+                        attribute name redefines name = "Ground Crypto/Integrity";
+                        attribute downlinkVerifyEnabled redefines downlinkVerifyEnabled = true;
+                        attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
+                        attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
+                        attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
+                    }
+                }
+
+                part Mission_Control_Centre redefines Mission_Control_Centre {
+                    port Ground_Station_TC_Port redefines Ground_Station_TC_Port;
+                    port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
+                    port Ground_Station_Pass_Plan_Port redefines Ground_Station_Pass_Plan_Port;
+                    port Ground_Station_Tracking_Port redefines Ground_Station_Tracking_Port;
+
+                    part Auth_Service_Part redefines Auth_Service_Part {
+                        attribute name redefines name = "MCC Authentication";
+                        attribute method redefines method = "MFA (TBD)";
+                    }
+
+                    part Operations_Console_Part redefines Operations_Console_Part {
+                        attribute name redefines name = "Operations Console";
+                    }
+
+                    part Pass_Planner_Part redefines Pass_Planner_Part {
+                        attribute name redefines name = "Pass Planner";
+                        attribute usesTLE redefines usesTLE = true;
+                    }
+                }
+
+                part Data_Centre redefines Data_Centre {
+                    port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
+                    port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
+                    port Mission_Control_Centre_TM_Products_Port redefines Mission_Control_Centre_TM_Products_Port;
+
+                    part Structured_Archive_Part redefines Structured_Archive_Part {
+                        attribute name redefines name = "Structured Archive";
+                        attribute retention redefines retention = 1825 [SI::day];
+                    }
+
+                    part Data_Validator_Part redefines Data_Validator_Part {
+                        attribute name redefines name = "Telemetry Validator";
+                    }
+                }
+
+                connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
+                connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+
+                connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+                connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
+
+                connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
+                connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+
+                connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
             }
-
-            part Mission_Control_Centre redefines Mission_Control_Centre {
-                port tcToGS redefines tcToGS;
-                port tmFromGS redefines tmFromGS;
-                port passPlanToGS redefines passPlanToGS;
-                port trackingFromGS redefines trackingFromGS;
-            }
-
-            part Data_Centre redefines Data_Centre {
-                port tmFromGS redefines tmFromGS;
-                port recordsFromGS redefines recordsFromGS;
-                port tmProductsToMCC redefines tmProductsToMCC;
-            }
-
-            // Mirror GroundSegment connects (already in type)
-            connect Mission_Control_Centre.tcToGS to Ground_Station.tcFromMCC;
-            connect Mission_Control_Centre.passPlanToGS to Ground_Station.passPlanFromMCC;
-
-            connect Ground_Station.tmToMCC to Mission_Control_Centre.tmFromGS;
-            connect Ground_Station.trackingToMCC to Mission_Control_Centre.trackingFromGS;
-
-            connect Ground_Station.tmToDataCentre to Data_Centre.tmFromGS;
-            connect Ground_Station.archiveOut to Data_Centre.recordsFromGS;
-
-            connect Data_Centre.tmProductsToMCC to Mission_Control_Centre.tmFromGS;
-        }
     }
 }

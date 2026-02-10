@@ -7,15 +7,15 @@ package MissionControlCentrePackage {
     item def OperatorRequest { attribute type : String; }
     item def AuthToken { attribute type : String; }
 
-    port def tcPort { out item tcOut : MissionPackage::GroundCommand; }
-    port def tmPort { in item tmIn : MissionPackage::TelemetryData; }
+    port def TcPort { out item TcOut : MissionPackage::GroundCommand; }
+    port def TmPort { in item TmIn : MissionPackage::TelemetryData; }
 
-    port def passPlanPort { out item planOut : PassPlan; }
-    port def trackingPort { in item trackingIn : TrackingData; }
+    port def PassPlanPort { out item PlanOut : PassPlan; }
+    port def TrackingPort { in item TrackingIn : TrackingData; }
 
     part def AuthenticationService {
         attribute name : String;
-        attribute method : String; // e.g. "MFA", "SSH keys", "Role-based"
+        attribute method : String;
     }
 
     part def OperationsConsole {
@@ -28,22 +28,22 @@ package MissionControlCentrePackage {
     }
 
     part def MissionControlCentre {
-        port tcToGS : tcPort;
-        port tmFromGS : tmPort;
-        port passPlanToGS : passPlanPort;
-        port trackingFromGS : trackingPort;
+        port Ground_Station_TC_Port : TcPort;
+        port Ground_Station_TM_Port : TmPort;
+        port Ground_Station_Pass_Plan_Port : PassPlanPort;
+        port Ground_Station_Tracking_Port : TrackingPort;
 
-        part auth : AuthenticationService;
-        part console : OperationsConsole;
-        part planner : PassPlanner;
+        part Auth_Service_Part : AuthenticationService;
+        part Operations_Console_Part : OperationsConsole;
+        part Pass_Planner_Part : PassPlanner;
 
-        perform action authorize : AuthorizeCommanding;
-        perform action genTC : GenerateTelecommand;
-        perform action planPasses : GeneratePassPlan;
-        perform action monitor : MonitorTelemetryRealtime;
+        perform action Authorize_Action : AuthorizeCommanding;
+        perform action Generate_TC_Action : GenerateTelecommand;
+        perform action Plan_Passes_Action : GeneratePassPlan;
+        perform action Monitor_TM_Action : MonitorTelemetryRealtime;
 
-        bind genTC.tc = tcToGS.tcOut;
-        bind planPasses.plan = passPlanToGS.planOut;
-        bind monitor.tm = tmFromGS.tmIn;
+        bind Generate_TC_Action.tc = Ground_Station_TC_Port.TcOut;
+        bind Plan_Passes_Action.plan = Ground_Station_Pass_Plan_Port.PlanOut;
+        bind Monitor_TM_Action.tm = Ground_Station_TM_Port.TmIn;
     }
 }
