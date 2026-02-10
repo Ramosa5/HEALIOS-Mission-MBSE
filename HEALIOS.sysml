@@ -3,11 +3,10 @@ package HEALIOS {
 
 
     // and still import its contents for unqualified use
-    public import MissionPackage::*;
-        public alias MissionPackagesd for MissionPackage;
+    public import MissionPackage::**;
 
-    public part HEALIOS_System : MissionPackage::MissionSegments {
-        :>> HEALIOS_Space_Segment {
+    part HEALIOS_System : MissionSegments {
+        part Space_Segment redefines Space_Segment {
             :>> EPS {
                 :>> Eps_Command_In;
                 :>> Eps_Telemetry_Out;
