@@ -23,13 +23,10 @@ package HealiosMissionInstancePackage {
 
         // Mirror MissionSegments type connect for visibility
         connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-        //connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Ground_Segment.TmTc_Port;
-        //connect HEALIOS_Ground_Segment.TmTc_Port to HEALIOS_Space_Segment.TmTc_Port;
         connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
         connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.TmTc_Port;
         
-        connection TmTc : TmTcConnection
-            connect HEALIOS_Ground_Segment to HEALIOS_Space_Segment;
+        connection S2G : TmTcConnection connect HEALIOS_Ground_Segment.TmTc_Port to HEALIOS_Space_Segment.TmTc_Port;
 
         
         // =========================
@@ -484,7 +481,10 @@ package HealiosMissionInstancePackage {
        part HEALIOS_Ground_Segment redefines Ground_Segment {
 
             port TmTc_Port redefines TmTc_Port;
+
             part Ground_Station redefines Ground_Station {
+                port TmTc_Port : TmTcPort;
+
                 port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
                 port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
                 port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
@@ -571,7 +571,7 @@ package HealiosMissionInstancePackage {
             connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
             connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-
+            bind TmTc_Port = Ground_Station.TmTc_Port;
             }
     }
 }

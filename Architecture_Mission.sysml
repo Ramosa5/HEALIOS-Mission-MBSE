@@ -1,5 +1,6 @@
 package MissionPackage {
     public import ScalarValues::*;
+    private import Quantities::*;
     public import ISQ::*;
     public import StakeholdersDefinitionPackage::*;
     public import Environment::*;
@@ -155,7 +156,7 @@ package MissionPackage {
         public part <GS> Ground_Segment : GroundSegment;
 
         attribute missionName : String;
-        attribute missionDuration : ISQ::DurationValue;
+        attribute missionDuration : ScalarQuantityValue;
         attribute orbitType : String;
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
