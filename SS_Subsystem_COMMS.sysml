@@ -21,8 +21,8 @@ package CommunicationsSystemPackage {
     }
 
     port def RFLinkPort {
-        out item RF_Out : ~CommandPort;
-        in item RF_In : ~CommandPort;
+        out item RF_Out : ~TmTcPort;
+        in item RF_In : ~TmTcPort;
     }
 
     item def CommsAnomaly {

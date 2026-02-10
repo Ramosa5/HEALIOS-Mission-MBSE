@@ -26,7 +26,7 @@ package AttitudeAndOrbitControlSystemPackage {
 
     // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
     part def AttitudeAndOrbitControlSystem {
-        port AOCS_Command_In : ~CommandPort;
+        port AOCS_Command_In : ~TmTcPort;
         port Power_Bus_In_3V3 : ~PowerBus;
         port Power_Bus_In_5V : ~PowerBus;
         part Sun_Sensor : SunSensor [0..*];

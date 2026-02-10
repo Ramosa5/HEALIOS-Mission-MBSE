@@ -15,13 +15,26 @@ package MissionPackage {
     private import DataCentrePackage::*;
     private import MissionControlCentrePackage::*;
 
-
-    port def CommandPort {
-        in Telecommand : OnBoardCommand;
-        out Telemetry : OnBoardStatus;
+    port def TmTcPort {
+        out item Telecommand : GroundCommand;
+        in item Telemetry : TelemetryData;
     }
 
-    
+    interface def TmTcInterface {
+        end groundTransceiver : TmTcPort;
+        end spacecraft : ~TmTcPort;
+
+        flow of GroundCommand from groundTransceiver.Telecommand to spacecraft.Telecommand;
+        flow of TelemetryData from spacecraft.Telemetry to groundTransceiver.Telemetry;
+    }
+
+    connection def TmTcConnection {
+        end transceiverPart : GroundSegment; // your part def name
+        end satellitePart : SpaceSegment; // your part def name
+
+        interface : TmTcInterface connect transceiverPart.TmTc_Port to satellitePart.TmTc_Port;
+    }
+
     // items that flow in the system
     item def OnBoardCommand {
         attribute Type : String;
@@ -41,10 +54,9 @@ package MissionPackage {
 
     item def TimeTaggedStatus specializes OnBoardStatus {
         attribute Time_Tag : ISQ::TimeValue;
-        attribute Source  : String;      // "EPS", "PL_RAD", "PL_SPEC", ...
-        attribute Channel : String;      // optional: "I2C0", "ADC1", ...
+        attribute Source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
+        attribute Channel : String; // optional: "I2C0", "ADC1", ...
     }
-    
 
     public part def SpaceSegment {
         // A. Attributes
@@ -56,8 +68,7 @@ package MissionPackage {
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
         part <COMMS> SS_Communication_System : CommunicationsSystem;
-        part <EPS> SS_Electrical_Power_System
-            : ElectricalPowerSystemPackage::ElectricalPowerSystem;
+        part <EPS> SS_Electrical_Power_System : ElectricalPowerSystemPackage::ElectricalPowerSystem;
         part <OBDH> SS_On_Board_Data_Handling : OnBoardDataHandlingSystem;
         part <STR> SS_Structure_And_Mechanisms : StructureSystem;
         part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
@@ -69,11 +80,12 @@ package MissionPackage {
             in item Measured_Beta_Angle : Real;
         }
 
-        port Satellite_Command_Port : CommandPort;
+        port TmTc_Port : ~TmTcPort;
 
         connect SS_Electrical_Power_System.EPS_I2C to SS_On_Board_Data_Handling.EPS_I2C;
-        //connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board_I2C to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
-        connect SS_Satellite_Payload.Env_Sensors_Block.Temperature_Sensor_At_Environment.Temperature_Port to SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
+        // connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board_I2C to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
+        connect SS_Satellite_Payload.Env_Sensors_Block.Temperature_Sensor_At_Environment
+                        .Temperature_Port to SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
         // Payload Env Sensors -> OBDH I2C buses
         connect SS_Satellite_Payload.Env_Sensors_Block.Irradiance_Sensor_Block.Irradiance_Sensor_I2C
             to SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
@@ -84,49 +96,57 @@ package MissionPackage {
         connect SS_Satellite_Payload.Env_Sensors_Block.Spectrometer.Spectrometer_Sensor_I2C
             to SS_On_Board_Data_Handling.Spectrometer_I2C;
 
-        connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block.Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
+        connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block
+                        .Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
             to SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
 
         connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Magnetorquer_Board_I2C
             to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
 
         // Power distribution
-        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
+        connect SS_Electrical_Power_System.Power_Bus_5V
+            to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
         connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.EPS_Power_Port;
-        connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
-        
-        // Telemetry
-        connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
-        connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
+        connect SS_Electrical_Power_System.Power_Bus_3V3
+            to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
 
-        connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out to SS_On_Board_Data_Handling.Telecommand_In;
+        // Telemetry
+        connect TmTc_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
+        connect TmTc_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
+
+        connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
+            to SS_On_Board_Data_Handling.Telecommand_In;
         connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.OBDH_HK_Port.HK;
 
-        //Commands
+        // Commands
         connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Thermal_Control_System.Command_IN;
-        connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
-
-
+        connect SS_On_Board_Data_Handling.Out_Command_Port
+            to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
 
         state Satellite_Mode;
     }
     // --- 4. Ground Segment Placeholder ---
     public part def GroundSegment {
-    part <GST> Ground_Station : GroundStation;
-    part <MCC> Mission_Control_Centre : MissionControlCentre;
-    part <DT> Data_Centre : DataCentre;
-    port Ground_Command_Port : ~CommandPort;
+        part <GST> Ground_Station : GroundStation;
+        part <MCC> Mission_Control_Centre : MissionControlCentre;
+        part <DT> Data_Centre : DataCentre;
+        port TmTc_Port : TmTcPort;
 
-    connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
-    connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+        connect Mission_Control_Centre.Ground_Station_TC_Port
+            to Ground_Station.Mission_Control_Centre_TC_Port;
+        connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port
+            to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
 
-    connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-    connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
+        connect Ground_Station.Mission_Control_Centre_TM_Port
+            to Mission_Control_Centre.Ground_Station_TM_Port;
+        connect Ground_Station.Mission_Control_Centre_Tracking_Port
+            to Mission_Control_Centre.Ground_Station_Tracking_Port;
 
-    connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
-    connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+        connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
+        connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
-    connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+        connect Data_Centre.Mission_Control_Centre_TM_Products_Port
+            to Mission_Control_Centre.Ground_Station_TM_Port;
     }
 
     // --- 5. The Complete System ---
@@ -138,17 +158,14 @@ package MissionPackage {
         attribute missionDuration : ISQ::DurationValue;
         attribute orbitType : String;
 
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        //perform action performScience : PerformScienceOperations;
-       // perform action operateSystem : OperateSystem;
-        //perform action maintainOperability : MaintainOperability;
+        // perform action performScience : PerformScienceOperations;
+        // perform action operateSystem : OperateSystem;
+        // perform action maintainOperability : MaintainOperability;
 
         connect Sun_Entity.Sun_Solar_Environment to Space_Segment.satelliteSolarEnvironment;
-        connect Space_Segment.Satellite_Command_Port to Ground_Segment.Ground_Command_Port;
-
-
+        connection TmTc : TmTcConnection
+            connect Ground_Segment to Space_Segment;
     }
-    
-
 }

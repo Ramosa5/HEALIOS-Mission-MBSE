@@ -23,10 +23,15 @@ package HealiosMissionInstancePackage {
 
         // Mirror MissionSegments type connect for visibility
         connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-        connect HEALIOS_Space_Segment.Satellite_Command_Port to HEALIOS_Ground_Segment.Ground_Command_Port;
-        connect HEALIOS_Ground_Segment.Ground_Command_Port to HEALIOS_Space_Segment.Satellite_Command_Port;
-        connect HEALIOS_Space_Segment.Satellite_Command_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
-        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.Satellite_Command_Port;
+        //connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Ground_Segment.TmTc_Port;
+        //connect HEALIOS_Ground_Segment.TmTc_Port to HEALIOS_Space_Segment.TmTc_Port;
+        connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
+        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.TmTc_Port;
+        
+        connection TmTc : TmTcConnection
+            connect HEALIOS_Ground_Segment to HEALIOS_Space_Segment;
+
+        
         // =========================
         // Space segment refinements
         // =========================
@@ -40,7 +45,7 @@ package HealiosMissionInstancePackage {
 
             // --- SpaceSegment external ports ---
             in port satelliteSolarEnvironment redefines satelliteSolarEnvironment;
-            port Satellite_Command_Port redefines Satellite_Command_Port;
+            port TmTc_Port redefines TmTc_Port;
 
             // =========================
             // EPS
@@ -96,7 +101,6 @@ package HealiosMissionInstancePackage {
 
                 // I2C buses
                 port EPS_I2C redefines EPS_I2C;
-                port TCS_I2C redefines TCS_I2C;
                 port Magnetorquer_Board_I2C redefines Magnetorquer_Board_I2C;
                 port Temperature_Sensor_I2C redefines Temperature_Sensor_I2C;
                 port Sun_Sensor_I2C redefines Sun_Sensor_I2C;
@@ -381,8 +385,8 @@ package HealiosMissionInstancePackage {
             connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Magnetorquer_Board_I2C
                 to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
 // i2c connections_____________________________________________________________________________________
-            connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
-            connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
+            // connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
+            // connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
 
 // electrical connections_____________________________________________________________________________________
 
@@ -397,9 +401,9 @@ package HealiosMissionInstancePackage {
             connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V
                 to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
 
-            connect Satellite_Command_Port.Telecommand
+            connect TmTc_Port.Telecommand
                 to SS_On_Board_Data_Handling.Telecommand_In;
-            connect Satellite_Command_Port.Telemetry
+            connect TmTc_Port.Telemetry
                 to SS_On_Board_Data_Handling.Telemetry_Out;
 
             connect SS_Communication_System.OBDH_Command_Port  
@@ -444,33 +448,33 @@ package HealiosMissionInstancePackage {
 
                 transition Commissioning_To_Nominal
                     first Commissioning_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via Satellite_Command_Port
+                    accept Proceed_To_Nominal_Command : GroundCommand via TmTc_Port
                     then Nominal_Sun_Mode;
 
                 transition Sun_To_Eclipse
                     first Nominal_Sun_Mode
-                    accept Proceed_To_Eclipse_Command : OnBoardCommand via Satellite_Command_Port
+                    accept Proceed_To_Eclipse_Command : OnBoardCommand via TmTc_Port
                     then Nominal_Eclipse_Mode;
 
                 transition Eclipse_To_Sun
                     first Nominal_Eclipse_Mode
-                    accept Proceed_To_Sun_Command : OnBoardCommand via Satellite_Command_Port
+                    accept Proceed_To_Sun_Command : OnBoardCommand via TmTc_Port
                     then Nominal_Sun_Mode;
 
                 transition Safe_To_Nominal
                     first Safe_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via Satellite_Command_Port
+                    accept Proceed_To_Nominal_Command : GroundCommand via TmTc_Port
                     then Nominal_Sun_Mode;
 
                 transition Nominal_Sun_To_Safe
                     first Nominal_Sun_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via TmTc_Port
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
 
                 transition Nominal_Eclipse_To_Safe
                     first Nominal_Eclipse_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via TmTc_Port
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
             }
@@ -479,94 +483,94 @@ package HealiosMissionInstancePackage {
        
        part HEALIOS_Ground_Segment redefines Ground_Segment {
 
-             port Ground_Command_Port redefines Ground_Command_Port;
-                part Ground_Station redefines Ground_Station {
-                    port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
-                    port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
-                    port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
-                    port Mission_Control_Centre_Pass_Plan_Port redefines Mission_Control_Centre_Pass_Plan_Port;
-                    port Mission_Control_Centre_Tracking_Port redefines Mission_Control_Centre_Tracking_Port;
-                    port Data_Centre_Archive_Port redefines Data_Centre_Archive_Port;
+            port TmTc_Port redefines TmTc_Port;
+            part Ground_Station redefines Ground_Station {
+                port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
+                port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
+                port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
+                port Mission_Control_Centre_Pass_Plan_Port redefines Mission_Control_Centre_Pass_Plan_Port;
+                port Mission_Control_Centre_Tracking_Port redefines Mission_Control_Centre_Tracking_Port;
+                port Data_Centre_Archive_Port redefines Data_Centre_Archive_Port;
 
-                    part Antenna_Part redefines Antenna_Part {
-                        attribute name redefines name = "UHF Ground Antenna";
-                        attribute band redefines band = "UHF";
-                        attribute gain redefines gain = 12.0;
-                    }
-
-                    part Radio_Unit_Part redefines Radio_Unit_Part {
-                        attribute name redefines name = "SDR Ground Radio";
-                        attribute supportedBands redefines supportedBands = "UHF/VHF";
-                    }
-
-                    part Pass_Predictor_Part redefines Pass_Predictor_Part {
-                        attribute name redefines name = "Pass Predictor";
-                        attribute usesTLE redefines usesTLE = true;
-                    }
-
-                    part Doppler_Compensator_Part redefines Doppler_Compensator_Part {
-                        attribute name redefines name = "Doppler Compensator";
-                    }
-
-                    part Link_Budget_Tool_Part redefines Link_Budget_Tool_Part {
-                        attribute name redefines name = "Link Budget Tool";
-                    }
-
-                    part Crypto_Unit_Part redefines Crypto_Unit_Part {
-                        attribute name redefines name = "Ground Crypto/Integrity";
-                        attribute downlinkVerifyEnabled redefines downlinkVerifyEnabled = true;
-                        attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
-                        attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
-                        attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
-                    }
+                part Antenna_Part redefines Antenna_Part {
+                    attribute name redefines name = "UHF Ground Antenna";
+                    attribute band redefines band = "UHF";
+                    attribute gain redefines gain = 12.0;
                 }
 
-                part Mission_Control_Centre redefines Mission_Control_Centre {
-                    port Ground_Station_TC_Port redefines Ground_Station_TC_Port;
-                    port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
-                    port Ground_Station_Pass_Plan_Port redefines Ground_Station_Pass_Plan_Port;
-                    port Ground_Station_Tracking_Port redefines Ground_Station_Tracking_Port;
-
-                    part Auth_Service_Part redefines Auth_Service_Part {
-                        attribute name redefines name = "MCC Authentication";
-                        attribute method redefines method = "MFA (TBD)";
-                    }
-
-                    part Operations_Console_Part redefines Operations_Console_Part {
-                        attribute name redefines name = "Operations Console";
-                    }
-
-                    part Pass_Planner_Part redefines Pass_Planner_Part {
-                        attribute name redefines name = "Pass Planner";
-                        attribute usesTLE redefines usesTLE = true;
-                    }
+                part Radio_Unit_Part redefines Radio_Unit_Part {
+                    attribute name redefines name = "SDR Ground Radio";
+                    attribute supportedBands redefines supportedBands = "UHF/VHF";
                 }
 
-                part Data_Centre redefines Data_Centre {
-                    port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
-                    port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
-                    port Mission_Control_Centre_TM_Products_Port redefines Mission_Control_Centre_TM_Products_Port;
-
-                    part Structured_Archive_Part redefines Structured_Archive_Part {
-                        attribute name redefines name = "Structured Archive";
-                        attribute retention redefines retention = 1825 [SI::day];
-                    }
-
-                    part Data_Validator_Part redefines Data_Validator_Part {
-                        attribute name redefines name = "Telemetry Validator";
-                    }
+                part Pass_Predictor_Part redefines Pass_Predictor_Part {
+                    attribute name redefines name = "Pass Predictor";
+                    attribute usesTLE redefines usesTLE = true;
                 }
 
-                connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
-                connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+                part Doppler_Compensator_Part redefines Doppler_Compensator_Part {
+                    attribute name redefines name = "Doppler Compensator";
+                }
 
-                connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-                connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
+                part Link_Budget_Tool_Part redefines Link_Budget_Tool_Part {
+                    attribute name redefines name = "Link Budget Tool";
+                }
 
-                connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
-                connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+                part Crypto_Unit_Part redefines Crypto_Unit_Part {
+                    attribute name redefines name = "Ground Crypto/Integrity";
+                    attribute downlinkVerifyEnabled redefines downlinkVerifyEnabled = true;
+                    attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
+                    attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
+                    attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
+                }
+            }
 
-                connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+            part Mission_Control_Centre redefines Mission_Control_Centre {
+                port Ground_Station_TC_Port redefines Ground_Station_TC_Port;
+                port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
+                port Ground_Station_Pass_Plan_Port redefines Ground_Station_Pass_Plan_Port;
+                port Ground_Station_Tracking_Port redefines Ground_Station_Tracking_Port;
+
+                part Auth_Service_Part redefines Auth_Service_Part {
+                    attribute name redefines name = "MCC Authentication";
+                    attribute method redefines method = "MFA (TBD)";
+                }
+
+                part Operations_Console_Part redefines Operations_Console_Part {
+                    attribute name redefines name = "Operations Console";
+                }
+
+                part Pass_Planner_Part redefines Pass_Planner_Part {
+                    attribute name redefines name = "Pass Planner";
+                    attribute usesTLE redefines usesTLE = true;
+                }
+            }
+
+            part Data_Centre redefines Data_Centre {
+                port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
+                port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
+                port Mission_Control_Centre_TM_Products_Port redefines Mission_Control_Centre_TM_Products_Port;
+
+                part Structured_Archive_Part redefines Structured_Archive_Part {
+                    attribute name redefines name = "Structured Archive";
+                    attribute retention redefines retention = 1825 [SI::day];
+                }
+
+                part Data_Validator_Part redefines Data_Validator_Part {
+                    attribute name redefines name = "Telemetry Validator";
+                }
+            }
+
+            connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
+            connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+
+            connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+            connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
+
+            connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
+            connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+
+            connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
 
             }
     }
