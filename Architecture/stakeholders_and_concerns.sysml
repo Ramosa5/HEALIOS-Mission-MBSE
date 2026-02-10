@@ -5,7 +5,7 @@ package StakeholdersDefinition {
     }
 
     part def ResearchInstitutes {
-        doc /* Research institutions involved, directly and indirectly, in the HEALIOS mission. This includes private companies or government laboratories. Academic institutions may also be included, if their role is not directly conteted to the student status of the core Healios Team.*/
+        doc /* Research institutions involved, directly and indirectly, in the HEALIOS mission. This includes private companies or government laboratories. Academic institutions may also be included, if their role is not directly conteted to the student status of the core HEALIOS Team.*/
     }
 
     part def EuropeanSpaceAgency {
@@ -15,7 +15,7 @@ package StakeholdersDefinition {
     part def Manufacturers {
         doc /* Companies manufacturing satellite components, including solar cells. Interested in providing components for space missions. */
     }
-    part def HEALIOS_Team {
+    part def HEALIOS_Team_Community {
         doc /* The core team responsible for the HEALIOS mission. Interested in successfully executing the mission objectives and advancing space technology. */
     }
     part def RegulatoryBodies {
@@ -44,7 +44,7 @@ package StakeholdersDefinition {
         doc /* The university collaborating on the HEALIOS mission. */
     }
     
-    part def <HEALIOS> HEALIOSTeamCommunity specializes HEALIOS_Team {
+    part def HEALIOSTeamCommunity specializes HEALIOS_Team_Community {
         doc /* The broader community of students, researchers, and professionals involved in the HEALIOS mission. Interested in the success of the mission and the advancement of space technology. Beside the core team, this includes collaborators and supporters. */
     }
 
@@ -68,3 +68,161 @@ package StakeholdersDefinition {
     }
 }
 
+package HEALIOS_StakeholderConcerns {
+
+    private import ScalarValues::*;
+    private import StakeholdersDefinition::*;
+    private import MissionPackage::*;
+
+    concern def EducationalValueConcern {
+
+        subject HEALIOS_Mission : MissionSegments; 
+        
+        require constraint {
+            doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team to fulfill academic qualification requirements. */
+        }
+
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder GUT : GdanskUniversityOfTechnology;
+        stakeholder HSB : HSBHochschuleBremen;
+        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+    }
+
+    concern def InstitutionalVisibilityConcern {
+        subject HEALIOS_Mission : MissionSegments;
+
+        require constraint {
+            doc /* The mission shall demonstrate the research capabilities of the participating universities and ESA programs to the broader aerospace community. */
+        }
+
+        stakeholder GUT : GdanskUniversityOfTechnology;
+        stakeholder HSB : HSBHochschuleBremen;
+        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+    }
+
+    concern def PerovskiteTRLAdvancementConcern {
+        // Subject: The Satellite (specifically the payload within it)
+        subject HEALIOS_Satellite : SpaceSegment;
+        
+        require constraint {
+            doc /* The mission shall validate the performance and degradation of Perovskite solar cells in the Low Earth Orbit (LEO) environment to increase their Technology Readiness Level (TRL). */
+        }
+
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def DataAcquisitionConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+
+        require constraint {
+            doc /* The system shall collect and downlink I-V curve data from the payload with sufficient resolution to analyze solar cell efficiency over time. */
+        }
+
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def LaunchSafetyConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+        
+        require constraint {
+            doc /* The satellite shall remain powered off and chemically inert during the launch phase to ensure the safety of the launch vehicle and primary payload. */
+        }
+
+        stakeholder Launch_Providers : LaunchServiceProvider;
+        stakeholder CSF : ESACubeSatSupportFacility;
+    }
+
+    concern def CubeSatStandardComplianceConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+        
+        require constraint {
+            doc /* The satellite shall strictly adhere to the CubeSat Design Specification (CDS) dimensions and mass budgets to ensure compatibility with the deployer (POD). */
+        }
+
+        stakeholder CubeSat_Community : CubeSatCommunity;
+        stakeholder Launch_Providers : LaunchServiceProvider;
+        stakeholder CSF : ESACubeSatSupportFacility;
+    }
+
+    concern def SpaceDebrisMitigationConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+
+        require constraint {
+            doc /* The satellite shall comply with Space Debris Mitigation Guidelines, ensuring orbital decay and re-entry within 25 years after mission end. */
+        }
+
+        stakeholder UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
+        stakeholder ESA : EuropeanSpaceAgency;
+        stakeholder Launch_Providers : LaunchServiceProvider;
+    }
+
+    concern def ComponentReliabilityConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+        
+        require constraint {
+            doc /* The system shall utilize COTS components that are verified for the LEO radiation and thermal environment to ensure mission duration survival. */
+        }
+
+        stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder CSF : ESACubeSatSupportFacility;
+    }
+
+    concern def FrequencyAllocationConcern {
+        subject HEALIOS_Satellite : SpaceSegment;
+        
+        require constraint {
+            doc /* The satellite communications shall operate strictly within allocated amateur radio bands and comply with ITU Radio Regulations to prevent interference. */
+        }
+
+        stakeholder ITU : InternationalTelecommunicationUnion;
+        stakeholder IARU : InternationalAmateurRadioUnion;
+    }
+
+    concern def GroundStationCompatibilityConcern {
+        subject HEALIOS_Mission_Control : GroundSegment;
+
+        require constraint {
+            doc /* The Ground Station shall support the modulation, encoding, and frequency protocols (UHF/VHF) required to communicate with the satellite. */
+        }
+
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder IARU : InternationalAmateurRadioUnion;
+    }
+
+    concern def DataAvailabilityConcern {
+        subject HEALIOS_Mission_Control : GroundSegment;
+
+        require constraint {
+            doc /* The Ground Segment shall ensure that telemetry and payload data (I-V curves) are decoded, archived, and made open-source accessible to science community. */
+        }
+
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def CommandSecurityConcern {
+        subject HEALIOS_Mission_Control : GroundSegment;
+
+        require constraint {
+            doc /* The Mission Control Centre shall implement authentication procedures to prevent unauthorized telecommands from being transmitted to the satellite. */
+        }
+
+        stakeholder ITU : InternationalTelecommunicationUnion;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def AmateurRadioAccessConcern {
+        subject HEALIOS_Mission_Control : GroundSegment;
+
+        require constraint {
+            doc /* The Ground Segment shall publish beacon decoding software or definitions to allow the global amateur radio community to receive and decode public telemetry beacons. */
+        }
+
+        stakeholder IARU : InternationalAmateurRadioUnion;
+        stakeholder CubeSat_Community : CubeSatCommunity;
+    }
+}

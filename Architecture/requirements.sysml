@@ -8,8 +8,8 @@ package Mission_Requirements{
 
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes;
-        stakeholder Perovskite_Solar_Cell_Manufacturers;
+        stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
+        stakeholder Perovskite_Solar_Cell_Manufacturers : PerovskiteSolarCellManufacturers;
 
         requirement <R_M_001_a> PSC_Performance {
             doc
@@ -42,16 +42,16 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
     }
 
     requirement def <R_M_003> Platform_Conformity {
         doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), that enables experiment performance. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder CubeSat_Community;
-        stakeholder Satellite_COTS_Providers;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder CubeSat_Community : CubeSatCommunity;
+        stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
     }
 
     requirement def <R_M_004> Autonomous_Management {
@@ -59,7 +59,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes;
+        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
     }
 
     requirement def <R_M_005> Dataset_Format {
@@ -67,7 +67,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes;
+        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
     }
 
     requirement def <R_M_006> ESA_Compliance {
@@ -75,7 +75,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
     }
 
     requirement def <R_M_007> Mission_Duration {
@@ -83,9 +83,9 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes;
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_008> EOL_Plan {
@@ -93,7 +93,7 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
     }
 
     requirement def <R_M_009> Core_Team_Composition {
@@ -101,8 +101,8 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_010> Academic_Supervision {
@@ -110,37 +110,37 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_011> Academic_Integration {
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_012> Test_Facility_Usage {
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
     }
 
     requirement def <R_M_013> Educational_Return {
         doc /* The mission shall demonstrate a clear educational return. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_014> Ground_Station_Support {
@@ -148,9 +148,9 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     
     }
 
@@ -159,10 +159,10 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_016> Launcher_Compliance {
@@ -171,7 +171,7 @@ package Mission_Requirements{
         subject Mission_Req : MissionPackage::MissionSegments;
 
         stakeholder Launch_Service_Provider;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_017> Telecommunication_Compliance {
@@ -182,7 +182,7 @@ package Mission_Requirements{
         stakeholder International_Telecommunication_Union;
         stakeholder International_Amateur_Radio_Union;
 
-        stakeholder HEALIOS_Team_Community;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_M_018> UN_Registration {
@@ -196,7 +196,7 @@ package Mission_Requirements{
         doc /* The mission shall implement a Fault Detection, Isolation, and Recovery (FDIR) strategy to enhance system reliability. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
     }
 }
 
@@ -277,7 +277,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_012> FYS_Config_Compatibility specializes R_M_006 {
         doc /* The Space Segment shall maintain configuration compatibility with the Fly Your Satellite! testing flow, including environmental and functional test setups. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
     }
 
     requirement def <R_SS_013> Telemetry_Protocol specializes R_M_014 {
@@ -318,7 +318,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_016> PFM_Campaign specializes R_M_006, R_M_012, R_M_015 {
         doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
 
         requirement def <R_SS_016_a> PFM_Exclusions {
             doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
@@ -379,18 +379,18 @@ package GroundSegmentRequirement {
 
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder HEALIOS_Team_Community;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
 }
 
      requirement def <R_GS_002> Bidirectional_Communication specializes R_M_014 {
         doc /* At least one ground station shall enable communication with the spacecraft. */
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder HEALIOS_Team_Community;
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
     }
 
     requirement def <R_GS_003> Real_Time_Health_Monitoring specializes R_M_014 {
@@ -424,7 +424,7 @@ package GroundSegmentRequirement {
 
         stakeholder International_Amateur_Radio_Union;
         stakeholder International_Telecommunication_Union;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_GS_009> Data_Archive specializes R_M_005 {
@@ -432,8 +432,8 @@ package GroundSegmentRequirement {
         
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder Perovskite_Research_Institutes;
-        stakeholder HEALIOS_Team_Community;
+        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     requirement def <R_GS_010> Data_Format_And_Range_Validation specializes R_M_005 {
@@ -446,8 +446,8 @@ package GroundSegmentRequirement {
         doc /* The ground station should be fully controlled and operated by the HEALIOS team. */
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder HEALIOS_Team_Community;
-        stakeholder ESA_Fly_Your_Satellite_Programme;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
 
     }
 
@@ -455,8 +455,8 @@ package GroundSegmentRequirement {
         doc /* The Mission Control Centre shall be located in at least one of the locations: HSB Hochschule Bremen - City University of Applied Sciences (Germany) and Gdańsk Univeristy of Technology (Poland). */
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder Gdansk_University_of_Technology;
-        stakeholder HSB_Hochschule_Bremen;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
     }
 }
 
