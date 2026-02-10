@@ -38,8 +38,8 @@ package CommunicationsSystemPackage {
         attribute name : String;
         attribute maxTxPower : ISQ::PowerValue;
 
-        attribute supportsRx : Boolean = true;
-        attribute supportsTx : Boolean = true;
+        attribute supportsRx : Boolean;
+        attribute supportsTx : Boolean;
 
         attribute downlinkDataRate : MissionPackage::TelemetryData;
         attribute uplinkDataRate : MissionPackage::GroundCommand;
@@ -48,20 +48,20 @@ package CommunicationsSystemPackage {
         attribute modulationCoding : String;
         attribute packetFormat : String;
 
-        attribute fecEnabled : Boolean = true;
-        attribute crcEnabled : Boolean = true;
+        attribute fecEnabled : Boolean;
+        attribute crcEnabled : Boolean;
 
-        attribute reconfigurableInOrbit : Boolean = true;
+        attribute reconfigurableInOrbit : Boolean;
     }
 
     part def CryptoUnit {
         attribute name : String;
 
-        attribute uplinkAuthEnabled : Boolean = true;
-        attribute uplinkDecryptEnabled : Boolean = true;
+        attribute uplinkAuthEnabled : Boolean;
+        attribute uplinkDecryptEnabled : Boolean;
 
-        attribute downlinkEncryptEnabled : Boolean = true;
-        attribute downlinkIntegrityEnabled : Boolean = true; // e.g., MAC/signature
+        attribute downlinkEncryptEnabled : Boolean;
+        attribute downlinkIntegrityEnabled : Boolean; // e.g., MAC/signature
     }
 
     
@@ -82,18 +82,18 @@ package CommunicationsSystemPackage {
         // Security element
         part crypto : CryptoUnit;
 
-        attribute supportsAllMissionPhases : Boolean = true;
-        attribute hasRedundancyOrFailSafe : Boolean = false;
+        attribute supportsAllMissionPhases : Boolean;
+        attribute hasRedundancyOrFailSafe : Boolean;
         attribute worstCaseLinkMargin_dB : Real;
 
-        attribute rfEmissionsCompliant : Boolean = true;
-        attribute emcCompliant : Boolean = true;
+        attribute rfEmissionsCompliant : Boolean;
+        attribute emcCompliant : Boolean;
 
-        attribute beaconEnabled : Boolean = true;
-        attribute beaconContainsVitalTelemetry : Boolean = true;
+        attribute beaconEnabled : Boolean;
+        attribute beaconContainsVitalTelemetry : Boolean;
 
-        attribute supportsE2ETestWithEGSE : Boolean = true;
-        attribute supportsOverTheAirQualificationTest : Boolean = true;
+        attribute supportsE2ETestWithEGSE : Boolean;
+        attribute supportsOverTheAirQualificationTest : Boolean;
 
         perform action txHK : TransmitStatusDownlink;
         perform action decryptAuth : DecryptAndAuthenticateUplink;

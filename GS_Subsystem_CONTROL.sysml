@@ -24,7 +24,7 @@ package MissionControlCentrePackage {
 
     part def PassPlanner {
         attribute name : String;
-        attribute usesTLE : Boolean = true;
+        attribute usesTLE : Boolean;
     }
 
     part def MissionControlCentre {
