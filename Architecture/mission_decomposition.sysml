@@ -147,13 +147,13 @@ package MissionPackage {
             transition Nominal_Sun_To_Safe
                 first Nominal_Sun_Mode
                 accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
-                //do action Enter_Safe_Mode : Enter_Safe_Mode_Action;
+                do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                 then Safe_Mode;
 
             transition Nominal_Eclipse_To_Safe
                 first Nominal_Eclipse_Mode
                 accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
-                //do action Enter_Safe_Mode : Enter_Safe_Mode_Action;
+                do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                 then Safe_Mode;         
         }
     }
@@ -177,8 +177,8 @@ package MissionPackage {
 
     // --- 5. The Complete System ---
     public part def MissionSegments {
-        public part <SS> HEALIOS_Space_Segment : SpaceSegment;
-        public part <GS> HEALIOS_Ground_Segment : GroundSegment;
+        public part <SS> Space_Segment : SpaceSegment;
+        public part <GS> Ground_Segment : GroundSegment;
 
         attribute missionName : String;
         attribute missionDuration : ISQ::DurationValue;
@@ -190,7 +190,7 @@ package MissionPackage {
        // perform action operateSystem : OperateSystem;
         //perform action maintainOperability : MaintainOperability;
 
-        connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
+        connect Sun_Entity.Sun_Solar_Environment to Space_Segment.satelliteSolarEnvironment;
 
     }
 

@@ -511,6 +511,24 @@ action def TransmitStatusDownlink {
         out item anomaly : CommsAnomaly;
     }
 
+    //----------------safe mode coomands
+
+    action def Enter_Safe_Mode_Action specializes PerformSpaceSegmentMission {
+        in  Trigger_Command        [0..*] : MissionPackage::OnBoardCommand {:>> Type = "ErrorCommand";}
+        out Payload_Power_Off_Cmd  [0..*] : MissionPackage::OnBoardCommand {:>> Type = "PowerCommand";}
+        out Safe_Mode_Cmd          [0..*] : MissionPackage::OnBoardCommand {:>> Type = "ModeCommand";}
+        out Safe_Mode_Status       [0..*] : MissionPackage::OnBoardStatus;
+
+        // 1) Shed non-essential loads (incl. payload) via EPS load management
+        action Shed_Payload_Loads : manageLoadSheddingAndReactivation;
+        bind Shed_Payload_Loads.Load_Mgmt_Command = Payload_Power_Off_Cmd;
+        flow from Shed_Payload_Loads.Load_Mgmt_Status to Safe_Mode_Status;
+
+        // 2) Command the spacecraft to transition into Safe Mode
+        //    (interpreted by the mode manager / OBDH)
+        // NOTE: Specific decoding of Safe_Mode_Cmd is handled elsewhere; here we only emit it.
+    }
+
 }
 
 package GroundActionsPackage{
