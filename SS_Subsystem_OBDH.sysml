@@ -89,16 +89,18 @@ package OnBoardDataHandlingSystemPackage {
         port Telecommand_In : MissionPackage::GroundCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
         port Out_Command_Port[0..*] : OutCommandPort;
+        port Power_Bus_In_3V3 : ~PowerBus;
+        port Power_Bus_In_5V : ~PowerBus;
 
         port EPS_I2C[1] : I2CPort;
-        port Magnetorquer_Board_I2C[0..2] : I2CPort;
-        port Temperature_Sensor_I2C[0..*] : I2CPort;
-        port Sun_Sensor_I2C[0..*] : I2CPort;
-        port Irradiance_Sensor_I2C[0..*] : I2CPort;
-        port Radiation_Sensor_I2C[0..*] : I2CPort;
-        port Spectrometer_I2C[0..*] : I2CPort;
-        port Voltage_Current_Sense_I2C[0..*] : I2CPort;
-        port UHF_I2C[0..1] : I2CPort;
+        port Magnetorquer_Board_I2C[0..2] : ~I2CPort;
+        port Temperature_Sensor_I2C[0..*] : ~I2CPort;
+        port Sun_Sensor_I2C[0..*] : ~I2CPort;
+        port Irradiance_Sensor_I2C[0..*] : ~I2CPort;
+        port Radiation_Sensor_I2C[0..*] : ~I2CPort;
+        port Spectrometer_I2C[0..*] : ~I2CPort;
+        port Voltage_Current_Sense_I2C[0..*] : ~I2CPort;
+        port UHF_I2C[0..1] : ~I2CPort;
 
         port Analog_ADC_Input[0..*] : AnalogADCInput;
 
