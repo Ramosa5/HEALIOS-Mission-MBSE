@@ -4,10 +4,10 @@
 // At the end:
     // Do satifaction and verification implementation.
 
-package Mission_Requirements{
+package MissionRequirementsPackage{
     private import MissionPackage::*;
-    private import StakeholdersDefinition::*;
-    private import HEALIOS_StakeholderConcerns::*;
+    private import StakeholdersDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
 
 
     requirement def <R_M_001> Self_Healing_Experiments {
@@ -275,7 +275,7 @@ package Mission_Requirements{
 
 package SpaceSegmentRequirement {
     private import MissionPackage::*;
-    private import Mission_Requirements::*;
+    private import MissionRequirementsPackage::*;
 
     requirement def <R_SS_001> Payload_Accommodation specializes R_M_001 {
         doc /* The Space Segment shall accommodate and support the operation of the perovskite solar cells payload. */
@@ -350,7 +350,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_012> FYS_Config_Compatibility specializes R_M_006 {
         doc /* The Space Segment shall maintain configuration compatibility with the Fly Your Satellite! testing flow, including environmental and functional test setups. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
     }
 
     requirement def <R_SS_013> Telemetry_Protocol specializes R_M_014 {
@@ -429,7 +429,7 @@ package SpaceSegmentRequirement {
         }
     }
 
-    requirement def <R_SS_017> Launch_Mass specializes Mission_Requirements::R_M_003 {
+    requirement def <R_SS_017> Launch_Mass specializes R_M_003 {
         doc /* The Space Segment should have a total launch mass not exceeding 2 kg within 0.001 kg tolerance. */
 
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
@@ -443,9 +443,9 @@ package SpaceSegmentRequirement {
     }
 }
 
-package GroundSegmentRequirement {
+package GroundSegmentRequirementsPackage {
     private import MissionPackage::*;
-    private import Mission_Requirements::*;
+    private import MissionRequirementsPackage::*;
 
     requirement def <R_GS_001> Reuse_Institutional_Infrastructure specializes R_M_014 {
         doc /* The Ground Segment architecture shall prioritise the reuse of existing institutional ground station infrastructure (or relevant technology) where compliant with mission needs. */

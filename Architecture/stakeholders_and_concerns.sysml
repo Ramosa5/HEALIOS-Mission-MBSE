@@ -1,4 +1,4 @@
-package StakeholdersDefinition {
+package StakeholdersDefinitionPackage {
 
     part def AcademicInstitutions {
         doc /* Universities involved directly in the HEALIOS mission. The core HEALIOS Team is composed of students enrolled in these institutions. Interested in providing academic supervision and resources to improve the institution visibility, qualification, and research capabilities. */
@@ -68,10 +68,10 @@ package StakeholdersDefinition {
     }
 }
 
-package HEALIOS_StakeholderConcerns {
+package StakeholderConcernsPackage {
 
     private import ScalarValues::*;
-    private import StakeholdersDefinition::*;
+    private import StakeholdersDefinitionPackage::*;
     private import MissionPackage::*;
 
     concern def EducationalValueConcern {

@@ -1,7 +1,7 @@
 package MissionPackage {
     public import ScalarValues::*;
     public import ISQ::*;
-    public import StakeholdersDefinition::*;
+    public import StakeholdersDefinitionPackage::*;
     public import Environment::*;
     private import ElectricalPowerSystemPackage::*;
     private import PayloadPackage::*;
