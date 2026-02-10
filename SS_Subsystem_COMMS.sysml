@@ -2,6 +2,7 @@ package CommunicationsSystemPackage {
     private import MissionPackage::*;
     private import ISQ::*;
     private import SpaceActionsPackage::*;
+    private import ElectricalPowerSystemPackage::*;
 
     port def PowerBusPort {
         in Voltage : ISQ::SourceVoltageValue;
@@ -20,8 +21,8 @@ package CommunicationsSystemPackage {
     }
 
     port def RFLinkPort {
-        out item RF_Out : MissionPackage::TelemetryData;
-        in item RF_In : MissionPackage::TelemetryData;
+        out item RF_Out : ~CommandPort;
+        in item RF_In : ~CommandPort;
     }
 
     item def CommsAnomaly {
@@ -32,14 +33,12 @@ package CommunicationsSystemPackage {
         out item Anomaly : CommsAnomaly;
     }
 
-    part def Antenna {
-        attribute Name : String;
+    part def Antenna :> GeneralElectricalComponent {
         attribute Band : String;
         attribute Gain : Real;
     }
 
-    part def Transceiver {
-        attribute Name : String;
+    part def Transceiver :> GeneralElectricalComponent {
         attribute MaxTxPower : ISQ::PowerValue;
 
         attribute SupportsRx : Boolean;
@@ -98,7 +97,6 @@ package CommunicationsSystemPackage {
         port OBDH_Status_Port : OutStatusPort;
         port RF_Link_Port : RFLinkPort;
         port OBDH_Anomaly_Port : OutAnomalyPort;
-
 
         part Antenna_Part : Antenna;
         part Transceiver_Part : Transceiver;

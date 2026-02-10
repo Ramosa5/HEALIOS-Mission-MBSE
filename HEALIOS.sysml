@@ -29,7 +29,10 @@ package HealiosMissionInstancePackage {
 
         // Mirror the MissionSegments-level environment connection for visibility
         connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-
+        connect HEALIOS_Space_Segment.Satellite_Command_Port to HEALIOS_Ground_Segment.Ground_Command_Port;
+        connect HEALIOS_Ground_Segment.Ground_Command_Port to HEALIOS_Space_Segment.Satellite_Command_Port;
+        connect HEALIOS_Space_Segment.Satellite_Command_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
+        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.Satellite_Command_Port;
         // =========================
         // Space segment refinements
         // =========================
@@ -44,6 +47,7 @@ package HealiosMissionInstancePackage {
             in port satelliteSolarEnvironment redefines satelliteSolarEnvironment;
             port Satellite_Command_Port redefines Satellite_Command_Port;
 
+            
             // --- EPS ---
             part SS_Electrical_Power_System redefines SS_Electrical_Power_System {
                 // top-level EPS ports
@@ -358,15 +362,36 @@ package HealiosMissionInstancePackage {
             connect Satellite_Command_Port.Telemetry
                 to SS_On_Board_Data_Handling.Telemetry_Out;
 
-            connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
+            connect SS_Communication_System.OBDH_Command_Port  
                 to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_HK_Port.HK;
+                to SS_Communication_System.OBDH_Status_Port;
+            
+            connect SS_On_Board_Data_Handling.Telemetry_Out
+                to SS_Communication_System.OBDH_HK_Port;
+            
+            connect SS_On_Board_Data_Handling.Telemetry_Out
+                to SS_Communication_System.OBDH_Anomaly_Port;
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
+
+            connect SS_On_Board_Data_Handling.Out_Command_Port
+                to SS_Satellite_Payload.Cmd_In;
+
+            connect SS_Satellite_Payload.Status_Out to 
+                SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
+            connect SS_Satellite_Payload.Status_Out to 
+                SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
+            connect SS_Satellite_Payload.Status_Out to 
+                SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
+            connect SS_Satellite_Payload.Status_Out to 
+                SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
+            connect SS_Satellite_Payload.Status_Out to 
+                SS_On_Board_Data_Handling.Spectrometer_I2C;
+
 
             // Keep your state refinement as-is
             state HEALIOS_Mode redefines Satellite_Mode {
@@ -414,6 +439,8 @@ package HealiosMissionInstancePackage {
 
        
        part HEALIOS_Ground_Segment redefines Ground_Segment {
+
+             port Ground_Command_Port redefines Ground_Command_Port;
                 part Ground_Station redefines Ground_Station {
                     port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
                     port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
@@ -501,6 +528,7 @@ package HealiosMissionInstancePackage {
                 connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
                 connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+
             }
     }
 }

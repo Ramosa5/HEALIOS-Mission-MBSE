@@ -44,6 +44,7 @@ package MissionPackage {
         attribute Source  : String;      // "EPS", "PL_RAD", "PL_SPEC", ...
         attribute Channel : String;      // optional: "I2C0", "ADC1", ...
     }
+    
 
     public part def SpaceSegment {
         // A. Attributes
@@ -114,6 +115,7 @@ package MissionPackage {
     part <GST> Ground_Station : GroundStation;
     part <MCC> Mission_Control_Centre : MissionControlCentre;
     part <DT> Data_Centre : DataCentre;
+    port Ground_Command_Port : ~CommandPort;
 
     connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
     connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
@@ -125,7 +127,7 @@ package MissionPackage {
     connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
     connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-}
+    }
 
     // --- 5. The Complete System ---
     public part def MissionSegments {
@@ -143,7 +145,10 @@ package MissionPackage {
         //perform action maintainOperability : MaintainOperability;
 
         connect Sun_Entity.Sun_Solar_Environment to Space_Segment.satelliteSolarEnvironment;
+        connect Space_Segment.Satellite_Command_Port to Ground_Segment.Ground_Command_Port;
+
 
     }
+    
 
 }
