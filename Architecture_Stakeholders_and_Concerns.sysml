@@ -1,5 +1,28 @@
 package StakeholdersDefinitionPackage {
 
+    part def ESAProgramme {
+        doc /* The ESA set of ESA programmes. */
+    }
+    part def ESAFacility {
+        doc /* The ESA set of facilities that provide support for missions. */
+    }
+    
+    part def <FYS> ESAFlyYourSatelliteProgramme specializes ESAProgramme {
+        doc /* The ESA program that supports university satellite projects. Interested in ensuring the success of the HEALIOS mission and fostering educational opportunities in space technology. */
+    }
+    part def <CSF> ESACubeSatSupportFacility specializes ESAFacility {
+        doc /* The ESA facility that provides support for CubeSat missions, including testing and integration services. Interested in ensuring the technical success and testing campaign of the HEALIOS mission. */
+    }
+
+    part def EuropeanSpaceAgency {
+        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting univeristy engaement in space exploration and satellite technology development. */
+        part ESA_Programmes : ESAProgramme[*];
+        part ESA_Facilities : ESAFacility[*];
+
+        part Fly_Your_Satellite_programme : ESAFlyYourSatelliteProgramme;
+        part CubeSat_Support_Facility : ESACubeSatSupportFacility;
+    }
+
     part def AcademicInstitutions {
         doc /* Universities involved directly in the HEALIOS mission. The core HEALIOS Team is composed of students enrolled in these institutions. Interested in providing academic supervision and resources to improve the institution visibility, qualification, and research capabilities. */
     }
@@ -8,26 +31,16 @@ package StakeholdersDefinitionPackage {
         doc /* Research institutions involved, directly and indirectly, in the HEALIOS mission. This includes private companies or government laboratories. Academic institutions may also be included, if their role is not directly conteted to the student status of the core HEALIOS Team.*/
     }
 
-    part def EuropeanSpaceAgency {
-        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting univeristy engaement in space exploration and satellite technology development. */
-    }
-
     part def Manufacturers {
         doc /* Companies manufacturing satellite components, including solar cells. Interested in providing components for space missions. */
     }
-    part def HEALIOS_Team_Community {
+    part def HEALIOSTeam {
         doc /* The core team responsible for the HEALIOS mission. Interested in successfully executing the mission objectives and advancing space technology. */
     }
     part def RegulatoryBodies {
         doc /* Organizations that regulate space activities and satellite operations. Interested in ensuring compliance with international space law and safety standards. */
     }
 
-    part def <FYS> ESAFlyYourSatelliteProgramme specializes EuropeanSpaceAgency {
-        doc /* The ESA program that supports university satellite projects. Interested in ensuring the success of the HEALIOS mission and fostering educational opportunities in space technology. */
-    }
-    part def <CSF> ESACubeSatSupportFacility specializes EuropeanSpaceAgency {
-        doc /* The ESA facility that provides support for CubeSat missions, including testing and integration services. Interested in ensuring the technical success and testing campaign of the HEALIOS mission. */
-    }
     part def CubeSatCommunity specializes Manufacturers {
         doc /* The community of manufacturers and developers focused on CubeSat technology. Interested in advancing CubeSat visibility in space sector; provide CubeSat Design Specification - guide for the HEALIOS mission. */
     }
@@ -44,7 +57,7 @@ package StakeholdersDefinitionPackage {
         doc /* The university collaborating on the HEALIOS mission. */
     }
     
-    part def HEALIOSTeamCommunity specializes HEALIOS_Team_Community {
+    part def HEALIOSTeamCommunity specializes HEALIOSTeam {
         doc /* The broader community of students, researchers, and professionals involved in the HEALIOS mission. Interested in the success of the mission and the advancement of space technology. Beside the core team, this includes collaborators and supporters. */
     }
 
