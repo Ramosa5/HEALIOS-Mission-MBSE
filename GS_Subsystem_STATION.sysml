@@ -26,7 +26,7 @@ package GroundStationPackage {
 
     part def PassPredictor {
         attribute name : String;
-        attribute usesTLE : Boolean = true;
+        attribute usesTLE : Boolean;
     }
 
     part def DopplerCompensator {
@@ -41,12 +41,12 @@ package GroundStationPackage {
         attribute name : String;
 
         // Downlink: verify integrity / optional decrypt
-        attribute downlinkVerifyEnabled : Boolean = true;
-        attribute downlinkDecryptEnabled : Boolean = true;
+        attribute downlinkVerifyEnabled : Boolean;
+        attribute downlinkDecryptEnabled : Boolean;
 
         // Uplink: authenticate / optional encrypt
-        attribute uplinkAuthEnabled : Boolean = true;
-        attribute uplinkEncryptEnabled : Boolean = true;
+        attribute uplinkAuthEnabled : Boolean;
+        attribute uplinkEncryptEnabled : Boolean;
     }
 
 

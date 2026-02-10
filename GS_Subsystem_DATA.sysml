@@ -10,7 +10,7 @@ package DataCentrePackage {
 
     part def StructuredArchive {
         attribute name : String;
-        attribute retention : ISQ::DurationValue = 730 [SI::day]; 
+        attribute retention : ISQ::DurationValue; 
     }
 
     part def DataValidator {

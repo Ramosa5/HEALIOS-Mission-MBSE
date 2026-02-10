@@ -107,55 +107,7 @@ package MissionPackage {
 
 
 
-        state Satellite_Mode {
-            entry;
-            then Commissioning_Mode;
-
-            state Commissioning_Mode {
-                doc /* The satellite waits for ground command */
-            }
-            state Safe_Mode {
-                doc /* The satellite charges battery and waits for commands */
-            }
-            state Nominal_Sun_Mode {
-                doc /* The satellite performs nominal operations during sun exposure */
-            }
-            state Nominal_Eclipse_Mode {
-                doc /* The satellite performs nominal operations during eclipse */
-            }
-
-            transition Commissioning_To_Nominal 
-                first Commissioning_Mode
-                accept Proceed_To_Nominal_Command : GroundCommand via Satellite_Command_Port
-                then Nominal_Sun_Mode;          
-            
-            transition Sun_To_Eclipse
-                first Nominal_Sun_Mode
-                accept Proceed_To_Eclipse_Command : OnBoardCommand via Satellite_Command_Port
-                then Nominal_Eclipse_Mode;    
-
-            transition Eclipse_To_Sun
-                first Nominal_Eclipse_Mode
-                accept Proceed_To_Sun_Command : OnBoardCommand via Satellite_Command_Port
-                then Nominal_Sun_Mode;
-
-            transition Safe_To_Nominal
-                first Safe_Mode
-                accept Proceed_To_Nominal_Command : GroundCommand via Satellite_Command_Port
-                then Nominal_Sun_Mode; 
-
-            transition Nominal_Sun_To_Safe
-                first Nominal_Sun_Mode
-                accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
-                do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
-                then Safe_Mode;
-
-            transition Nominal_Eclipse_To_Safe
-                first Nominal_Eclipse_Mode
-                accept Enter_Safe_Mode_Command : OnBoardCommand via Satellite_Command_Port
-                do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
-                then Safe_Mode;         
-        }
+        state Satellite_Mode;
     }
     // --- 4. Ground Segment Placeholder ---
     public part def GroundSegment {
