@@ -5,20 +5,21 @@ package HealiosMissionInstancePackage {
     public import SI::*;
     public import ISQ::*;
     public import ScalarValues::*;
+    public import SpaceActionsPackage::*; // for Enter_Safe_Mode_Action
 
     public part Healios_Mission : MissionPackage::MissionSegments {
         doc
-        /* * HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
-         * SysIDE often shows ports/connectors more reliably when they are explicitly
-         * referenced in the usage context. Therefore this instance explicitly
-         * redefines the ports that already exist on the types, and (optionally)
-         * repeats the connect statements from the type definitions.
+        /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
+         * Added missing Payload internal blocks and sensor subparts according to the
+         * product tree sheet (Task Management - Product Tree SS.pdf).
          *
-         * IMPORTANT: The connect statements below mirror the ones already defined
-         * in MissionPackage::SpaceSegment and MissionPackage::GroundSegment.
-         * If your tool treats them as *additional* connectors (duplicates), simply
-         * delete the repeated connect statements and keep the port redefinitions.
+         * IMPORTANT:
+         * - This file only instantiates/redefines what already exists in the model defs.
+         * - "connect" statements that mirror type-level connections may duplicate connectors
+         *   in some tools. If you see duplicates, delete the mirrored connects and keep
+         *   the port/part redefinitions.
          */
+
         // =========================
         // Mission-level refinements
         // =========================
@@ -33,10 +34,11 @@ package HealiosMissionInstancePackage {
         // Space segment refinements
         // =========================
         part HEALIOS_Space_Segment redefines Space_Segment {
+            state Satellite_Mode redefines Satellite_Mode;
+
             attribute Total_Mass redefines Total_Mass = 2.0 [SI::kg];
             attribute CubeSat_Form_Factor redefines CubeSat_Form_Factor = "1U";
-            attribute Center_Of_Mass redefines Center_Of_Mass =
-                "TBD (set after CAD mass properties)";
+            attribute Center_Of_Mass redefines Center_Of_Mass = "TBD (set after CAD mass properties)";
 
             // --- Ports (explicitly redefined for SysIDE visibility) ---
             in port satelliteSolarEnvironment redefines satelliteSolarEnvironment;
@@ -52,6 +54,9 @@ package HealiosMissionInstancePackage {
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
                 port Heater_Power_Bus redefines Heater_Power_Bus;
 
+                // Exists in EPS model
+                part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays;
+
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
                     attribute Name redefines Name = "Li-ion Battery Pack";
                     attribute Mass redefines Mass = 0.30 [SI::kg];
@@ -65,9 +70,7 @@ package HealiosMissionInstancePackage {
                         attribute Mass redefines Mass = 0.02 [SI::kg];
                         attribute PowerConsumption redefines PowerConsumption = 2.0 [SI::W];
                         attribute Power redefines Power = 2.0 [SI::W];
-                        attribute Minimal_Temperature redefines Minimal_Temperature = 273.15 [
-                            SI::K
-                        ];
+                        attribute Minimal_Temperature redefines Minimal_Temperature = 273.15 [SI::K];
                     }
 
                     part Temp_Sensor redefines Temp_Sensor {
@@ -113,12 +116,8 @@ package HealiosMissionInstancePackage {
                     attribute Role redefines Role = "Command & Data Handling (Primary)";
                     attribute Warm_Redundant redefines Warm_Redundant = true;
 
-                    part NVM redefines NVM {
-                        attribute Total_Memory redefines Total_Memory = 8.0;
-                    }
-                    part RAM redefines RAM {
-                        attribute Total_Memory redefines Total_Memory = 2.0;
-                    }
+                    part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
+                    part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
 
                 part Secondary_OBC redefines Secondary_OBC {
@@ -126,12 +125,8 @@ package HealiosMissionInstancePackage {
                     attribute Role redefines Role = "Command & Data Handling (Warm Redundant)";
                     attribute Warm_Redundant redefines Warm_Redundant = true;
 
-                    part NVM redefines NVM {
-                        attribute Total_Memory redefines Total_Memory = 8.0;
-                    }
-                    part RAM redefines RAM {
-                        attribute Total_Memory redefines Total_Memory = 2.0;
-                    }
+                    part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
+                    part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
             }
 
@@ -150,8 +145,7 @@ package HealiosMissionInstancePackage {
                 attribute worstCaseLinkMargin_dB redefines worstCaseLinkMargin_dB = 3.0;
 
                 attribute beaconEnabled redefines beaconEnabled = true;
-                attribute beaconContainsVitalTelemetry redefines beaconContainsVitalTelemetry =
-                    true;
+                attribute beaconContainsVitalTelemetry redefines beaconContainsVitalTelemetry = true;
 
                 part antenna redefines antenna {
                     attribute name redefines name = "UHF Antenna";
@@ -183,11 +177,15 @@ package HealiosMissionInstancePackage {
             part SS_Structure_And_Mechanisms redefines SS_Structure_And_Mechanisms {
                 attribute Total_Mass redefines Total_Mass = 0.40 [SI::kg];
                 attribute Material redefines Material = "Aluminium (TBD alloy)";
+
+                // From StructureSystem.sysml (deployment switches etc.)
+                part Primary_Structure redefines Primary_Structure;
+                part Secondary_Structure redefines Secondary_Structure;
+                part Deployment_Switches redefines Deployment_Switches;
             }
 
             // --- AOCS ---
-            part SS_Attitude_And_Orbit_Control_System
-                redefines SS_Attitude_And_Orbit_Control_System {
+            part SS_Attitude_And_Orbit_Control_System redefines SS_Attitude_And_Orbit_Control_System {
                 // AOCS ports
                 port AOCS_Command_In redefines AOCS_Command_In;
 
@@ -195,8 +193,6 @@ package HealiosMissionInstancePackage {
                 attribute Stop_Signal redefines Stop_Signal = false;
 
                 part Sun_Sensor redefines Sun_Sensor [1] {
-                    // Note: the Sun_Sensor part def has a 5V port in file, but in mission_decomposition
-                    // it is connected via Power_Bus_In_3V3 on the part usage; keep only what exists.
                     attribute Name redefines Name = "Sun Sensor";
                     attribute Mass redefines Mass = 0.01 [SI::kg];
                     attribute PowerConsumption redefines PowerConsumption = 0.05 [SI::W];
@@ -239,8 +235,68 @@ package HealiosMissionInstancePackage {
                 attribute Stop_Signal redefines Stop_Signal;
             }
 
-            // --- Payload (as far as your current instance goes) ---
+            // --- Payload (ADDED missing internal blocks + sensors) ---
             part SS_Satellite_Payload redefines SS_Satellite_Payload {
+
+                // Payload integration ports (exist in Payload.sysml)
+                port Cmd_In redefines Cmd_In;
+                port Status_Out redefines Status_Out;
+
+                // Missing internal blocks from Payload.sysml
+                part Power_Filtering_Block redefines Power_Filtering_Block {
+                    port Power_Bus_In_3V3 redefines Power_Bus_In_3V3;
+                    port Power_Bus_In_5V redefines Power_Bus_In_5V;
+                    port Power_Bus_Filtered_5V redefines Power_Bus_Filtered_5V;
+                    port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+
+                    part Power_Filter redefines Power_Filter;
+                }
+
+                part Mppt_Block redefines Mppt_Block {
+                    port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+                    part Mppt_Controller redefines Mppt_Controller;
+                    part Power_Dump_Resistor redefines Power_Dump_Resistor;
+                }
+
+                part Iv_Sweep_And_Reverse_Bias_Block redefines Iv_Sweep_And_Reverse_Bias_Block {
+                    port Power_Bus_Filtered_5V redefines Power_Bus_Filtered_5V;
+
+                    part Iv_Sweep_Load_Shunt_Resistor redefines Iv_Sweep_Load_Shunt_Resistor;
+                    part Iv_Sweep_Load_MOSFET redefines Iv_Sweep_Load_MOSFET;
+                    part Iv_Sweep_Load_OpAmp redefines Iv_Sweep_Load_OpAmp;
+                    part Iv_Sweep_Load_DAC redefines Iv_Sweep_Load_DAC;
+
+                    part Current_And_Voltage_Sensing_Block redefines Current_And_Voltage_Sensing_Block {
+                        port Voltage_Current_Sense_I2C redefines Voltage_Current_Sense_I2C;
+                    }
+                }
+
+                part Env_Sensors_Block redefines Env_Sensors_Block {
+                    port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+
+                    port Temp_Out redefines Temp_Out;
+                    port Irr_Out redefines Irr_Out;
+                    port Rad_Out redefines Rad_Out;
+                    port Spec_Out redefines Spec_Out;
+
+                    part Temperature_Sensor_At_Environment redefines Temperature_Sensor_At_Environment {
+                        port Temperature_Port redefines Temperature_Port;
+                    }
+
+                    part Irradiance_Sensor_Block redefines Irradiance_Sensor_Block {
+                        port Irradiance_Sensor_I2C redefines Irradiance_Sensor_I2C;
+                    }
+
+                    part Radiation_Dose_Sensor redefines Radiation_Dose_Sensor {
+                        port Radiation_Sensor_I2C redefines Radiation_Sensor_I2C;
+                    }
+
+                    part Spectrometer redefines Spectrometer {
+                        port Spectrometer_Sensor_I2C redefines Spectrometer_Sensor_I2C;
+                    }
+                }
+
+                // Existing solar-cells block (kept)
                 part Solar_Cells_Block redefines Solar_Cells_Block {
                     part Psc_Connector_And_Protection redefines Psc_Connector_And_Protection {
                         attribute Name redefines Name = "Perovskite Coupon Protection";
@@ -268,21 +324,19 @@ package HealiosMissionInstancePackage {
             // --- Mirror SpaceSegment connect statements for visibility ---
             connect SS_Electrical_Power_System.EPS_I2C to SS_On_Board_Data_Handling.EPS_I2C;
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Temperature_Sensor_At_Environment
-                            .Temperature_Port to SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
+            connect SS_Satellite_Payload.Env_Sensors_Block.Temperature_Sensor_At_Environment.Temperature_Port
+                to SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Irradiance_Sensor_Block
-                            .Irradiance_Sensor_I2C
+            connect SS_Satellite_Payload.Env_Sensors_Block.Irradiance_Sensor_Block.Irradiance_Sensor_I2C
                 to SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Radiation_Dose_Sensor
-                            .Radiation_Sensor_I2C to SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
+            connect SS_Satellite_Payload.Env_Sensors_Block.Radiation_Dose_Sensor.Radiation_Sensor_I2C
+                to SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
 
             connect SS_Satellite_Payload.Env_Sensors_Block.Spectrometer.Spectrometer_Sensor_I2C
                 to SS_On_Board_Data_Handling.Spectrometer_I2C;
 
-            connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block
-                            .Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
+            connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block.Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
                 to SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
 
             connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Magnetorquer_Board_I2C
@@ -291,13 +345,16 @@ package HealiosMissionInstancePackage {
             connect SS_Electrical_Power_System.Power_Bus_5V
                 to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
 
-            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.commsPowerIn;
+            connect SS_Electrical_Power_System.Power_Bus_5V
+                to SS_Communication_System.commsPowerIn;
 
             connect SS_Electrical_Power_System.Power_Bus_3V3
                 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
 
-            connect Satellite_Command_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
-            connect Satellite_Command_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
+            connect Satellite_Command_Port.Telecommand
+                to SS_On_Board_Data_Handling.Telecommand_In;
+            connect Satellite_Command_Port.Telemetry
+                to SS_On_Board_Data_Handling.Telemetry_Out;
 
             connect SS_Communication_System.tcToOBDH.cmdOut
                 to SS_On_Board_Data_Handling.Telecommand_In;
@@ -308,26 +365,16 @@ package HealiosMissionInstancePackage {
                 to SS_Thermal_Control_System.Command_IN;
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
+
+            // Keep your state refinement as-is
             state HEALIOS_Mode redefines Satellite_Mode {
                 entry;
                 then Commissioning_Mode;
 
-                state Commissioning_Mode {
-                    doc
-                    /* The satellite waits for ground command */
-                }
-                state Safe_Mode {
-                    doc
-                    /* The satellite charges battery and waits for commands */
-                }
-                state Nominal_Sun_Mode {
-                    doc
-                    /* The satellite performs nominal operations during sun exposure */
-                }
-                state Nominal_Eclipse_Mode {
-                    doc
-                    /* The satellite performs nominal operations during eclipse */
-                }
+                state Commissioning_Mode { doc /* The satellite waits for ground command */ }
+                state Safe_Mode { doc /* The satellite charges battery and waits for commands */ }
+                state Nominal_Sun_Mode { doc /* Nominal operations during sun exposure */ }
+                state Nominal_Eclipse_Mode { doc /* Nominal operations during eclipse */ }
 
                 transition Commissioning_To_Nominal
                     first Commissioning_Mode
@@ -392,13 +439,8 @@ package HealiosMissionInstancePackage {
                     attribute usesTLE redefines usesTLE = true;
                 }
 
-                part doppler redefines doppler {
-                    attribute name redefines name = "Doppler Compensator";
-                }
-
-                part linkBudget redefines linkBudget {
-                    attribute name redefines name = "Link Budget Tool";
-                }
+                part doppler redefines doppler { attribute name redefines name = "Doppler Compensator"; }
+                part linkBudget redefines linkBudget { attribute name redefines name = "Link Budget Tool"; }
 
                 part crypto redefines crypto {
                     attribute name redefines name = "Ground Crypto/Integrity";
@@ -421,9 +463,7 @@ package HealiosMissionInstancePackage {
                     attribute method redefines method = "MFA (TBD)";
                 }
 
-                part console redefines console {
-                    attribute name redefines name = "Operations Console";
-                }
+                part console redefines console { attribute name redefines name = "Operations Console"; }
 
                 part planner redefines planner {
                     attribute name redefines name = "Pass Planner";
@@ -442,9 +482,7 @@ package HealiosMissionInstancePackage {
                     attribute retention redefines retention = 1825 [SI::day];
                 }
 
-                part validator redefines validator {
-                    attribute name redefines name = "Telemetry Validator";
-                }
+                part validator redefines validator { attribute name redefines name = "Telemetry Validator"; }
             }
 
             // --- Mirror GroundSegment connect statements for visibility ---
