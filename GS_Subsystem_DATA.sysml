@@ -4,13 +4,13 @@ package DataCentrePackage {
     private import GroundStationPackage::*;
     private import GroundActionsPackage::*;
 
-    port def tmPort { in item tmIn : MissionPackage::TelemetryData; }
-    port def archivePort { in item recordIn : ArchiveRecord; }
-    port def tmProductPort { out item tmOut : MissionPackage::TelemetryData; }
+    port def TmPort { in item TmIn : MissionPackage::TelemetryData; }
+    port def ArchivePort { in item RecordIn : ArchiveRecord; }
+    port def TmProductPort { out item TmOut : MissionPackage::TelemetryData; }
 
     part def StructuredArchive {
         attribute name : String;
-        attribute retention : ISQ::DurationValue; 
+        attribute retention : ISQ::DurationValue;
     }
 
     part def DataValidator {
@@ -18,18 +18,18 @@ package DataCentrePackage {
     }
 
     part def DataCentre {
-        port tmFromGS : tmPort;
-        port recordsFromGS : archivePort;
-        port tmProductsToMCC : tmProductPort;
+        port Ground_Station_TM_Port : TmPort;
+        port Ground_Station_Records_Port : ArchivePort;
+        port Mission_Control_Centre_TM_Products_Port : TmProductPort;
 
-        part archive : StructuredArchive;
-        part validator : DataValidator;
+        part Structured_Archive_Part : StructuredArchive;
+        part Data_Validator_Part : DataValidator;
 
-        perform action validate : ValidateTelemetry;
-        perform action store : StoreRecord;
+        perform action Validate_Action : ValidateTelemetry;
+        perform action Store_Action : StoreRecord;
 
-        bind validate.tm = tmFromGS.tmIn;
-        bind store.record = recordsFromGS.recordIn;
-        bind tmProductsToMCC.tmOut = tmFromGS.tmIn;
+        bind Validate_Action.tm = Ground_Station_TM_Port.TmIn;
+        bind Store_Action.record = Ground_Station_Records_Port.RecordIn;
+        bind Mission_Control_Centre_TM_Products_Port.TmOut = Ground_Station_TM_Port.TmIn;
     }
 }

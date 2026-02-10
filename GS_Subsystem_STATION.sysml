@@ -7,11 +7,11 @@ package GroundStationPackage {
     item def TrackingData { attribute type : String; }
     item def ArchiveRecord { attribute type : String; }
 
-    port def tcPort { in item tcIn : MissionPackage::GroundCommand; }
-    port def tmPort { out item tmOut : MissionPackage::TelemetryData; }
-    port def passPlanPort { in item planIn : PassPlan; }
-    port def trackingPort { out item trackingOut : TrackingData; }
-    port def archivePort { out item recordOut : ArchiveRecord; }
+    port def TcPort { in item TcIn : MissionPackage::GroundCommand; }
+    port def TmPort { out item TmOut : MissionPackage::TelemetryData; }
+    port def PassPlanPort { in item PlanIn : PassPlan; }
+    port def TrackingPort { out item TrackingOut : TrackingData; }
+    port def ArchivePort { out item RecordOut : ArchiveRecord; }
 
     part def Antenna {
         attribute name : String;
@@ -39,46 +39,45 @@ package GroundStationPackage {
 
     part def CryptoUnit {
         attribute name : String;
-
-        // Downlink: verify integrity / optional decrypt
         attribute downlinkVerifyEnabled : Boolean;
         attribute downlinkDecryptEnabled : Boolean;
-
-        // Uplink: authenticate / optional encrypt
         attribute uplinkAuthEnabled : Boolean;
         attribute uplinkEncryptEnabled : Boolean;
     }
 
-
     part def GroundStation {
-        port tcFromMCC : tcPort;
-        port tmToMCC : tmPort;
-        port tmToDataCentre : tmPort;
-        port passPlanFromMCC : passPlanPort;
-        port trackingToMCC : trackingPort;
-        port archiveOut : archivePort;
-        part antenna : Antenna;
-        part radio : RadioUnit;
-        part predictor : PassPredictor;
-        part doppler : DopplerCompensator;
-        part linkBudget : LinkBudgetTool;
-        part crypto : CryptoUnit;
+        port Mission_Control_Centre_TC_Port : TcPort;
+        port Mission_Control_Centre_TM_Port : TmPort;
+        port Data_Centre_TM_Port : TmPort;
+        port Mission_Control_Centre_Pass_Plan_Port : PassPlanPort;
+        port Mission_Control_Centre_Tracking_Port : TrackingPort;
+        port Data_Centre_Archive_Port : ArchivePort;
 
-        perform action uplink : ExecuteUplink;
-        perform action downlink : ReceiveDownlink;
-        perform action tracking : ComputeTracking;
-        perform action archive : StreamToArchive;
-        perform action verifyDecrypt : VerifyAndDecryptDownlink;
-        perform action authEncrypt : AuthenticateAndEncryptUplink;
+        part Antenna_Part : Antenna;
+        part Radio_Unit_Part : RadioUnit;
+        part Pass_Predictor_Part : PassPredictor;
+        part Doppler_Compensator_Part : DopplerCompensator;
+        part Link_Budget_Tool_Part : LinkBudgetTool;
+        part Crypto_Unit_Part : CryptoUnit;
 
-        bind authEncrypt.tcIn = tcFromMCC.tcIn;
-        bind uplink.uplinkTc = authEncrypt.tcOut;
-        bind verifyDecrypt.tmIn = downlink.downlinkTm;
-        bind tmToMCC.tmOut = verifyDecrypt.tmOut;
-        bind tmToDataCentre.tmOut = verifyDecrypt.tmOut;
-        bind tracking.plan = passPlanFromMCC.planIn;
-        bind trackingToMCC.trackingOut = tracking.tracking;
-        bind archive.tmIn = verifyDecrypt.tmOut;
-        bind archiveOut.recordOut = archive.record;
+        perform action Uplink_Action : ExecuteUplink;
+        perform action Downlink_Action : ReceiveDownlink;
+        perform action Tracking_Action : ComputeTracking;
+        perform action Archive_Action : StreamToArchive;
+        perform action Verify_Decrypt_Action : VerifyAndDecryptDownlink;
+        perform action Auth_Encrypt_Action : AuthenticateAndEncryptUplink;
+
+        bind Auth_Encrypt_Action.tcIn = Mission_Control_Centre_TC_Port.TcIn;
+        bind Uplink_Action.uplinkTc = Auth_Encrypt_Action.tcOut;
+
+        bind Verify_Decrypt_Action.tmIn = Downlink_Action.downlinkTm;
+        bind Mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.tmOut;
+        bind Data_Centre_TM_Port.TmOut = Verify_Decrypt_Action.tmOut;
+
+        bind Tracking_Action.plan = Mission_Control_Centre_Pass_Plan_Port.PlanIn;
+        bind Mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.tracking;
+
+        bind Archive_Action.tmIn = Verify_Decrypt_Action.tmOut;
+        bind Data_Centre_Archive_Port.RecordOut = Archive_Action.record;
     }
 }
