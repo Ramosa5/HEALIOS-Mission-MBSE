@@ -1,15 +1,26 @@
+// TO DO:
+    // Check Space Segment and Ground Segment requirements for compliance.
+    // Check that all requirements are correctly linked to the higher-level.
+// At the end:
+    // Do satifaction and verification implementation.
+
 package Mission_Requirements{
     private import MissionPackage::*;
     private import StakeholdersDefinition::*;
+    private import HEALIOS_StakeholderConcerns::*;
 
 
     requirement def <R_M_001> Self_Healing_Experiments {
         doc /* The mission shall perform active self-healing experiments on designated PSC samples by applying a controlled reverse-bias voltage during orbital eclipse phases. */
 
         subject Mission_Req : MissionPackage::MissionSegments;
-
+        
         stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
         stakeholder Perovskite_Solar_Cell_Manufacturers : PerovskiteSolarCellManufacturers;
+
+        frame concern PerovskiteInvestigationConcern;
+        frame concern ComparativeStudyConcern;
+        frame concern DataAcquisitionConcern;
 
         requirement <R_M_001_a> PSC_Performance {
             doc
@@ -23,17 +34,16 @@ package Mission_Requirements{
 
             subject Mission_Req : MissionPackage::MissionSegments;
         }
-        requirement <R_M_001_c> Enivornment_Characterisation {
+        requirement <R_M_001_c> Environment_Characterisation {
             doc /* The mission shall characterise the space environment by measuring radiation, irradiance, and temperature related to Perovskite Solar Cells samples, to contextualise with observed degradation and self-healing phenomena. */
 
             subject Mission_Req : MissionPackage::MissionSegments;
         }
-        requirement <R_M_001_d> Environmental_Repetitivity {
+        requirement <R_M_001_d> Environmental_Repeatability {
             doc /* The mission scenarios shall enable repetitive environmental conditions for the perovskite solar cells and the benchmark group. */
 
             subject Mission_Req : MissionPackage::MissionSegments;
         }
-
     }
 
     requirement def <R_M_002> Orbit_Definition {
@@ -43,6 +53,10 @@ package Mission_Requirements{
         subject Mission_Req : MissionPackage::MissionSegments;
 
         stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+
+        frame concern PerovskiteTRLAdvancementConcern;
+        frame concern ProgrammaticComplianceConcern;
+        frame concern ComponentReliabilityConcern;
     }
 
     requirement def <R_M_003> Platform_Conformity {
@@ -52,6 +66,8 @@ package Mission_Requirements{
         stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
         stakeholder CubeSat_Community : CubeSatCommunity;
         stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
+
+        frame concern CubeSatStandardComplianceConcern;
     }
 
     requirement def <R_M_004> Autonomous_Management {
@@ -59,7 +75,9 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
+        stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
+
+        frame concern DataAcquisitionConcern;
     }
 
     requirement def <R_M_005> Dataset_Format {
@@ -67,7 +85,10 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
+        stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
+
+        frame concern DataAvailabilityConcern;
+        frame concern ComparativeStudyConcern;
     }
 
     requirement def <R_M_006> ESA_Compliance {
@@ -75,7 +96,9 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_007> Mission_Duration {
@@ -83,9 +106,12 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern ComponentReliabilityConcern;
+        frame concern PerovskiteTRLAdvancementConcern;
     }
 
     requirement def <R_M_008> EOL_Plan {
@@ -93,7 +119,9 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+
+        frame concern SpaceDebrisMitigationConcern;
     }
 
     requirement def <R_M_009> Core_Team_Composition {
@@ -101,8 +129,12 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        
+        //frame concern InstitutionalVisibilityConcern;
+        frame concern EducationalValueConcern;
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_010> Academic_Supervision {
@@ -110,37 +142,53 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern InstitutionalVisibilityConcern;
+        //frame concern EducationalValueConcern;
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_011> Academic_Integration {
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern InstitutionalVisibilityConcern;
+        frame concern EducationalValueConcern;
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_012> Test_Facility_Usage {
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+
+        frame concern InstitutionalVisibilityConcern;
+        frame concern ProgrammaticComplianceConcern;
+        frame concern ComponentReliabilityConcern;
     }
 
     requirement def <R_M_013> Educational_Return {
         doc /* The mission shall demonstrate a clear educational return. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern InstitutionalVisibilityConcern;
+        frame concern EducationalValueConcern;
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_014> Ground_Station_Support {
@@ -148,10 +196,11 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-    
+
+        frame concern LinkCompatibilityConcern;
     }
 
     requirement def <R_M_015> Safety_Implementation {
@@ -159,10 +208,13 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
+        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern SafetyConcern;
+        frame concern ProgrammaticComplianceConcern;
     }
 
     requirement def <R_M_016> Launcher_Compliance {
@@ -170,8 +222,10 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder Launch_Service_Provider;
+        stakeholder Launch_Service_Provider : LaunchServiceProvider;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern SafetyConcern;
     }
 
     requirement def <R_M_017> Telecommunication_Compliance {
@@ -179,17 +233,24 @@ package Mission_Requirements{
         
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder International_Telecommunication_Union;
-        stakeholder International_Amateur_Radio_Union;
+        stakeholder International_Telecommunication_Union : InternationalTelecommunicationUnion;
+        stakeholder International_Amateur_Radio_Union : InternationalAmateurRadioUnion;
 
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern FrequencyAllocationConcern;
+        frame concern AmateurRadioAccessConcern;
     }
 
     requirement def <R_M_018> UN_Registration {
-        doc /* The mission shall be registration of the satellite in the United Nations Register of Objects Launched into Outer Space of UNOOSA, including national registers. */
+        doc /* The mission shall provide registration of the satellite in the United Nations Register of Objects Launched into Outer Space of UNOOSA, including national registers. */
         subject Mission_Req : MissionPackage::MissionSegments;
 
-        stakeholder United_Nations_Office_for_Outer_Space_Affairs;
+        stakeholder United_Nations_Office_for_Outer_Space_Affairs : UnitedNationsOfficeForOuterSpaceAffairs;
+
+        frame concern SpaceDebrisMitigationConcern;
+        frame concern RegistrationComplianceConcern;
+
     }
 
     requirement def <R_M_019> FDIR_Implementation {
@@ -197,6 +258,18 @@ package Mission_Requirements{
         subject Mission_Req : MissionPackage::MissionSegments;
 
         stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+
+        frame concern ComponentReliabilityConcern;
+    }
+
+    requirement def <R_M_020> Security_Architecture {
+        doc /* The mission shall implement secure data transmission link and relevant protection mechanisms to ensure the integrity against external threats, unauthorized access, and invalid data ingestion. */
+
+        subject Mission_Req : MissionPackage::MissionSegments;
+        stakeholder ITU : InternationalTelecommunicationUnion;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+
+        frame concern CommandSecurityConcern;
     }
 }
 
@@ -290,7 +363,7 @@ package SpaceSegmentRequirement {
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
         }
 
-    requirement def <R_SS_015> FDIR_Implementation specializes R_M_019 {
+    requirement def <R_SS_015> FDIR_Implementation specializes R_M_019, R_M_020 {
         doc /* The Space Segment shall provide Foult Detection, Isolation, and Recovery (FDIR) capability to ensure spacecraft safety and experiment integrity. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
 
@@ -432,7 +505,7 @@ package GroundSegmentRequirement {
         
         subject GroundStation_Req : MissionPackage::GroundSegment;
 
-        stakeholder Perovskite_Research_Institutes : ResearchInstitutes;
+        stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 

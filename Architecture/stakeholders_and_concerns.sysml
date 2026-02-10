@@ -101,34 +101,66 @@ package HEALIOS_StakeholderConcerns {
     }
 
     concern def PerovskiteTRLAdvancementConcern {
-        // Subject: The Satellite (specifically the payload within it)
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
         
         require constraint {
-            doc /* The mission shall validate the performance and degradation of Perovskite solar cells in the Low Earth Orbit (LEO) environment to increase their Technology Readiness Level (TRL). */
+            doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit (LEO) environment to increase their Technology Readiness Level (TRL). */
+        }
+
+        stakeholder Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+    }
+
+    concern def PerovskiteInvestigationConcern {
+        subject HEALIOS_Mission : MissionSegments;
+        
+        require constraint {
+            doc /* The mission shall investigate the self-healing behavior of Perovskite Solar Cells induced by reverse-bias voltage during eclipse phases, and quantify their degradation in the space environment (Voc, Isc, MPP). */
+        }
+
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def ComparativeStudyConcern {
+        subject HEALIOS_Mission : MissionSegments;
+
+        require constraint {
+            doc /* The mission shall compare degradation rates between Perovskite samples and traditional space-graded solar cells (e.g., silicon) under identical space environment exposure to benchmark performance. */
         }
 
         stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
         stakeholder Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
     concern def DataAcquisitionConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
 
         require constraint {
-            doc /* The system shall collect and downlink I-V curve data from the payload with sufficient resolution to analyze solar cell efficiency over time. */
+            doc /* The mission shall ensure validated data from the payload is acquired with sufficient context, resolution and accuracy to analyse solar cell efficiency over time. */
         }
 
         stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
-    concern def LaunchSafetyConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+    concern def DataAvailabilityConcern {
+        subject HEALIOS_Mission : MissionSegments;
+
+        require constraint {
+            doc /* The mission shall ensure that scientific results and telemetry are processed, archived, and made accessible to the scientific community. */
+        }
+
+        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def SafetyConcern {
+        subject HEALIOS_Mission : MissionSegments;
+        
         
         require constraint {
-            doc /* The satellite shall remain powered off and chemically inert during the launch phase to ensure the safety of the launch vehicle and primary payload. */
+            doc /* The mission shall ensure the safety of the launch vehicle, transport means, personnel, and testing facilities by adhering to hazard control measures and safety requirements. */
         }
 
         stakeholder Launch_Providers : LaunchServiceProvider;
@@ -136,10 +168,10 @@ package HEALIOS_StakeholderConcerns {
     }
 
     concern def CubeSatStandardComplianceConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
         
         require constraint {
-            doc /* The satellite shall strictly adhere to the CubeSat Design Specification (CDS) dimensions and mass budgets to ensure compatibility with the deployer (POD). */
+            doc /* The mission architecture shall conform to the CubeSat Design Specification (CDS) to ensure physical and functional compatibility with the deployment system. */
         }
 
         stakeholder CubeSat_Community : CubeSatCommunity;
@@ -148,22 +180,21 @@ package HEALIOS_StakeholderConcerns {
     }
 
     concern def SpaceDebrisMitigationConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
 
         require constraint {
-            doc /* The satellite shall comply with Space Debris Mitigation Guidelines, ensuring orbital decay and re-entry within 25 years after mission end. */
+            doc /* The mission shall be designed to minimize space debris generation and ensure orbital decay within the regulatory timeframe after the end of operations. */
         }
 
         stakeholder UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
         stakeholder ESA : EuropeanSpaceAgency;
-        stakeholder Launch_Providers : LaunchServiceProvider;
     }
 
     concern def ComponentReliabilityConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
         
         require constraint {
-            doc /* The system shall utilize COTS components that are verified for the LEO radiation and thermal environment to ensure mission duration survival. */
+            doc /* The mission shall ensure the survival and operational integrity of the system in the Low Earth Orbit (LEO) environment for the intended duration. */
         }
 
         stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
@@ -172,43 +203,32 @@ package HEALIOS_StakeholderConcerns {
     }
 
     concern def FrequencyAllocationConcern {
-        subject HEALIOS_Satellite : SpaceSegment;
+        subject HEALIOS_Mission : MissionSegments;
         
         require constraint {
-            doc /* The satellite communications shall operate strictly within allocated amateur radio bands and comply with ITU Radio Regulations to prevent interference. */
+            doc /* The mission shall operate within allocated radio frequency bands and comply with international telecommunication regulations to prevent interference. */
         }
 
         stakeholder ITU : InternationalTelecommunicationUnion;
         stakeholder IARU : InternationalAmateurRadioUnion;
     }
 
-    concern def GroundStationCompatibilityConcern {
-        subject HEALIOS_Mission_Control : GroundSegment;
+    concern def LinkCompatibilityConcern {
+        subject HEALIOS_Mission : MissionSegments;
 
         require constraint {
-            doc /* The Ground Station shall support the modulation, encoding, and frequency protocols (UHF/VHF) required to communicate with the satellite. */
+            doc /* The mission shall establish a compatible and reliable communication link between the space and ground segments to support operations. */
         }
 
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
         stakeholder IARU : InternationalAmateurRadioUnion;
     }
 
-    concern def DataAvailabilityConcern {
-        subject HEALIOS_Mission_Control : GroundSegment;
-
-        require constraint {
-            doc /* The Ground Segment shall ensure that telemetry and payload data (I-V curves) are decoded, archived, and made open-source accessible to science community. */
-        }
-
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-    }
-
     concern def CommandSecurityConcern {
-        subject HEALIOS_Mission_Control : GroundSegment;
+        subject HEALIOS_Mission : MissionSegments;
 
         require constraint {
-            doc /* The Mission Control Centre shall implement authentication procedures to prevent unauthorized telecommands from being transmitted to the satellite. */
+            doc /* The mission shall implement security measures to prevent unauthorized access or control of the space and ground segments. */
         }
 
         stakeholder ITU : InternationalTelecommunicationUnion;
@@ -216,13 +236,35 @@ package HEALIOS_StakeholderConcerns {
     }
 
     concern def AmateurRadioAccessConcern {
-        subject HEALIOS_Mission_Control : GroundSegment;
+        subject HEALIOS_Mission : MissionSegments;
 
         require constraint {
-            doc /* The Ground Segment shall publish beacon decoding software or definitions to allow the global amateur radio community to receive and decode public telemetry beacons. */
+            doc /* The mission shall engage the global amateur radio community by enabling the open reception and decoding of public beacon telemetry. */
         }
 
         stakeholder IARU : InternationalAmateurRadioUnion;
         stakeholder CubeSat_Community : CubeSatCommunity;
+    }
+
+    concern def ProgrammaticComplianceConcern {
+        subject HEALIOS_Mission : MissionSegments;
+
+        require constraint {
+            doc /* The mission shall adhere to the programmatic schedules, review milestones, and documentation standards mandated by the ESA Fly Your Satellite! programme. */
+        }
+
+        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    }
+
+    concern def RegistrationComplianceConcern {
+        subject HEALIOS_Mission : MissionSegments;
+
+        require constraint {
+            doc /* The mission shall comply with all registration requirements for space objects, including UN registration and any applicable national regulations. */
+        }
+
+        stakeholder UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
+        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 }
