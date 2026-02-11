@@ -205,8 +205,8 @@ package HealiosMissionInstancePackage {
             connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
             connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
             connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
-            connect Antenna_Part.Antenna_RF_Link_Port to RF_Link_Port;
-            connect RF_Link_Port to Antenna_Part.Antenna_Command_Port;
+            connect Antenna_Part.Antenna_RF_Link_Port to SS_Communication_System.RF_Link_Port;
+            connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
             connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
             connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
             connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
