@@ -3,21 +3,14 @@ package CommunicationsSystemPackage {
     private import ISQ::*;
     private import SpaceActionsPackage::*;
     private import ElectricalPowerSystemPackage::*;
-
-    port def PowerBusPort {
-        in Voltage : ISQ::SourceVoltageValue;
-    }
+    private import OnBoardDataHandlingSystemPackage::*;
 
     port def OutCommandPort {
         out item Cmd : MissionPackage::GroundCommand;
     }
 
-    port def InHKPort {
-        in item HK : MissionPackage::OnBoardStatus;
-    }
-
-    port def OutStatusPort {
-        out item Status : MissionPackage::OnBoardStatus;
+    port def InStatusPort {
+        in item Status : MissionPackage::OnBoardStatus;
     }
 
     port def RFLinkPort {
@@ -36,9 +29,17 @@ package CommunicationsSystemPackage {
     part def Antenna :> GeneralElectricalComponent {
         attribute Band : String;
         attribute Gain : Real;
+
+        port Antenna_Command_Port : OutCommandPort;
+        port Antenna_Status_Port : InStatusPort;
+        port Antenna_RF_Link_Port : RFLinkPort;
     }
 
     part def Transceiver :> GeneralElectricalComponent {
+
+        port Transceiver_Status_Port : InStatusPort;
+        port Transceiver_Command_Port : OutCommandPort;
+
         attribute MaxTxPower : ISQ::PowerValue;
 
         attribute SupportsRx : Boolean;
@@ -61,6 +62,9 @@ package CommunicationsSystemPackage {
         attribute UplinkDecryptEnabled : Boolean;
         attribute DownlinkEncryptEnabled : Boolean;
         attribute DownlinkIntegrityEnabled : Boolean;
+
+        port Crypto_Status_Port : InStatusPort;
+        port Crypto_Command_Port : OutCommandPort;
     }
 
     action def TransmitStatusDownlink {
@@ -78,26 +82,13 @@ package CommunicationsSystemPackage {
         out item RF_Out : MissionPackage::TelemetryData;
     }
 
-    action def ReportCommsHealth {
-        out item Status_Out : MissionPackage::OnBoardStatus;
-    }
-
-    action def TransmitBeacon {
-        out item Beacon_Out : MissionPackage::TelemetryData;
-    }
-
-    action def LogCommsAnomaly {
-        out item Anomaly_Out : CommsAnomaly;
-    }
-
     part def CommunicationsSystem {
-        port EPS_Power_Port : PowerBusPort;
+        port Power_Bus_5V: PowerBus;
         port OBDH_Command_Port : OutCommandPort;
-        port OBDH_HK_Port : InHKPort;
-        port OBDH_Status_Port : OutStatusPort;
+        port OBDH_Status_Port : InStatusPort;
         port RF_Link_Port : RFLinkPort;
-        port OBDH_Anomaly_Port : OutAnomalyPort;
-
+        port I2C_Bus : I2CBus;
+        
         part Antenna_Part : Antenna;
         part Transceiver_Part : Transceiver;
         part Crypto_Part : CryptoUnit;
@@ -109,27 +100,17 @@ package CommunicationsSystemPackage {
         attribute Rf_Emissions_Compliant : Boolean;
         attribute Emc_Compliant : Boolean;
 
-        attribute Beacon_Enabled : Boolean;
-        attribute Beacon_Contains_Vital_Telemetry : Boolean;
-
         attribute Supports_E2E_Test_With_EGSE : Boolean;
         attribute Supports_Over_The_Air_Qualification_Test : Boolean;
 
         perform action TX_HK_Action : TransmitStatusDownlink;
         perform action DEC_AUTH_Action : DecryptAndAuthenticateUplink;
         perform action ENC_DL_Action : EncryptDownlinkTelemetry;
-        perform action HEALTH_Action : ReportCommsHealth;
-        perform action BEACON_Action : TransmitBeacon;
-        perform action LOG_ANOM_Action : LogCommsAnomaly;
 
-        bind TX_HK_Action.HK_In = OBDH_HK_Port.HK;
         bind ENC_DL_Action.TM_In = TX_HK_Action.TM_Out;
         bind RF_Link_Port.RF_Out = ENC_DL_Action.RF_Out;
-
         bind DEC_AUTH_Action.RF_In = RF_Link_Port.RF_In;
         bind OBDH_Command_Port.Cmd = DEC_AUTH_Action.Cmd_Out;
 
-        bind OBDH_Status_Port.Status = HEALTH_Action.Status_Out;
-        bind OBDH_Anomaly_Port.Anomaly = LOG_ANOM_Action.Anomaly_Out;
     }
 }

@@ -499,17 +499,10 @@ action def TransmitStatusDownlink {
         out item rfOut : MissionPackage::TelemetryData;
     }
 
-    action def ReportCommsHealth {
-        out item status : MissionPackage::OnBoardStatus;
-    }
-
     action def TransmitBeacon {
         out item rfOut : MissionPackage::TelemetryData;
     }
 
-    action def LogCommsAnomaly {
-        out item anomaly : CommsAnomaly;
-    }
 
     action def ArchiveAndStoreMissionData {
         in item dataIn : MissionPackage::TelemetryData;

@@ -4,6 +4,7 @@ package PayloadPackage {
     private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
     private import Environment::*;
+    private import OnBoardDataHandlingSystemPackage::*;
 
     // --- COTS blocks (definitions WITHOUT "name") ---
     part def PerovskiteCellConnectorAndProtection {
@@ -14,17 +15,17 @@ package PayloadPackage {
     part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
     part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
     part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent{
-        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
     }
     part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
     part def IrradianceSensorBlock specializes GeneralElectricalComponent {
-        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
     }
     part def RadiationDoseSensor specializes GeneralElectricalComponent {
-        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
     }
     part def SpectrometerPackage specializes GeneralElectricalComponent{
-        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
     }
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;
@@ -34,8 +35,8 @@ package PayloadPackage {
     }
 
     part def PowerFilteringBlock {
-        port Power_Bus_In_3V3 : ElectricalPowerSystemPackage::PowerBus;
-        port Power_Bus_In_5V : ElectricalPowerSystemPackage::PowerBus;
+        port Power_Bus_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port Power_Bus_5V : ElectricalPowerSystemPackage::PowerBus;
         port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
         port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
 
@@ -86,8 +87,9 @@ package PayloadPackage {
         // Ports for integration
         port Cmd_In : MissionPackage::OnBoardCommand;
         port Status_Out : MissionPackage::OnBoardStatus;
-        port Power_Bus_In_3V3 : ~PowerBus;
-        port Power_Bus_In_5V : ~PowerBus;
+        port Power_Bus_3V3 : ~PowerBus;
+        port Power_Bus_5V : ~PowerBus;
+        port I2C_Bus : ~I2CBus;
         
         // Subparts (NO default names here)
         part Power_Filtering_Block : PowerFilteringBlock;

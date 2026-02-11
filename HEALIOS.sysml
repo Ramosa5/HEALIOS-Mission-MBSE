@@ -8,7 +8,7 @@ package HealiosMissionInstancePackage {
     public import SpaceActionsPackage::*;
 
     attribute yr : year;
-    //attribute MB : megabyte;
+    // attribute MB : megabyte;
 
     public part Healios_Mission : MissionPackage::MissionSegments {
         doc
@@ -26,16 +26,18 @@ package HealiosMissionInstancePackage {
 
         // Mirror MissionSegments type connect for visibility
         connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-        connect HEALIOS_Space_Segment.Telecommand_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
-        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.Telemetry_Port;
+        connect HEALIOS_Space_Segment.Telecommand_Port
+            to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
+        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port
+            to HEALIOS_Space_Segment.Telemetry_Port;
 
-                
-        connection Uplink redefines Uplink 
-            connect HEALIOS_Ground_Segment.Telecommand_Port to HEALIOS_Space_Segment.Telecommand_Port;
-            
-        connection Downlink redefines Downlink 
+        connection Uplink redefines Uplink
+            connect HEALIOS_Ground_Segment.Telecommand_Port
+            to HEALIOS_Space_Segment.Telecommand_Port;
+
+        connection Downlink redefines Downlink
             connect HEALIOS_Space_Segment.Telemetry_Port to HEALIOS_Ground_Segment.Telemetry_Port;
-        
+
         // ========================
         // Space segment refinements
         // =========================
@@ -57,29 +59,42 @@ package HealiosMissionInstancePackage {
             // EPS
             // =========================
             part SS_Electrical_Power_System redefines SS_Electrical_Power_System {
-                port EPS_I2C redefines EPS_I2C;
+                port I2C_Bus redefines I2C_Bus;
                 port Eps_Command_In redefines Eps_Command_In;
                 port Eps_Telemetry_Out redefines Eps_Telemetry_Out;
                 port Power_Bus_5V redefines Power_Bus_5V;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
-                port Heater_Power_Bus redefines Heater_Power_Bus;
 
-                part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays;
+                part Power_Supply_Unit redefines Power_Supply_Unit {
+                    port Power_Bus_5V redefines Power_Bus_5V;
+                    port Power_Bus_3V3 redefines Power_Bus_3V3;
+                    port Battery_Power_Bus redefines Battery_Power_Bus;
+                }
+                part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2];
+                part Mounted_Solar_Cells redefines Mounted_Solar_Cells [1];
 
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
+                    port Battery_Power_Bus redefines Battery_Power_Bus;
+                    port Heater_Power_Bus redefines Heater_Power_Bus;
+
                     attribute Name redefines Name = "Li-ion Battery Pack";
                     attribute Mass redefines Mass = 0.30 [SI::kg];
                     attribute PowerConsumption redefines PowerConsumption = 0.0 [SI::W];
 
                     attribute Capacity redefines Capacity = 30.0 [SI::W * h];
                     attribute Max_Power_Generation redefines Max_Power_Generation = 10.0 [SI::W];
-
+                    part Battery_Unit redefines Battery_Unit [4] {
+                        port Battery_Power_Bus;
+                    }
                     part Main_Heater redefines Main_Heater {
+                        port Heater_Power_Bus;
                         attribute Name redefines Name = "Battery Heater";
                         attribute Mass redefines Mass = 0.02 [SI::kg];
                         attribute PowerConsumption redefines PowerConsumption = 2.0 [SI::W];
                         attribute Power redefines Power = 2.0 [SI::W];
-                        attribute Minimal_Temperature redefines Minimal_Temperature = 273.15 [SI::K];
+                        attribute Minimal_Temperature redefines Minimal_Temperature = 273.15 [
+                            SI::K
+                        ];
                     }
 
                     part Temp_Sensor redefines Temp_Sensor {
@@ -88,10 +103,14 @@ package HealiosMissionInstancePackage {
                         attribute PowerConsumption redefines PowerConsumption = 0.05 [SI::W];
                         attribute Power redefines Power = 0.05 [SI::W];
                     }
+                    connect Battery_Pack_EPS.Heater_Power_Bus to Main_Heater.Heater_Power_Bus;
+                    connect Battery_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
                 }
 
-                part Bus_5V redefines Bus_5V { attribute Name redefines Name = "EPS_5V_REG"; }
-                part Bus_3V3 redefines Bus_3V3 { attribute Name redefines Name = "EPS_3V3_REG"; }
+                connect Battery_Pack_EPS.Battery_Power_Bus to Power_Supply_Unit.Battery_Power_Bus;
+                connect Power_Supply_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
+                connect Power_Supply_Unit.Power_Bus_5V to SS_Electrical_Power_System.Power_Bus_5V;
+                connect Power_Supply_Unit.Power_Bus_3V3 to SS_Electrical_Power_System.Power_Bus_3V3;
             }
 
             // =========================
@@ -102,19 +121,10 @@ package HealiosMissionInstancePackage {
                 port Telecommand_In redefines Telecommand_In;
                 port Telemetry_Out redefines Telemetry_Out;
                 port Out_Command_Port redefines Out_Command_Port;
-                port Power_Bus_In_3V3 redefines Power_Bus_In_3V3;
-                port Power_Bus_In_5V :>> Power_Bus_In_5V;
+                port Power_Bus_3V3 redefines Power_Bus_3V3;
 
                 // I2C buses
-                port EPS_I2C redefines EPS_I2C;
-                port Magnetorquer_Board_I2C redefines Magnetorquer_Board_I2C;
-                port Temperature_Sensor_I2C redefines Temperature_Sensor_I2C;
-                port Sun_Sensor_I2C redefines Sun_Sensor_I2C;
-                port Irradiance_Sensor_I2C redefines Irradiance_Sensor_I2C;
-                port Radiation_Sensor_I2C redefines Radiation_Sensor_I2C;
-                port Spectrometer_I2C redefines Spectrometer_I2C;
-                port Voltage_Current_Sense_I2C redefines Voltage_Current_Sense_I2C;
-                port UHF_I2C redefines UHF_I2C;
+                port I2C_Bus redefines I2C_Bus;
 
                 part Carrier redefines Carrier {
                     attribute Name redefines Name = "OBC Carrier Board";
@@ -126,15 +136,7 @@ package HealiosMissionInstancePackage {
                     attribute Warm_Redundant redefines Warm_Redundant = true;
 
                     // Ports on the OBC that are wired out in the type definition
-                    port EPS_I2C redefines EPS_I2C;
-                    port Temperature_Sensor_I2C redefines Temperature_Sensor_I2C;
-                    port Magnetorquer_Board_I2C redefines Magnetorquer_Board_I2C;
-                    port Sun_Sensor_I2C redefines Sun_Sensor_I2C;
-                    port Irradiance_Sensor_I2C redefines Irradiance_Sensor_I2C;
-                    port Radiation_Sensor_I2C redefines Radiation_Sensor_I2C;
-                    port Spectrometer_I2C redefines Spectrometer_I2C;
-                    port Voltage_Current_Sense_I2C redefines Voltage_Current_Sense_I2C;
-                    port UHF_I2C redefines UHF_I2C;
+                    port I2C_Bus redefines I2C_Bus;
 
                     part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
@@ -148,45 +150,38 @@ package HealiosMissionInstancePackage {
                     part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
-                
-                // --- MIRROR CONNECTS from OnBoardDataHandling.sysml (for visibility) ---
-                connect Primary_OBC.EPS_I2C to EPS_I2C;
-                connect Primary_OBC.Temperature_Sensor_I2C to Temperature_Sensor_I2C;
-                connect Primary_OBC.Magnetorquer_Board_I2C to Magnetorquer_Board_I2C;
-                connect Primary_OBC.Sun_Sensor_I2C to Sun_Sensor_I2C;
-                connect Primary_OBC.Irradiance_Sensor_I2C to Irradiance_Sensor_I2C;
-                connect Primary_OBC.Radiation_Sensor_I2C to Radiation_Sensor_I2C;
-                connect Primary_OBC.Spectrometer_I2C to Spectrometer_I2C;
-                connect Primary_OBC.Voltage_Current_Sense_I2C to Voltage_Current_Sense_I2C;
-                connect Primary_OBC.UHF_I2C to UHF_I2C;
+
+                connect Primary_OBC.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
             }
 
             
         part SS_Communication_System redefines SS_Communication_System {
             // top-level comms ports (usage names with underscores)
-            port EPS_Power_Port redefines EPS_Power_Port;
+            port Power_Bus_5V redefines Power_Bus_5V;
             port OBDH_Command_Port redefines OBDH_Command_Port;
-            port OBDH_HK_Port redefines OBDH_HK_Port;
             port OBDH_Status_Port redefines OBDH_Status_Port;
             port RF_Link_Port redefines RF_Link_Port;
-            port OBDH_Anomaly_Port redefines OBDH_Anomaly_Port;
+            port I2C_Bus :>> I2C_Bus;
 
-            // attributes (usage names with underscores)
-            attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
-            attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
-            attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
+                // attributes (usage names with underscores)
+                attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
+                attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
+                attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
-            attribute Beacon_Enabled redefines Beacon_Enabled = true;
-            attribute Beacon_Contains_Vital_Telemetry redefines Beacon_Contains_Vital_Telemetry = true;
 
             // parts (usage names with underscores)
             part Antenna_Part redefines Antenna_Part {
+                port Antenna_Command_Port redefines Antenna_Command_Port ;
+                port Antenna_Status_Port redefines Antenna_Status_Port ;
+                port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
                 attribute Name redefines Name = "UHF Antenna";
                 attribute Band redefines Band = "UHF";
                 attribute Gain redefines Gain = 2.0;
             }
 
             part Transceiver_Part redefines Transceiver_Part {
+                port Transceiver_Status_Port redefines Transceiver_Status_Port;
+                port Transceiver_Command_Port redefines Transceiver_Command_Port;
                 attribute Name redefines Name = "UHF Transceiver";
                 attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
                 attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
@@ -198,12 +193,25 @@ package HealiosMissionInstancePackage {
             }
 
             part Crypto_Part redefines Crypto_Part {
+                port Crypto_Status_Port redefines Crypto_Status_Port;
+                port Crypto_Command_Port redefines Crypto_Command_Port;
                 attribute Name redefines Name = "Comms Crypto/Integrity";
                 attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
                 attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
                 attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
                 attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
             }
+
+            connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
+            connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
+            connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
+            connect Antenna_Part.Antenna_RF_Link_Port to RF_Link_Port;
+            connect RF_Link_Port to Antenna_Part.Antenna_Command_Port;
+            connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
+            connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
+            connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
+            
+            
         }
 
             // =========================
@@ -228,10 +236,13 @@ package HealiosMissionInstancePackage {
             // =========================
             // AOCS
             // =========================
-            part SS_Attitude_And_Orbit_Control_System redefines SS_Attitude_And_Orbit_Control_System {
+            part SS_Attitude_And_Orbit_Control_System
+                redefines SS_Attitude_And_Orbit_Control_System {
                 port AOCS_Command_In redefines AOCS_Command_In;
-                port Power_Bus_In_3V3 :>> Power_Bus_In_3V3;
-                port Power_Bus_In_5V :>> Power_Bus_In_5V;
+                port Power_Bus_3V3 :>> Power_Bus_3V3;
+                port Power_Bus_5V :>> Power_Bus_5V;
+                port I2C_Bus :>> I2C_Bus;
+
                 attribute Nominal_Force redefines Nominal_Force = 0.02 [SI::N];
                 attribute Stop_Signal redefines Stop_Signal = false;
 
@@ -239,11 +250,11 @@ package HealiosMissionInstancePackage {
                     attribute Name redefines Name = "Sun Sensor";
                     attribute Mass redefines Mass = 0.01 [SI::kg];
                     attribute PowerConsumption redefines PowerConsumption = 0.05 [SI::W];
-                    port Power_Bus_In_3V3 redefines Power_Bus_In_3V3;
+                    port Power_Bus_3V3 redefines Power_Bus_3V3;
                 }
 
                 part Magnetorquer_Board redefines Magnetorquer_Board [1] {
-                    port Power_Bus_In_5V redefines Power_Bus_In_5V;
+                    port Power_Bus_5V redefines Power_Bus_5V;
                     port Magnetorquer_Board_I2C redefines Magnetorquer_Board_I2C;
 
                     part Mounted_Magnetorquer_X redefines Mounted_Magnetorquer [1] {
@@ -268,6 +279,30 @@ package HealiosMissionInstancePackage {
                         attribute PowerConsumption redefines PowerConsumption = 0.2 [SI::W];
                     }
                 }
+
+                connect SS_Attitude_And_Orbit_Control_System.Power_Bus_3V3
+                    to Sun_Sensor.Power_Bus_3V3;
+                connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
+                    to Magnetorquer_Board.Power_Bus_5V;
+
+                perform action Activate_AOCS redefines Activate_AOCS {
+                    in AOCS_Command : MissionPackage::OnBoardCommand;
+
+                    if AOCS_Command.Type == "TurnOn" {
+                        loop {
+                            perform action Read_Sun_Angle : ReadSunAngle {
+                                bind Beta_Angle = Sun_Sensor.Beta_Angle;
+                            }
+                            then perform action Correct_Attitude : CorrectAttitude {
+                                bind Force = Magnetorquer_Board.Mounted_Magnetorquer_X.Force;
+                                bind Sun_Sensor_Reading = Read_Sun_Angle.Beta_Angle;
+                                bind Force_Value = Nominal_Force;
+                            }
+                            then assign Stop_Signal := AOCS_Command.Type == "TurnOff";
+                        } until Stop_Signal;
+                    }
+                }
+                
             }
 
             // =========================
@@ -283,15 +318,15 @@ package HealiosMissionInstancePackage {
                 attribute Stop_Signal redefines Stop_Signal;
 
                 // ref parts exist in the TCS definition; create concrete instance usages for visibility
-                ref part EPS_Heater_1 redefines EPS_Heater[1];
-                ref part PL_TempSensor_1 redefines PL_Temperature_Sensor[1];
-                ref part OBC_TempSensor_1 redefines OBC_Temperature_Sensor[1];
-                ref part EPS_TempSensor_1 redefines EPS_Temperature_Sensor[1];
+                abstract part EPS_Heater redefines EPS_Heater [1];
+                ref part PL_TempSensor redefines PL_Temperature_Sensor [1];
+                ref part OBC_TempSensor redefines OBC_Temperature_Sensor [1];
+                ref part EPS_TempSensor redefines EPS_Temperature_Sensor [1];
 
                 // --- MIRROR CONNECTS from ThermalControlSystem.sysml ---
-                connect PL_TempSensor_1.Temperature_Measurement to PL_Temperature_Port.Temp;
-                connect OBC_TempSensor_1.Temperature_Measurement to OBDH_Temperature_Port.Temp;
-                connect EPS_TempSensor_1.Temperature_Measurement to EPS_Temperature_Port.Temp;
+                connect PL_TempSensor.Temperature_Measurement to PL_Temperature_Port.Temp;
+                connect OBC_TempSensor.Temperature_Measurement to OBDH_Temperature_Port.Temp;
+                connect EPS_TempSensor.Temperature_Measurement to EPS_Temperature_Port.Temp;
             }
 
             // =========================
@@ -300,12 +335,13 @@ package HealiosMissionInstancePackage {
             part SS_Satellite_Payload redefines SS_Satellite_Payload {
                 port Cmd_In redefines Cmd_In;
                 port Status_Out redefines Status_Out;
-                port Power_Bus_In_3V3 :>> Power_Bus_In_3V3;
-                port Power_Bus_In_5V :>> Power_Bus_In_5V;
+                port Power_Bus_3V3 :>> Power_Bus_3V3;
+                port Power_Bus_5V :>> Power_Bus_5V;
+                port I2C_Bus :>> I2C_Bus;
 
                 part Power_Filtering_Block redefines Power_Filtering_Block {
-                    port Power_Bus_In_3V3 redefines Power_Bus_In_3V3;
-                    port Power_Bus_In_5V redefines Power_Bus_In_5V;
+                    port Power_Bus_3V3 redefines Power_Bus_3V3;
+                    port Power_Bus_5V redefines Power_Bus_5V;
                     port Power_Bus_Filtered_5V redefines Power_Bus_Filtered_5V;
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
                 }
@@ -317,7 +353,8 @@ package HealiosMissionInstancePackage {
                 part Iv_Sweep_And_Reverse_Bias_Block redefines Iv_Sweep_And_Reverse_Bias_Block {
                     port Power_Bus_Filtered_5V redefines Power_Bus_Filtered_5V;
 
-                    part Current_And_Voltage_Sensing_Block redefines Current_And_Voltage_Sensing_Block {
+                    part Current_And_Voltage_Sensing_Block
+                        redefines Current_And_Voltage_Sensing_Block {
                         port Voltage_Current_Sense_I2C redefines Voltage_Current_Sense_I2C;
                     }
                 }
@@ -330,7 +367,8 @@ package HealiosMissionInstancePackage {
                     port Rad_Out redefines Rad_Out;
                     port Spec_Out redefines Spec_Out;
 
-                    part Temperature_Sensor_At_Environment redefines Temperature_Sensor_At_Environment {
+                    part Temperature_Sensor_At_Environment
+                        redefines Temperature_Sensor_At_Environment {
                         port Temperature_Port redefines Temperature_Port;
                     }
                     part Irradiance_Sensor_Block redefines Irradiance_Sensor_Block {
@@ -366,90 +404,89 @@ package HealiosMissionInstancePackage {
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                     }
                 }
+
+                connect SS_Satellite_Payload.Power_Bus_5V to Power_Filtering_Block.Power_Bus_5V;
+                connect SS_Satellite_Payload.Power_Bus_3V3 to Power_Filtering_Block.Power_Bus_3V3;
+                connect Power_Filtering_Block.Power_Bus_Filtered_3V3
+                    to Env_Sensors_Block.Power_Bus_Filtered_3V3;
+                connect Power_Filtering_Block.Power_Bus_Filtered_3V3
+                    to Mppt_Block.Power_Bus_Filtered_3V3;
+                connect Power_Filtering_Block.Power_Bus_Filtered_5V
+                    to Iv_Sweep_And_Reverse_Bias_Block.Power_Bus_Filtered_5V;
             }
 
             // =========================
             // SpaceSegment connects (already in type; mirrored here)
             // =========================
-            connect SS_Electrical_Power_System.EPS_I2C to SS_On_Board_Data_Handling.EPS_I2C;
+            // i2c connections_____________________________________________________________________________________
+            connect SS_Electrical_Power_System.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Temperature_Sensor_At_Environment.Temperature_Port
-                to SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
+            connect SS_Satellite_Payload.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
+            connect SS_Communication_System.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
+            connect SS_Attitude_And_Orbit_Control_System.I2C_Bus
+                to SS_On_Board_Data_Handling.I2C_Bus;
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Irradiance_Sensor_Block.Irradiance_Sensor_I2C
-                to SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
+            // electrical connections_____________________________________________________________________________________
 
-            connect SS_Satellite_Payload.Env_Sensors_Block.Radiation_Dose_Sensor.Radiation_Sensor_I2C
-                to SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
-
-            connect SS_Satellite_Payload.Env_Sensors_Block.Spectrometer.Spectrometer_Sensor_I2C
-                to SS_On_Board_Data_Handling.Spectrometer_I2C;
-
-            connect SS_Satellite_Payload.Iv_Sweep_And_Reverse_Bias_Block.Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_I2C
-                to SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
-
-            connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Magnetorquer_Board_I2C
-                to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
-// i2c connections_____________________________________________________________________________________
-            // connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
-            // connect SS_Attitude_And_Orbit_Control_System.AOCS_I2C to SS_On_Board_Data_Handling.I2C_Bus;
-
-// electrical connections_____________________________________________________________________________________
-
-            connect SS_Electrical_Power_System.Power_Bus_5V
-                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
-
-            connect SS_Electrical_Power_System.Power_Bus_5V
-                to SS_Communication_System.EPS_Power_Port;
-
+            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_3V3
-                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
-            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V
-                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
+                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_3V3;
+            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
+                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_5V;
+            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Satellite_Payload.Power_Bus_5V;
+            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Satellite_Payload.Power_Bus_3V3;
+            connect SS_Electrical_Power_System.Power_Bus_3V3
+                to SS_On_Board_Data_Handling.Power_Bus_3V3;
 
-            connect Telecommand_Port.TC
-                to SS_On_Board_Data_Handling.Telecommand_In;
+            connect Telecommand_Port.TC to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out to Telemetry_Port.TM;
 
-            connect SS_Communication_System.OBDH_Command_Port  
+            connect SS_Communication_System.OBDH_Command_Port
                 to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out
                 to SS_Communication_System.OBDH_Status_Port;
             
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_HK_Port;
-            
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_Anomaly_Port;
+
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
 
-            connect SS_On_Board_Data_Handling.Out_Command_Port
-                to SS_Satellite_Payload.Cmd_In;
+            connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Satellite_Payload.Cmd_In;
 
-            connect SS_Satellite_Payload.Status_Out to 
-                SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
-            connect SS_Satellite_Payload.Status_Out to 
-                SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
-            connect SS_Satellite_Payload.Status_Out to 
-                SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
-            connect SS_Satellite_Payload.Status_Out to 
-                SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
-            connect SS_Satellite_Payload.Status_Out to 
-                SS_On_Board_Data_Handling.Spectrometer_I2C;
-
+            // connect SS_Satellite_Payload.Status_Out to
+            // SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
+            // connect SS_Satellite_Payload.Status_Out to
+            // SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
+            // connect SS_Satellite_Payload.Status_Out to
+            // SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
+            // connect SS_Satellite_Payload.Status_Out to
+            // SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
+            // connect SS_Satellite_Payload.Status_Out to
+            // SS_On_Board_Data_Handling.Spectrometer_I2C;
 
             // Keep your state refinement as-is
             state HEALIOS_Mode redefines Satellite_Mode {
-                entry; then Commissioning_Mode;
+                entry;
+                then Commissioning_Mode;
 
-                state Commissioning_Mode { doc /* waits for ground command */ }
-                state Safe_Mode { doc /* charges battery & waits */ }
-                state Nominal_Sun_Mode { doc /* nominal sun ops */ }
-                state Nominal_Eclipse_Mode { doc /* nominal eclipse ops */ }
+                state Commissioning_Mode {
+                    doc
+                    /* waits for ground command */
+                }
+                state Safe_Mode {
+                    doc
+                    /* charges battery & waits */
+                }
+                state Nominal_Sun_Mode {
+                    doc
+                    /* nominal sun ops */
+                }
+                state Nominal_Eclipse_Mode {
+                    doc
+                    /* nominal eclipse ops */
+                }
 
                 transition Commissioning_To_Nominal
                     first Commissioning_Mode
@@ -485,9 +522,7 @@ package HealiosMissionInstancePackage {
             }
         }
 
-       
-       part HEALIOS_Ground_Segment redefines Ground_Segment {
-
+        part HEALIOS_Ground_Segment redefines Ground_Segment {
             port Telecommand_Port redefines Telecommand_Port;
             port Telemetry_Port redefines Telemetry_Port;
 
@@ -498,8 +533,10 @@ package HealiosMissionInstancePackage {
                 port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
                 port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
                 port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
-                port Mission_Control_Centre_Pass_Plan_Port redefines Mission_Control_Centre_Pass_Plan_Port;
-                port Mission_Control_Centre_Tracking_Port redefines Mission_Control_Centre_Tracking_Port;
+                port Mission_Control_Centre_Pass_Plan_Port
+                    redefines Mission_Control_Centre_Pass_Plan_Port;
+                port Mission_Control_Centre_Tracking_Port
+                    redefines Mission_Control_Centre_Tracking_Port;
                 port Data_Centre_Archive_Port redefines Data_Centre_Archive_Port;
 
                 part Antenna_Part redefines Antenna_Part {
@@ -559,7 +596,8 @@ package HealiosMissionInstancePackage {
             part Data_Centre redefines Data_Centre {
                 port Ground_Station_TM_Port redefines Ground_Station_TM_Port;
                 port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
-                port Mission_Control_Centre_TM_Products_Port redefines Mission_Control_Centre_TM_Products_Port;
+                port Mission_Control_Centre_TM_Products_Port
+                    redefines Mission_Control_Centre_TM_Products_Port;
 
                 part Structured_Archive_Part redefines Structured_Archive_Part {
                     attribute name redefines name = "Structured Archive";
@@ -571,17 +609,24 @@ package HealiosMissionInstancePackage {
                 }
             }
 
-            connect Mission_Control_Centre.Ground_Station_TC_Port to Ground_Station.Mission_Control_Centre_TC_Port;
-            connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+            connect Mission_Control_Centre.Ground_Station_TC_Port
+                to Ground_Station.Mission_Control_Centre_TC_Port;
+            connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port
+                to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
 
-            connect Ground_Station.Mission_Control_Centre_TM_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-            connect Ground_Station.Mission_Control_Centre_Tracking_Port to Mission_Control_Centre.Ground_Station_Tracking_Port;
+            connect Ground_Station.Mission_Control_Centre_TM_Port
+                to Mission_Control_Centre.Ground_Station_TM_Port;
+            connect Ground_Station.Mission_Control_Centre_Tracking_Port
+                to Mission_Control_Centre.Ground_Station_Tracking_Port;
 
             connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
-            connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+            connect Ground_Station.Data_Centre_Archive_Port
+                to Data_Centre.Ground_Station_Records_Port;
 
-            connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
+            connect Data_Centre.Mission_Control_Centre_TM_Products_Port
+                to Mission_Control_Centre.Ground_Station_TM_Port;
             bind Telecommand_Port = Ground_Station.Tc_Port;
+            bind Telemetry_Port= Ground_Station.Tm_Port;
             }
                
     }
