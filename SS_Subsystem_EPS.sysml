@@ -16,7 +16,7 @@ package ElectricalPowerSystemPackage {
         attribute Resistance : ISQ::ResistanceValue;
     }
 
-    port def TemperaturePort specializes I2CPort{
+    port def TemperaturePort specializes I2CBus{
         out Temp : ISQ::TemperatureValue [1..*];
     }
 
@@ -34,7 +34,7 @@ package ElectricalPowerSystemPackage {
 
     part def SolarArray specializes GeneralElectricalComponent {
         attribute Power_Generation : ISQ::PowerValue;
-        port Electrode_Connection : solarArrayElectrodeConnection;
+        port Electrode_Connection : SolarArrayElectrodeConnection;
         port Solar_Environment : MissionPackage::SolarEnvironment;
     }
 
@@ -48,18 +48,28 @@ package ElectricalPowerSystemPackage {
 
     part def Connector specializes GeneralElectricalComponent;
 
+    part def Battery :> GeneralElectricalComponent{
+        attribute Battery_Size : ISQ::EnergyValue;
+    }
+
     part def BatteryPack specializes GeneralElectricalComponent {
         attribute Capacity : ISQ::EnergyValue;
         attribute Max_Power_Generation : ISQ::PowerValue;
 
         part Battery_Pack_Connector : Connector;
+        part Battery_Unit[1..*] : Battery;
         part Main_Heater : Heater;
         part Temp_Sensor : TemperatureSensor;
-
+        port Battery_Power_Bus : PowerBus;
         port Heater_Power_Bus : PowerBus;
     }
 
-    part def PowerSupplyUnit specializes GeneralElectricalComponent;
+    part def PowerSupplyUnit specializes GeneralElectricalComponent{
+        port Power_Bus_5V : PowerBus;
+        port Power_Bus_3V3 : PowerBus;
+        port Solar_Array_Power_Bus : PowerBus;
+        port Battery_Power_Bus : PowerBus; 
+    }
 
     part def Heater specializes GeneralElectricalComponent {
         attribute Power : ISQ::PowerValue;
@@ -75,7 +85,7 @@ package ElectricalPowerSystemPackage {
         out Voltage : ISQ::SourceVoltageValue;
     }
 
-    port def solarArrayElectrodeConnection {
+    port def SolarArrayElectrodeConnection {
         out Voltage : ISQ::SourceVoltageValue;
         out Current : ISQ::ElectricCurrentUnit;
     }
@@ -83,7 +93,7 @@ package ElectricalPowerSystemPackage {
     // Electrical Power System
     part def ElectricalPowerSystem {
         // Interfaces (telecommand/telemetry + power rails)
-        port EPS_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port I2C_Bus : ~I2CBus;
 
         // Internal EPS command/telemetry ports used to bind actions
         port Eps_Command_In  : MissionPackage::OnBoardCommand;
@@ -92,23 +102,17 @@ package ElectricalPowerSystemPackage {
         // Regulated rails commonly referenced in your DAQ chapter
         port Power_Bus_5V : PowerBus;
         port Power_Bus_3V3 : PowerBus;
-        port Heater_Power_Bus : PowerBus;
 
-        part Battery_Pack_EPS : BatteryPack;
+        part Battery_Pack_EPS[1..*] : BatteryPack;
 
         // Chosen / documented elements
-        part Power_Supply_Unit : PowerSupplyUnit;
+        part Power_Supply_Unit[1..*] : PowerSupplyUnit;
 
         part Deployable_Solar_Arrays[0..*] : DeployableSolarArray;
         part Mounted_Solar_Cells[0..*] : SolarArray;
 
-        part Bus_5V : RegulatedPowerBus;
-        part Bus_3V3 : RegulatedPowerBus;
-
         // Map internal bus outputs to EPS external ports
-        bind Power_Bus_5V = Bus_5V.Voltage_Out;
-        bind Power_Bus_3V3 = Bus_3V3.Voltage_Out;
-        bind Heater_Power_Bus = Battery_Pack_EPS.Heater_Power_Bus;
+        //bind Heater_Power_Bus = Battery_Pack_EPS.Heater_Power_Bus;
 
         // --- EPS actions (wired to EPS command/telemetry ports) ---
         perform action Mppt : performMPPT;

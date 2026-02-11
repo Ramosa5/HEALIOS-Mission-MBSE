@@ -9,14 +9,14 @@ package OnBoardDataHandlingSystemPackage {
     // ------------------------------------------------------------------------------------------------
     // Generic data/command plumbing (abstracted physical buses)
     // ------------------------------------------------------------------------------------------------
-    port def I2CPort {
+    port def I2CBus {
         in Data : MissionPackage::OnBoardStatus;
         out Cmd : MissionPackage::OnBoardCommand;
     }
 
     interface def I2CInterface {
-        end Rx : ~I2CPort;
-        end Tx : I2CPort;
+        end Rx : ~I2CBus;
+        end Tx : I2CBus;
     }
 
     port def AnalogADCInput {
@@ -64,16 +64,7 @@ package OnBoardDataHandlingSystemPackage {
         port Command_In : MissionPackage::OnBoardCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        port EPS_I2C : I2CPort;
-        //port TCS_I2C : I2CPort;
-        port Magnetorquer_Board_I2C : I2CPort;
-        port Temperature_Sensor_I2C[0..*] : I2CPort;
-        port Sun_Sensor_I2C[0..*] : I2CPort;
-        port Irradiance_Sensor_I2C[0..*] : I2CPort;
-        port Radiation_Sensor_I2C[0..*] : I2CPort;
-        port Spectrometer_I2C[0..*] : I2CPort;
-        port Voltage_Current_Sense_I2C[0..*] : I2CPort;
-        port UHF_I2C[0..1] : I2CPort;
+        port I2C_Bus[1] : I2CBus;
 
         perform action Read_OBC_Temperature : ReadTemperature;
     }
@@ -89,18 +80,10 @@ package OnBoardDataHandlingSystemPackage {
         port Telecommand_In : MissionPackage::GroundCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
         port Out_Command_Port[0..*] : OutCommandPort;
-        port Power_Bus_In_3V3 : ~PowerBus;
-        port Power_Bus_In_5V : ~PowerBus;
+        port Power_Bus_3V3 : ~PowerBus;
+        port Power_Bus_5V : ~PowerBus;
 
-        port EPS_I2C[1] : I2CPort;
-        port Magnetorquer_Board_I2C[0..2] : ~I2CPort;
-        port Temperature_Sensor_I2C[0..*] : ~I2CPort;
-        port Sun_Sensor_I2C[0..*] : ~I2CPort;
-        port Irradiance_Sensor_I2C[0..*] : ~I2CPort;
-        port Radiation_Sensor_I2C[0..*] : ~I2CPort;
-        port Spectrometer_I2C[0..*] : ~I2CPort;
-        port Voltage_Current_Sense_I2C[0..*] : ~I2CPort;
-        port UHF_I2C[0..1] : ~I2CPort;
+        port I2C_Bus[1] : I2CBus;
 
         port Analog_ADC_Input[0..*] : AnalogADCInput;
 
@@ -108,17 +91,6 @@ package OnBoardDataHandlingSystemPackage {
 
         part Primary_OBC : OnBoardComputerUnit;
         part Secondary_OBC : OnBoardComputerUnit;
-
-        // Route primary OBC I2C controllers to system ports
-        connect Primary_OBC.EPS_I2C to EPS_I2C;
-        connect Primary_OBC.Temperature_Sensor_I2C to Temperature_Sensor_I2C;
-        connect Primary_OBC.Magnetorquer_Board_I2C to Magnetorquer_Board_I2C;
-        connect Primary_OBC.Sun_Sensor_I2C to Sun_Sensor_I2C;
-        connect Primary_OBC.Irradiance_Sensor_I2C to Irradiance_Sensor_I2C;
-        connect Primary_OBC.Radiation_Sensor_I2C to Radiation_Sensor_I2C;
-        connect Primary_OBC.Spectrometer_I2C to Spectrometer_I2C;
-        connect Primary_OBC.Voltage_Current_Sense_I2C to Voltage_Current_Sense_I2C;
-        connect Primary_OBC.UHF_I2C to UHF_I2C;
 
         // ------------------------------------------------------------------------------------------------
         // OBDH Actions
