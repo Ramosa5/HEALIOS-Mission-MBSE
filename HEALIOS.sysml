@@ -115,15 +115,23 @@ package HealiosMissionInstancePackage {
                 port EPS_Solar_Input redefines EPS_Solar_Input;
 
                 part Power_Supply_Unit redefines Power_Supply_Unit {
-                    port Power_Bus_5V redefines Power_Bus_5V;
-                    port Power_Bus_3V3 redefines Power_Bus_3V3;
+                    out port Power_Bus_5V redefines Power_Bus_5V;
+                    out port Power_Bus_3V3 redefines Power_Bus_3V3;
                     port Battery_Power_Bus redefines Battery_Power_Bus;
+                    in port Power_Supply_Bus redefines Power_Supply_Bus;
                 }
                 part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2] {
                     in port Solar_Input redefines Solar_Input;
+                    port Electrode_Connection redefines Electrode_Connection;
+
                 }
                 part Mounted_Solar_Arrays redefines Mounted_Solar_Arrays [1] {
                     in port Solar_Input redefines Solar_Input;
+                    port Electrode_Connection redefines Electrode_Connection;
+                }
+                part MPPT_Unit[3] :>> MPPT_Unit {
+                    port MPPT_Control :>> MPPT_Control;
+                    out port Power_Supply_Bus :>> Power_Supply_Bus;
                 }
 
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
@@ -159,6 +167,9 @@ package HealiosMissionInstancePackage {
                     connect Battery_Pack_EPS.Heater_Power_Bus to Main_Heater.Heater_Power_Bus;
                     connect Battery_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
                 }
+                connect Mounted_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
+                connect Deployable_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
+                connect MPPT_Unit.Power_Supply_Bus to Power_Supply_Unit.Power_Supply_Bus;
 
                 connect Battery_Pack_EPS.Battery_Power_Bus to Power_Supply_Unit.Battery_Power_Bus;
                 connect Power_Supply_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
@@ -407,11 +418,10 @@ package HealiosMissionInstancePackage {
             }
 
             // =========================
-            // PAYLOAD (your added blocks)
+            // PAYLOAD
             // =========================
+
             part SS_Satellite_Payload redefines SS_Satellite_Payload {
-                port Cmd_In redefines Cmd_In;
-                port Status_Out redefines Status_Out;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
                 port Data_Bus :>> Data_Bus;
@@ -425,7 +435,10 @@ package HealiosMissionInstancePackage {
                 }
 
                 part Mppt_Block redefines Mppt_Block {
+                    part Mppt_Unit[2] redefines Mppt_Unit;
+                    part Power_Dump_Resistor[2] redefines Power_Dump_Resistor;
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+                    port Mppt_Controller redefines Mppt_Controller;
                 }
 
                 part Iv_Sweep_And_Reverse_Bias_Block redefines Iv_Sweep_And_Reverse_Bias_Block {
@@ -472,6 +485,7 @@ package HealiosMissionInstancePackage {
 
                 part Solar_Cells_Block redefines Solar_Cells_Block {
                     in port Solar_Input redefines Solar_Input;
+                    port Mppt_Controller redefines Mppt_Controller;
 
                     part Psc_Connector_And_Protection redefines Psc_Connector_And_Protection {
                         attribute Name redefines Name = "Perovskite Coupon Protection";
@@ -485,7 +499,7 @@ package HealiosMissionInstancePackage {
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                         attribute Manufacturer redefines Manufacturer = "TBD";
                         in port Solar_Input redefines Solar_Input;
-
+                        port Electrode_Connection redefines Electrode_Connection;
                     }
 
                     part Reference_Silicon_Solar_Array_Coupon
@@ -495,11 +509,15 @@ package HealiosMissionInstancePackage {
                         attribute PowerConsumption redefines PowerConsumption = 0.0 [SI::W];
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                         in port Solar_Input redefines Solar_Input;
+                        port Electrode_Connection redefines Electrode_Connection;
                     }
 
                     connect Solar_Cells_Block.Solar_Input to Perovskite_Solar_Array_Coupon.Solar_Input;
                     connect Solar_Cells_Block.Solar_Input to Reference_Silicon_Solar_Array_Coupon.Solar_Input;
+                    connect Solar_Cells_Block.Mppt_Controller to Perovskite_Solar_Array_Coupon.Electrode_Connection;
+                    connect Solar_Cells_Block.Mppt_Controller to Reference_Silicon_Solar_Array_Coupon.Electrode_Connection;
                 }
+                connect Mppt_Block.Mppt_Controller to Solar_Cells_Block.Mppt_Controller;
 
                 connect SS_Satellite_Payload.PL_Solar_Input to Solar_Cells_Block.Solar_Input;
                 connect SS_Satellite_Payload.PL_Solar_Input to Env_Sensors_Block.Solar_Input;
