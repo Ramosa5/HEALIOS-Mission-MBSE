@@ -117,12 +117,15 @@ package MissionPhases {
 
             first MissionAnalysisProcess then MDR;
 
-            // The review is held at the end of phase 0
             snapshot MDR {
                 doc
                 /* Mission Definition Review:
+                 
                 
-                The primary objective of this review is to release the mission statement and assess the preliminary technical requirements specification and programmatic aspects */
+                The review is held at the end of phase 0:
+                
+                1) Release the mission statement.
+                2) Assess the preliminary technical requirements specification and programmatic aspects. */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -445,10 +448,133 @@ package MissionPhases {
             doc
             /* Detailed Definition */
 
-            // CDR is held at the end of phase C
+            // 1. Establish the Baseline from Phase B (PDR)
+            part PhaseB_Baseline : PhaseBaseline {
+                doc /* Baseline established at the end of Phase B (PDR) */
+                attribute PhaseName redefines PhaseName = "Phase B";
+                out item BaselineReport redefines BaselineReport;
+            }
+
+            // 2. Container for Phase C Documents
+            part PhaseC_Documentation : MissionDocumentation {
+                doc /* Documentation Created through Phase C */
+                in item Report_Item : Report [0..*];
+            }
+
+            // 3. Connect Baseline to Process, and Process to Documentation
+            connect PhaseB_Baseline.BaselineReport to DetailedDefinitionProcess.PhaseB_Baseline_Report;
+            connect DetailedDefinitionProcess.PhaseC_Documentation_Item to PhaseC_Documentation.Report_Item;
+
+            // 4. The Engineering Process
+            timeslice DetailedDefinitionProcess {
+                doc /* The workflow to reach Critical Design Review (CDR) */
+
+                // Input: Data frozen at PDR
+                in item PhaseB_Baseline_Report : Report;
+                
+                // Output: Data generated for CDR
+                out item PhaseC_Documentation_Item : Report [0..*];
+
+                // --- Design & Interface Actions ---
+
+                action Elaborate_Detailed_Design {
+                    doc /* Completion of the detailed design definition of the system at all levels */
+                    
+                    in item PhaseB_Baseline_Report : Report; // Contains Preliminary Design
+                    out item Detailed_Design_Definition : String; // E.g., Schematics, CAD, Code
+                }
+
+                action Finalize_Interface_Definitions {
+                    doc /* Detailed definition of internal and external interfaces */
+                    
+                    in item Detailed_Design_Definition : String;
+                    out item Final_Interface_Control_Documents : String;
+                }
+
+                // --- Hardware/Software Realization & Testing ---
+
+                action Develop_And_Test_Engineering_Models {
+                    doc /* Production and development testing of engineering models (EM) and pre-qualification of critical elements */
+                    
+                    in item Detailed_Design_Definition : String;
+                    out item EM_Test_Reports : String;
+                }
+
+                // --- AIT Planning ---
+
+                action Plan_AIT {
+                    doc /* Completion of assembly, integration and test (AIT) planning */
+                    
+                    in item Detailed_Design_Definition : String;
+                    in item PhaseB_Baseline_Report : Report; // Contains Verification Plan
+                    out item Detailed_AIT_Plan : String;
+                    //out item AIT_Procedures : String;
+                }
+
+                // --- Operations & Risk ---
+
+                action Prepare_User_Manual {
+                    doc /* Issue of preliminary user manual */
+                    
+                    in item Detailed_Design_Definition : String;
+                    out item Preliminary_User_Manual : String;
+                }
+
+                action Update_Risk_Assessment {
+                    doc /* Update of the risk assessment based on detailed design and EM testing */
+                    
+                    in item Detailed_Design_Definition : String;
+                    in item EM_Test_Reports : String;
+                    out item Updated_Risk_Register : String;
+                }
+
+                action Finalize_Procurement_And_Manufacturing_Plan {
+                    doc /* Preparation of procurement and manufacturing for phase D */
+                    
+                    in item Final_Design : String;
+                    out item Procurement_And_Manufacturing_Plan : String;
+                }
+
+                // 1. Detailed Design drives everything
+                flow PhaseB_Baseline_Report to Elaborate_Detailed_Design.PhaseB_Baseline_Report;
+                
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Finalize_Interface_Definitions.Detailed_Design_Definition;
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Develop_And_Test_Engineering_Models.Detailed_Design_Definition;
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Plan_AIT.Detailed_Design_Definition;
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Prepare_User_Manual.Detailed_Design_Definition;
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Update_Risk_Assessment.Detailed_Design_Definition;
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to Finalize_Procurement_And_Manufacturing_Plan.Final_Design;
+
+                flow Finalize_Interface_Definitions.Final_Interface_Control_Documents to Finalize_Procurement_And_Manufacturing_Plan.Final_Design;
+
+                flow Develop_And_Test_Engineering_Models.EM_Test_Reports to Update_Risk_Assessment.EM_Test_Reports;
+
+                flow PhaseB_Baseline_Report to Plan_AIT.PhaseB_Baseline_Report;
+
+                flow Elaborate_Detailed_Design.Detailed_Design_Definition to PhaseC_Documentation_Item;
+                flow Finalize_Interface_Definitions.Final_Interface_Control_Documents to PhaseC_Documentation_Item;
+                flow Develop_And_Test_Engineering_Models.EM_Test_Reports to PhaseC_Documentation_Item;
+                flow Plan_AIT.Detailed_AIT_Plan to PhaseC_Documentation_Item;
+                flow Prepare_User_Manual.Preliminary_User_Manual to PhaseC_Documentation_Item;
+                flow Update_Risk_Assessment.Updated_Risk_Register to PhaseC_Documentation_Item;
+                flow Finalize_Procurement_And_Manufacturing_Plan.Procurement_And_Manufacturing_Plan to PhaseC_Documentation_Item;
+            }
+
+            // Sequence: Process -> CDR
+            first DetailedDefinitionProcess then CDR;
+
             snapshot CDR : Report {
                 doc
-                /* Critical Design Review */
+                /* Critical Design Review 
+                
+                CDR is held at the end of phase C and assesses the following:
+
+                1) Assess the qualification and validation status of the critical processes and their readiness for deployment for phase D.
+                2) Confirm compatibility with external interfaces.
+                3) Release the final design.
+                4) Release assembly, integration and test planning.
+                5) Release flight hardware/software manufacturing, assembly and testing.
+                6) Release of user manual.*/
 
                 attribute BaselineApproved : Boolean;
             }
