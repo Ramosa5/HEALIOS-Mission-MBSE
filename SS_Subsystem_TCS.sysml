@@ -16,7 +16,7 @@ package ThermalControlSystemPackage {
         port EPS_Temperature_Port : temperatureReadingPort [0..*];
         port PL_Temperature_Port : temperatureReadingPort [0..*];
         port OBDH_Temperature_Port : temperatureReadingPort [0..*];
-        port Command_IN : ~OutCommandPort; [0..*];
+        port Data_Bus : ~DataBus; [0..*];
         
         //attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 
@@ -34,7 +34,7 @@ package ThermalControlSystemPackage {
         // In next iterations, add loop type action for OBDH control.
         perform action activateTCS {
             in Command : OnBoardCommand;
-            bind Command = Command_IN.Cmd;
+            bind Command = Data_Bus.Cmd;
             if Command.Type == "TurnOn" {
                 loop{
                     perform action read : ReadTemperature {

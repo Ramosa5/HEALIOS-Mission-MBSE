@@ -20,6 +20,14 @@ package ElectricalPowerSystemPackage {
         out Temp : ISQ::TemperatureValue [1..*];
     }
 
+    port def MPPTControl :> DataBus {
+        in Power : ISQ::PowerValue;
+        in Voltage : ISQ::SourceVoltageValue;
+        in Current : ISQ::ElectricCurrentUnit;
+    }
+
+    port def PowerSupplyBus :> PowerBus;
+
     part def TemperatureSensor specializes GeneralElectricalComponent {
         attribute Power : ISQ::PowerValue;
         attribute Temperature_Measurement : ISQ::TemperatureValue;
@@ -34,7 +42,7 @@ package ElectricalPowerSystemPackage {
 
     part def SolarArray specializes GeneralElectricalComponent {
         attribute Power_Generation : ISQ::PowerValue;
-        port Electrode_Connection : SolarArrayElectrodeConnection;
+        port Electrode_Connection : ~MPPTControl;
         port Solar_Input : ~MissionPackage::StellarEnvironment;
     }
 
@@ -42,7 +50,10 @@ package ElectricalPowerSystemPackage {
         attribute Deployment_Mechanism : String;
     }
 
-    part def MPPTUnit specializes GeneralElectricalComponent;
+    part def MPPTUnit specializes GeneralElectricalComponent{
+        port MPPT_Control : MPPTControl;
+        out port Power_Supply_Bus : PowerSupplyBus;
+    }
 
     part def KillSwitchUnit specializes GeneralElectricalComponent;
 
@@ -65,10 +76,10 @@ package ElectricalPowerSystemPackage {
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent{
-        port Power_Bus_5V : PowerBus;
-        port Power_Bus_3V3 : PowerBus;
-        port Solar_Array_Power_Bus : PowerBus;
+        out port Power_Bus_5V : PowerBus;
+        out port Power_Bus_3V3 : PowerBus;
         port Battery_Power_Bus : PowerBus; 
+        in port Power_Supply_Bus : PowerSupplyBus;
     }
 
     part def Heater specializes GeneralElectricalComponent {
@@ -83,11 +94,6 @@ package ElectricalPowerSystemPackage {
 
     port def PowerBus {
         out Voltage : ISQ::SourceVoltageValue;
-    }
-
-    port def SolarArrayElectrodeConnection {
-        out Voltage : ISQ::SourceVoltageValue;
-        out Current : ISQ::ElectricCurrentUnit;
     }
 
     // Electrical Power System
@@ -105,6 +111,7 @@ package ElectricalPowerSystemPackage {
         port Power_Bus_3V3 : PowerBus;
 
         part Battery_Pack_EPS[1..*] : BatteryPack;
+        part MPPT_Unit[0..*] : MPPTUnit;
 
         // Chosen / documented elements
         part Power_Supply_Unit[1..*] : PowerSupplyUnit;
