@@ -48,12 +48,13 @@ package PayloadPackage {
         part Reference_Silicon_Solar_Array_Coupon : SolarArray [1..*];
         part Psc_Connector_And_Protection : PerovskiteCellConnectorAndProtection;
         port Solar_Input : ~StellarEnvironment;
+        port Mppt_Controller : MPPTControl;
     }
 
     part def MPPTBlock {
         port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
-
-        part Mppt_Controller : MPPTUnit [1..*];
+        port Mppt_Controller : MPPTControl;
+        part Mppt_Unit : MPPTUnit [1..*];
         part Power_Dump_Resistor : Resistor [1..*];
     }
 
@@ -86,8 +87,6 @@ package PayloadPackage {
 
     part def Payload {
         // Ports for integration
-        port Cmd_In : MissionPackage::OnBoardCommand;
-        port Status_Out : MissionPackage::OnBoardStatus;
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;
         port Data_Bus : ~DataBus;
@@ -113,20 +112,20 @@ package PayloadPackage {
         perform action Collect_Data : collectExperimentalData;
 
         // Bind command input to the action command inputs
-        bind Apply_Reverse_Bias.Apply_Reverse_Bias_Voltage_Command = Cmd_In;
-        bind Measure_Iv_Curves.Measure_IV_Curves_Of_PSC_Command = Cmd_In;
-        bind Maintain_Mpp.Maintain_MPP_Command = Cmd_In;
-        bind Collect_Data.Collect_Experimental_Data_Command = Cmd_In;
+        bind Apply_Reverse_Bias.Apply_Reverse_Bias_Voltage_Command = Data_Bus.Cmd;
+        bind Measure_Iv_Curves.Measure_IV_Curves_Of_PSC_Command = Data_Bus.Cmd;
+        bind Maintain_Mpp.Maintain_MPP_Command = Data_Bus.Cmd;
+        bind Collect_Data.Collect_Experimental_Data_Command = Data_Bus.Cmd;
 
         // Merge action outputs to payload status out
-        bind Status_Out = Apply_Reverse_Bias.Voltage_Application_Status;
-        bind Status_Out = Measure_Iv_Curves.Measured_IV_Curves_Status;
-        bind Status_Out = Maintain_Mpp.Mpp_Status;
+        bind Data_Bus.Data = Apply_Reverse_Bias.Voltage_Application_Status;
+        bind Data_Bus.Data = Measure_Iv_Curves.Measured_IV_Curves_Status;
+        bind Data_Bus.Data = Maintain_Mpp.Mpp_Status;
 
         // Forward sensor results (collectData outputs) via statusOut
-        bind Status_Out = Collect_Data.Measured_Radiation_Status;
-        bind Status_Out = Collect_Data.Measured_Temperature_Status;
-        bind Status_Out = Collect_Data.Measured_Spectrum_Status;
-        bind Status_Out = Collect_Data.Measured_Irradiance_Status;
+        bind Data_Bus.Data = Collect_Data.Measured_Radiation_Status;
+        bind Data_Bus.Data = Collect_Data.Measured_Temperature_Status;
+        bind Data_Bus.Data = Collect_Data.Measured_Spectrum_Status;
+        bind Data_Bus.Data = Collect_Data.Measured_Irradiance_Status;
     }
 }

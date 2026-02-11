@@ -62,8 +62,6 @@ package OnBoardDataHandlingSystemPackage {
         part OBC_Magnetometer : Magnetometer;
 
         port Analog_ADC_Input[0..*] : AnalogADCInput;
-        port Command_In : MissionPackage::OnBoardCommand;
-        port Telemetry_Out : MissionPackage::OnBoardStatus;
 
         port Data_Bus[1] : DataBus;
 

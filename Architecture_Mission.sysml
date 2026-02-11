@@ -114,14 +114,8 @@ package MissionPackage {
         connect Telecommand_Port to SS_On_Board_Data_Handling.Telecommand_In;
         connect Telemetry_Port to SS_On_Board_Data_Handling.Telemetry_Out;
 
-        connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
+        connect SS_Communication_System.Decrypte_Autheticate_Action.Telecommand_Out
             to SS_On_Board_Data_Handling.Telecommand_In;
-
-
-        // Commands
-        connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Thermal_Control_System.Command_IN;
-        connect SS_On_Board_Data_Handling.Out_Command_Port
-            to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
 
         state Satellite_Mode;
     }

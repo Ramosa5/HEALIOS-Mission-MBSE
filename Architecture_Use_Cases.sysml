@@ -61,7 +61,7 @@ package UseCaseDefinitionsPackage {
             doc /* Modulates the secured command into a Radio Frequency (RF) signal and 
                    transmits it via the Ground Station antenna to the CubeSat. */
             in item Secured_Command_Input : GroundCommand;
-            out item Modulated_Uplink_Signal : GroundCommand; 
+            out item Modulated_Uplink_Signal : TelemetryData; 
         }
 
         // 5. Final State: The CubeSat receives the command and processes it according to its onboard software.
@@ -134,7 +134,7 @@ package UseCaseDefinitionsPackage {
         action Broadcast_Satellite_Telemetry_Signal : TransmitStatusDownlink {
             doc /* Modulates the secured data into an RF signal for transmission 
                    back to the Ground Station. */
-            in item Telemetry_Input : TelemetryData;
+            in item Telemetry_Input : OnBoardStatus;
             out item Transmitted_Radio_Signal : TelemetryData;
         }
 

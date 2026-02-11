@@ -68,24 +68,21 @@ package CommunicationsSystemPackage {
     }
 
     action def TransmitStatusDownlink {
-        in item HK_In : MissionPackage::OnBoardStatus;
-        out item TM_Out : MissionPackage::TelemetryData;
+        in item Housekeeping_In : MissionPackage::OnBoardStatus;
+        out item Telemetry_Frame_Out : MissionPackage::TelemetryData;
     }
 
     action def DecryptAndAuthenticateUplink {
-        in item RF_In : MissionPackage::TelemetryData;
-        out item Cmd_Out : MissionPackage::GroundCommand;
+        in item RF_Frame_In : MissionPackage::TelemetryData;
+         out item Telecommand_Out : MissionPackage::GroundCommand;
     }
-
     action def EncryptDownlinkTelemetry {
-        in item TM_In : MissionPackage::TelemetryData;
-        out item RF_Out : MissionPackage::TelemetryData;
+        in item Telemetry_Frame_In : MissionPackage::TelemetryData;
+        out item RF_Frame_Out : MissionPackage::TelemetryData;
     }
 
     part def CommunicationsSystem {
         port Power_Bus_5V: PowerBus;
-        port OBDH_Command_Port : OutCommandPort;
-        port OBDH_Status_Port : InStatusPort;
         port RF_Link_Port : RFLinkPort;
         port Data_Bus : DataBus;
         
@@ -103,14 +100,12 @@ package CommunicationsSystemPackage {
         attribute Supports_E2E_Test_With_EGSE : Boolean;
         attribute Supports_Over_The_Air_Qualification_Test : Boolean;
 
-        perform action TX_HK_Action : TransmitStatusDownlink;
-        perform action DEC_AUTH_Action : DecryptAndAuthenticateUplink;
-        perform action ENC_DL_Action : EncryptDownlinkTelemetry;
+        perform action Transmit_HealthData_Action : TransmitStatusDownlink;
+        perform action Decrypte_Autheticate_Action : DecryptAndAuthenticateUplink;
+        perform action Encrypt_Dowmlink_Action : EncryptDownlinkTelemetry;
 
-        bind ENC_DL_Action.TM_In = TX_HK_Action.TM_Out;
-        bind RF_Link_Port.RF_Out = ENC_DL_Action.RF_Out;
-        bind DEC_AUTH_Action.RF_In = RF_Link_Port.RF_In;
-        bind OBDH_Command_Port.Cmd = DEC_AUTH_Action.Cmd_Out;
-
+        bind Encrypt_Dowmlink_Action.Telemetry_Frame_In = Transmit_HealthData_Action.Telemetry_Frame_Out;
+        bind RF_Link_Port.RF_Out = Encrypt_Dowmlink_Action.Telemetry_Frame_In;
+        bind Decrypte_Autheticate_Action.Telecommand_Out = RF_Link_Port.RF_In;
     }
 }

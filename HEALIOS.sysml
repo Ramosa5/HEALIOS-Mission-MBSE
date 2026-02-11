@@ -6,6 +6,8 @@ package HealiosMissionInstancePackage {
     public import ISQ::*;
     public import ScalarValues::*;
     public import SpaceActionsPackage::*;
+    private import GroundStationPackage::*;
+    private import MissionControlCentrePackage::*;
 
     attribute yr : year;
 
@@ -110,22 +112,28 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_Electrical_Power_System redefines SS_Electrical_Power_System {
                 port Data_Bus redefines Data_Bus;
-                port Eps_Command_In redefines Eps_Command_In;
-                port Eps_Telemetry_Out redefines Eps_Telemetry_Out;
                 port Power_Bus_5V redefines Power_Bus_5V;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
                 port EPS_Solar_Input redefines EPS_Solar_Input;
 
                 part Power_Supply_Unit redefines Power_Supply_Unit {
-                    port Power_Bus_5V redefines Power_Bus_5V;
-                    port Power_Bus_3V3 redefines Power_Bus_3V3;
+                    out port Power_Bus_5V redefines Power_Bus_5V;
+                    out port Power_Bus_3V3 redefines Power_Bus_3V3;
                     port Battery_Power_Bus redefines Battery_Power_Bus;
+                    in port Power_Supply_Bus redefines Power_Supply_Bus;
                 }
                 part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2] {
                     in port Solar_Input redefines Solar_Input;
+                    port Electrode_Connection redefines Electrode_Connection;
+
                 }
                 part Mounted_Solar_Arrays redefines Mounted_Solar_Arrays [1] {
                     in port Solar_Input redefines Solar_Input;
+                    port Electrode_Connection redefines Electrode_Connection;
+                }
+                part MPPT_Unit[3] :>> MPPT_Unit {
+                    port MPPT_Control :>> MPPT_Control;
+                    out port Power_Supply_Bus :>> Power_Supply_Bus;
                 }
 
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
@@ -161,6 +169,9 @@ package HealiosMissionInstancePackage {
                     connect Battery_Pack_EPS.Heater_Power_Bus to Main_Heater.Heater_Power_Bus;
                     connect Battery_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
                 }
+                connect Mounted_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
+                connect Deployable_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
+                connect MPPT_Unit.Power_Supply_Bus to Power_Supply_Unit.Power_Supply_Bus;
 
                 connect Battery_Pack_EPS.Battery_Power_Bus to Power_Supply_Unit.Battery_Power_Bus;
                 connect Power_Supply_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
@@ -175,9 +186,6 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_On_Board_Data_Handling redefines SS_On_Board_Data_Handling {
                 // System ports
-                port Telecommand_In redefines Telecommand_In;
-                port Telemetry_Out redefines Telemetry_Out;
-                port Out_Command_Port redefines Out_Command_Port;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
 
                 // I2C buses
@@ -215,8 +223,6 @@ package HealiosMissionInstancePackage {
             part SS_Communication_System redefines SS_Communication_System {
                 // top-level comms ports (usage names with underscores)
                 port Power_Bus_5V redefines Power_Bus_5V;
-                port OBDH_Command_Port redefines OBDH_Command_Port;
-                port OBDH_Status_Port redefines OBDH_Status_Port;
                 port RF_Link_Port redefines RF_Link_Port;
                 port Data_Bus :>> Data_Bus;
 
@@ -259,15 +265,41 @@ package HealiosMissionInstancePackage {
                     attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
                 }
 
-                connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
                 connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
                 connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
                 connect Antenna_Part.Antenna_RF_Link_Port to SS_Communication_System.RF_Link_Port;
                 connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
                 connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
                 connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
-                connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
-                
+
+                perform action Transmit_HealthData_Action redefines Transmit_HealthData_Action {
+                    in item Housekeeping_In : MissionPackage::OnBoardStatus;
+                    out item Telemetry_Frame_Out : MissionPackage::TelemetryData;
+                }
+
+                perform action Encrypt_Dowmlink_Action redefines Encrypt_Dowmlink_Action {
+                    in item Telemetry_Frame_In : MissionPackage::TelemetryData;
+                    out RF_Frame_Out : MissionPackage::TelemetryData;  
+                }
+
+                perform action Decrypte_Autheticate_Action redefines Decrypte_Autheticate_Action {
+                    in item RF_Frame_In : MissionPackage::TelemetryData; 
+                    out item Rf_Frmae_Out : MissionPackage::TelemetryData;
+                }    
+
+                flow SS_Communication_System.Data_Bus to Transmit_HealthData_Action.Housekeeping_In;
+
+
+                flow Transmit_HealthData_Action.Telemetry_Frame_Out to Encrypt_Dowmlink_Action.Telemetry_Frame_In;
+
+
+                flow Encrypt_Dowmlink_Action.RF_Frame_Out to SS_Communication_System.RF_Link_Port;
+
+
+                flow SS_Communication_System.RF_Link_Port to Decrypte_Autheticate_Action.RF_Frame_In;
+
+
+                flow Decrypte_Autheticate_Action.Rf_Frmae_Out to SS_Communication_System.Data_Bus;
                 
             }
 
@@ -295,7 +327,6 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_Attitude_And_Orbit_Control_System
                 redefines SS_Attitude_And_Orbit_Control_System {
-                port AOCS_Command_In redefines AOCS_Command_In;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
                 port Data_Bus :>> Data_Bus;
@@ -344,7 +375,7 @@ package HealiosMissionInstancePackage {
                 connect SS_Attitude_And_Orbit_Control_System.Data_Bus
                     to Magnetorquer_Board.Magnetorquer_Board_I2C;
 
-                perform action Activate_AOCS redefines Activate_AOCS {
+                fgfgfg daje zeby bylo na czerowno zeby to ogarnac perform action Activate_AOCS redefines Activate_AOCS {
                     in AOCS_Command : MissionPackage::OnBoardCommand;
 
                     if AOCS_Command.Type == "TurnOn" {
@@ -372,7 +403,7 @@ package HealiosMissionInstancePackage {
                 port EPS_Temperature_Port redefines EPS_Temperature_Port;
                 port PL_Temperature_Port redefines PL_Temperature_Port;
                 port OBDH_Temperature_Port redefines OBDH_Temperature_Port;
-                port Command_IN redefines Command_IN;
+                in abstract port Data_Bus redefines Data_Bus;
 
                 attribute Stop_Signal redefines Stop_Signal;
 
@@ -389,11 +420,10 @@ package HealiosMissionInstancePackage {
             }
 
             // =========================
-            // PAYLOAD (your added blocks)
+            // PAYLOAD
             // =========================
+
             part SS_Satellite_Payload redefines SS_Satellite_Payload {
-                port Cmd_In redefines Cmd_In;
-                port Status_Out redefines Status_Out;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
                 port Data_Bus :>> Data_Bus;
@@ -407,7 +437,10 @@ package HealiosMissionInstancePackage {
                 }
 
                 part Mppt_Block redefines Mppt_Block {
+                    part Mppt_Unit[2] redefines Mppt_Unit;
+                    part Power_Dump_Resistor[2] redefines Power_Dump_Resistor;
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+                    port Mppt_Controller redefines Mppt_Controller;
                 }
 
                 part Iv_Sweep_And_Reverse_Bias_Block redefines Iv_Sweep_And_Reverse_Bias_Block {
@@ -454,6 +487,7 @@ package HealiosMissionInstancePackage {
 
                 part Solar_Cells_Block redefines Solar_Cells_Block {
                     in port Solar_Input redefines Solar_Input;
+                    port Mppt_Controller redefines Mppt_Controller;
 
                     part Psc_Connector_And_Protection redefines Psc_Connector_And_Protection {
                         attribute Name redefines Name = "Perovskite Coupon Protection";
@@ -467,7 +501,7 @@ package HealiosMissionInstancePackage {
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                         attribute Manufacturer redefines Manufacturer = "TBD";
                         in port Solar_Input redefines Solar_Input;
-
+                        port Electrode_Connection redefines Electrode_Connection;
                     }
 
                     part Reference_Silicon_Solar_Array_Coupon
@@ -477,11 +511,15 @@ package HealiosMissionInstancePackage {
                         attribute PowerConsumption redefines PowerConsumption = 0.0 [SI::W];
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                         in port Solar_Input redefines Solar_Input;
+                        port Electrode_Connection redefines Electrode_Connection;
                     }
 
                     connect Solar_Cells_Block.Solar_Input to Perovskite_Solar_Array_Coupon.Solar_Input;
                     connect Solar_Cells_Block.Solar_Input to Reference_Silicon_Solar_Array_Coupon.Solar_Input;
+                    connect Solar_Cells_Block.Mppt_Controller to Perovskite_Solar_Array_Coupon.Electrode_Connection;
+                    connect Solar_Cells_Block.Mppt_Controller to Reference_Silicon_Solar_Array_Coupon.Electrode_Connection;
                 }
+                connect Mppt_Block.Mppt_Controller to Solar_Cells_Block.Mppt_Controller;
 
                 connect SS_Satellite_Payload.PL_Solar_Input to Solar_Cells_Block.Solar_Input;
                 connect SS_Satellite_Payload.PL_Solar_Input to Env_Sensors_Block.Solar_Input;
@@ -521,20 +559,10 @@ package HealiosMissionInstancePackage {
 
             // command connections
 
-            connect Telecommand_Port.TC to SS_On_Board_Data_Handling.Telecommand_In;
-            connect SS_On_Board_Data_Handling.Telemetry_Out to Telemetry_Port.TM;
-
-            connect SS_Communication_System.OBDH_Command_Port
-                to SS_On_Board_Data_Handling.Telecommand_In;
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_Status_Port;
-
-            connect SS_On_Board_Data_Handling.Out_Command_Port
-                to SS_Thermal_Control_System.Command_IN;
-            connect SS_On_Board_Data_Handling.Out_Command_Port
-                to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
-
-            connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Satellite_Payload.Cmd_In;
+            connect SS_Electrical_Power_System.Data_Bus
+                to SS_Thermal_Control_System.Data_Bus;
+            connect SS_On_Board_Data_Handling.Data_Bus
+                to SS_Attitude_And_Orbit_Control_System.Data_Bus;
 
             // sun connections
             connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Electrical_Power_System.EPS_Solar_Input;
@@ -562,24 +590,9 @@ package HealiosMissionInstancePackage {
                     attribute name redefines name = "UHF Ground Antenna";
                     attribute band redefines band = "UHF";
                     attribute gain redefines gain = 12.0;
-                }
 
-                part Radio_Unit_Part redefines Radio_Unit_Part {
-                    attribute name redefines name = "SDR Ground Radio";
-                    attribute supportedBands redefines supportedBands = "UHF/VHF";
-                }
-
-                part Pass_Predictor_Part redefines Pass_Predictor_Part {
-                    attribute name redefines name = "Pass Predictor";
-                    attribute usesTLE redefines usesTLE = true;
-                }
-
-                part Doppler_Compensator_Part redefines Doppler_Compensator_Part {
-                    attribute name redefines name = "Doppler Compensator";
-                }
-
-                part Link_Budget_Tool_Part redefines Link_Budget_Tool_Part {
-                    attribute name redefines name = "Link Budget Tool";
+                    in port Uplink_In redefines Uplink_In;
+                    out port Downlink_Out redefines Downlink_Out;
                 }
 
                 part Crypto_Unit_Part redefines Crypto_Unit_Part {
@@ -588,7 +601,113 @@ package HealiosMissionInstancePackage {
                     attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
                     attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
                     attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
+
+                    in port TC_In redefines TC_In;
+                    out port TC_Out redefines TC_Out;
+
+                    in port TM_In redefines TM_In;
+                    out port TM_Out redefines TM_Out;
                 }
+
+                part Pass_Predictor_Part redefines Pass_Predictor_Part {
+                    attribute name redefines name = "Pass Predictor";
+                    attribute usesTLE redefines usesTLE = true;
+
+                    port PassPlan_Out redefines PassPlan_Out;
+                    port Tracking_Out redefines Tracking_Out;
+                }
+
+                perform action Auth_Encrypt_Action redefines Auth_Encrypt_Action {
+                    in Telecommand_To_Encrypt : MissionPackage::GroundCommand;
+                    out Secured_Encrypted_Telecommand : MissionPackage::GroundCommand;
+                }
+
+                perform action Uplink_Action redefines Uplink_Action {
+                    in Modulated_Uplink_Signal : MissionPackage::GroundCommand;
+                    out Uplink_Signal_Sent : MissionPackage::GroundCommand;
+                }
+
+                perform action Downlink_Action redefines Downlink_Action {
+                    out item Captured_Encrypted_Telemetry : MissionPackage::TelemetryData;
+                    in item Incoming_Radio_Signal : TelemetryData;
+                    
+                }
+
+                perform action Verify_Decrypt_Action redefines Verify_Decrypt_Action {
+                    in Telemetry_To_Decrypt : MissionPackage::TelemetryData;
+                    out Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
+                }
+
+                perform action Archive_Action redefines Archive_Action {
+                    in item Telemetry_To_Archive : MissionPackage::TelemetryData;
+                    out item Record_of_Telemetry : ArchiveRecord;
+                }
+
+                perform action Tracking_Action redefines Tracking_Action {
+                    in Satellite_plan : PassPlan;
+                    out Tracking_Data : TrackingData;
+                }   
+
+                 flow of MissionPackage::GroundCommand
+                    from Mission_Control_Centre_TC_Port
+                    to Auth_Encrypt_Action.Telecommand_To_Encrypt;
+
+                flow of MissionPackage::GroundCommand
+                    from Auth_Encrypt_Action.Secured_Encrypted_Telecommand
+                    to Uplink_Action.Modulated_Uplink_Signal;
+
+                flow of MissionPackage::GroundCommand
+                    from Uplink_Action.Uplink_Signal_Sent
+                    to Tc_Port;
+
+                // --- DOWNLINK (TM) ---
+                flow of MissionPackage::TelemetryData
+                    from Tm_Port
+                    to Downlink_Action.Incoming_Radio_Signal;
+
+                flow of MissionPackage::TelemetryData
+                    from Downlink_Action.Captured_Encrypted_Telemetry
+                    to Verify_Decrypt_Action.Telemetry_To_Decrypt;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Mission_Control_Centre_TM_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Data_Centre_TM_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Archive_Action.Telemetry_To_Archive;
+
+                flow of ArchiveRecord
+                    from Archive_Action.Record_of_Telemetry
+                    to Data_Centre_Archive_Port;
+
+                // --- PASS PLAN / TRACKING ---
+                flow of PassPlan
+                    from Mission_Control_Centre_Pass_Plan_Port
+                    to Tracking_Action.Satellite_plan;
+
+                flow of TrackingData
+                    from Tracking_Action.Tracking_Data
+                    to Mission_Control_Centre_Tracking_Port;
+
+                
+                connect Ground_Station.Mission_Control_Centre_TC_Port to Crypto_Unit_Part.TC_In;
+                connect Crypto_Unit_Part.TC_Out to Antenna_Part.Uplink_In;
+
+                // --- TM downlink ---
+                connect Antenna_Part.Downlink_Out to Crypto_Unit_Part.TM_In;
+                connect Crypto_Unit_Part.TM_Out to Ground_Station.Mission_Control_Centre_TM_Port;
+                connect Crypto_Unit_Part.TM_Out to Ground_Station.Data_Centre_TM_Port;
+
+                // --- pass plan / tracking ---
+                connect Ground_Station.Mission_Control_Centre_Pass_Plan_Port to Pass_Predictor_Part.PassPlan_Out;
+                connect Pass_Predictor_Part.Tracking_Out to Ground_Station.Mission_Control_Centre_Tracking_Port;
+
+
             }
 
             part Mission_Control_Centre redefines Mission_Control_Centre {
@@ -600,16 +719,79 @@ package HealiosMissionInstancePackage {
                 part Auth_Service_Part redefines Auth_Service_Part {
                     attribute name redefines name = "MCC Authentication";
                     attribute method redefines method = "MFA (TBD)";
+
+                    in port Auth_Request_In redefines Auth_Request_In;
+                    out port Auth_Token_Out redefines Auth_Token_Out;
                 }
 
                 part Operations_Console_Part redefines Operations_Console_Part {
                     attribute name redefines name = "Operations Console";
+
+                    out port Operator_Request_Out redefines Operator_Request_Out;
+                    in port Auth_Token_In redefines Auth_Token_In;
+
+                    out port TC_Out redefines TC_Out;
+                    in port TM_In redefines TM_In;
                 }
 
                 part Pass_Planner_Part redefines Pass_Planner_Part {
                     attribute name redefines name = "Pass Planner";
                     attribute usesTLE redefines usesTLE = true;
+
+                    out port PassPlan_Out redefines PassPlan_Out;
                 }
+
+                connect Operations_Console_Part.Operator_Request_Out to Auth_Service_Part.Auth_Request_In;
+                connect Auth_Service_Part.Auth_Token_Out to Operations_Console_Part.Auth_Token_In;
+
+                connect Operations_Console_Part.TC_Out to Mission_Control_Centre.Ground_Station_TC_Port;
+                connect Mission_Control_Centre.Ground_Station_TM_Port to Operations_Console_Part.TM_In;
+
+                connect Pass_Planner_Part.PassPlan_Out to Mission_Control_Centre.Ground_Station_Pass_Plan_Port;
+
+                perform action Authorize_Action redefines Authorize_Action {
+                    in item Operator_Request  : OperatorRequest;
+                    out item  Auth_Token : AuthToken;
+                }
+
+                perform action Generate_TC_Action redefines Generate_TC_Action {
+                    in item Auth_Token  : AuthToken;
+                    out item Raw_Unsecured_Telecommand : MissionPackage::GroundCommand;
+                }
+
+                perform action Plan_Passes_Action redefines Plan_Passes_Action {
+                    out item  Plan_of_Satellite_Path : PassPlan;
+                }
+
+                perform action Monitor_TM_Action redefines Monitor_TM_Action {
+                    in item  Telemetry_For_Monitoring : MissionPackage::TelemetryData;
+                }
+
+                flow of OperatorRequest
+                    from Operations_Console_Part.Operator_Request_Out
+                    to Authorize_Action.Operator_Request;
+
+                flow of AuthToken
+                    from Authorize_Action.Auth_Token
+                    to Operations_Console_Part.Auth_Token_In;
+
+
+                flow of AuthToken
+                    from Operations_Console_Part.Operator_Request_Out
+                    to Generate_TC_Action.Auth_Token;
+
+                flow of MissionPackage::GroundCommand
+                    from Generate_TC_Action.Raw_Unsecured_Telecommand
+                    to Mission_Control_Centre.Ground_Station_TC_Port;
+
+                flow of PassPlan
+                    from Plan_Passes_Action.Plan_of_Satellite_Path
+                    to Mission_Control_Centre.Ground_Station_Pass_Plan_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Mission_Control_Centre.Ground_Station_TM_Port
+                    to Monitor_TM_Action.Telemetry_For_Monitoring;
+
             }
 
             part Data_Centre redefines Data_Centre {
@@ -621,11 +803,55 @@ package HealiosMissionInstancePackage {
                 part Structured_Archive_Part redefines Structured_Archive_Part {
                     attribute name redefines name = "Structured Archive";
                     attribute retention redefines retention = 1825 [SI::day];
+
+                    in port Record_In redefines Record_In;
                 }
 
                 part Data_Validator_Part redefines Data_Validator_Part {
                     attribute name redefines name = "Telemetry Validator";
+
+                    in port TM_In redefines TM_In;
+                    out port TM_Validated_Out redefines TM_Validated_Out;
                 }
+
+                connect Data_Centre.Ground_Station_TM_Port
+                    to Data_Validator_Part.TM_In;
+
+                // zwalidowane TM do MCC products port
+                connect Data_Validator_Part.TM_Validated_Out
+                    to Data_Centre.Mission_Control_Centre_TM_Products_Port;
+
+                // record do archiwum
+                connect Data_Centre.Ground_Station_Records_Port
+                    to Structured_Archive_Part.Record_In.RecordIn;
+
+
+                connect Data_Centre.Ground_Station_Records_Port to
+                    Structured_Archive_Part.Record_In;
+
+                perform action Validate_Action redefines Validate_Action {
+                    in item Telemetry_For_Validate : MissionPackage::TelemetryData;
+                    out item Validated_Telemetry : MissionPackage::TelemetryData;
+                }
+
+                perform action Store_Action redefines Store_Action {
+                    in item Record_of_Satellite_Data redefines Record_of_Satellite_Data : ArchiveRecord;
+                }
+
+                                // GS TM -> Validate_Action
+                flow of MissionPackage::TelemetryData
+                    from Data_Centre.Ground_Station_TM_Port
+                    to Validate_Action.Telemetry_For_Validate;
+
+                // Validate_Action -> MCC TM products port
+                flow of MissionPackage::TelemetryData
+                    from Validate_Action.Validated_Telemetry
+                    to Data_Centre.Mission_Control_Centre_TM_Products_Port;
+
+                // GS Record -> Store_Action
+                flow of ArchiveRecord
+                    from Data_Centre.Ground_Station_Records_Port
+                    to Store_Action.Record_of_Satellite_Data;
             }
 
             connect Mission_Control_Centre.Ground_Station_TC_Port
