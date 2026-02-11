@@ -99,7 +99,7 @@ package MissionPackage {
         part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
         part <PL> SS_Satellite_Payload : Payload;
 
-        in port Satellite_Solar_Environment : StellarEnvironment;
+        in port Satellite_Solar_Environment : ~StellarEnvironment;
 
 
        
@@ -117,7 +117,9 @@ package MissionPackage {
         connect SS_Communication_System.Decrypte_Autheticate_Action.Telecommand_Out
             to SS_On_Board_Data_Handling.Telecommand_In;
 
-        state Satellite_Mode;
+        state Satellite_Mode{
+            in abstract port Switch_Command : DataBus;
+        }
     }
     // --- 4. Ground Segment Placeholder ---
     public part def GroundSegment {

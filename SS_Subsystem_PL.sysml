@@ -15,17 +15,17 @@ package PayloadPackage {
     part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
     part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
     part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent{
-        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port Voltage_Current_Sense_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
     part def IrradianceSensorBlock specializes GeneralElectricalComponent {
-        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port Irradiance_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def RadiationDoseSensor specializes GeneralElectricalComponent {
-        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port Radiation_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def SpectrometerPackage specializes GeneralElectricalComponent{
-        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port Spectrometer_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;

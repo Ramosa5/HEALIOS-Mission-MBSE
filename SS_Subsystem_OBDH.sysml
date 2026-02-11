@@ -53,9 +53,9 @@ package OnBoardDataHandlingSystemPackage {
     part def OnBoardComputerUnit {
         attribute Name : String;
         attribute Role : String;
-        attribute Warm_Redundant : Boolean;
+        attribute Redundant : Boolean;
 
-        part NVM : NonVolatileMemory;
+        part ROM : NonVolatileMemory;
         part RAM : VolatileMemory;
         part OBC_Temperature_Sensor : TemperatureSensor;
         part OBC_Gyroscope : Gyroscope;

@@ -26,8 +26,6 @@ package ElectricalPowerSystemPackage {
         in Current : ISQ::ElectricCurrentUnit;
     }
 
-    port def PowerSupplyBus :> PowerBus;
-
     part def TemperatureSensor specializes GeneralElectricalComponent {
         attribute Power : ISQ::PowerValue;
         attribute Temperature_Measurement : ISQ::TemperatureValue;
@@ -52,7 +50,7 @@ package ElectricalPowerSystemPackage {
 
     part def MPPTUnit specializes GeneralElectricalComponent{
         port MPPT_Control : MPPTControl;
-        out port Power_Supply_Bus : PowerSupplyBus;
+        out port Power_Supply_Bus : PowerBus;
     }
 
     part def KillSwitchUnit specializes GeneralElectricalComponent;
@@ -61,6 +59,8 @@ package ElectricalPowerSystemPackage {
 
     part def Battery :> GeneralElectricalComponent{
         attribute Battery_Size : ISQ::EnergyValue;
+        port Battery_Power_Bus : PowerBus;
+        port Heater_Power_Bus : PowerBus;
     }
 
     part def BatteryPack specializes GeneralElectricalComponent {
@@ -72,14 +72,14 @@ package ElectricalPowerSystemPackage {
         part Main_Heater : Heater;
         part Temp_Sensor : TemperatureSensor;
         port Battery_Power_Bus : PowerBus;
-        port Heater_Power_Bus : PowerBus;
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent{
         out port Power_Bus_5V : PowerBus;
         out port Power_Bus_3V3 : PowerBus;
         port Battery_Power_Bus : PowerBus; 
-        in port Power_Supply_Bus : PowerSupplyBus;
+        in port Power_Supply_Bus : ~PowerBus;
+        port Data_Bus : DataBus;
     }
 
     part def Heater specializes GeneralElectricalComponent {
