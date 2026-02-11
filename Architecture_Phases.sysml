@@ -585,6 +585,8 @@ package MissionPhases {
             doc
             /* Qualification and Production */
 
+            /* Deliberately left empty; the Phase D content is currently revised. Namely, Testing Campaign is under revision. */
+
             // QR held during the course of the phase
             snapshot QR : Report {
                 doc
@@ -618,6 +620,48 @@ package MissionPhases {
         then timeslice PhaseE {
             doc
             /* Utilization */
+
+            part PhaseE_Documentation : MissionDocumentation {
+                in item Report_Item : Report [0..*];
+            }
+
+            timeslice PreLaunchActivities {
+                doc /* Perform all activities at space and ground segment level to prepare for launch */
+
+                out item PreLaunch_Status : Report;
+
+                part CubeSat : MissionPackage::SpaceSegment {
+                    port Deployment_Interface redefines Deployment_Interface;
+                }
+                part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
+                    port Deployment_Slot redefines Deployment_Slot;
+                    port Mounting_Plate redefines Mounting_Plate;
+                }
+                part LaunchVehicle : LaunchEnvironment::Launcher {
+                    port Payload_Adapter redefines Payload_Adapter;
+                }
+
+                connect LaunchVehicle.Payload_Adapter to CubeSat_Dispenser.Mounting_Plate;
+connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
+
+                action Integration_With_Launch_Dispenser {
+                    doc /* Integration of the space segment with the launch vehicle through the launch dispenser */
+                }
+                
+                first Integration_With_Launch_Dispenser then Ground_Segment_Final_Validation;
+
+                action Ground_Segment_Final_Validation {
+                    doc /* Validation of tracking, comms, and safety systems */
+                }
+
+                first Ground_Segment_Final_Validation then Mission_Rehearsal;
+
+                action Mission_Rehearsal {
+                    doc /* Simulations and rehearsals for the operations team */
+                }
+            }
+
+            first PreLaunchActivities then FRR;
 
             // FRR held prior to launch
             snapshot FRR : Report {

@@ -32,17 +32,22 @@ package LaunchEnvironment {
 
   port def DispenserContactInterface;
 
+  port def MechanicalAdapterInterface;
+
   part def Launcher {
     attribute Name : String;
     attribute Payload_Capacity : ISQ::MassValue;
     attribute Launch_Site : String;
+
+    port Payload_Adapter : MechanicalAdapterInterface;
   }
 
   part def CubeSatDispenser {
     attribute Name : String;
     attribute Status : String;
-
-    port Mounting_Port : DispenserContactInterface;
+    
+    port Mounting_Plate : ~MechanicalAdapterInterface;
+    port Deployment_Slot : DispenserContactInterface;
   }
 }
 

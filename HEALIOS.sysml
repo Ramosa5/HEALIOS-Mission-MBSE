@@ -182,10 +182,9 @@ package HealiosMissionInstancePackage {
                 bind Battery_Pack_EPS.Battery_Power_Bus = Power_Supply_Unit.Battery_Power_Bus;
                 bind Power_Supply_Unit.Power_Bus_5V = SS_Electrical_Power_System.Power_Bus_5V;
                 bind Power_Supply_Unit.Power_Bus_3V3 = SS_Electrical_Power_System.Power_Bus_3V3;
-                bind SS_Electrical_Power_System.EPS_Solar_Input
-                    = Deployable_Solar_Arrays.Solar_Input;
-                bind SS_Electrical_Power_System.EPS_Solar_Input
-                    = Mounted_Solar_Arrays.Solar_Input;
+                bind SS_Electrical_Power_System.EPS_Solar_Input =
+                    Deployable_Solar_Arrays.Solar_Input;
+                bind SS_Electrical_Power_System.EPS_Solar_Input = Mounted_Solar_Arrays.Solar_Input;
                 bind SS_Electrical_Power_System.Data_Bus = Power_Supply_Unit.Data_Bus;
             }
 
@@ -362,7 +361,6 @@ package HealiosMissionInstancePackage {
                     port Power_Bus_5V redefines Power_Bus_5V;
                     port Magnetorquer_Board_Control redefines Magnetorquer_Board_Control;
 
-
                     part Mounted_Magnetorquer_X redefines Mounted_Magnetorquer [1] {
                         attribute Name redefines Name = "MTQ_X";
                         attribute Axis redefines Axis = "X";
@@ -386,12 +384,11 @@ package HealiosMissionInstancePackage {
                     }
                 }
 
-                bind SS_Attitude_And_Orbit_Control_System.Power_Bus_3V3
-                    = Sun_Sensor.Power_Bus_3V3;
-                bind SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
-                    = Magnetorquer_Board.Power_Bus_5V;
-                bind SS_Attitude_And_Orbit_Control_System.Data_Bus
-                    = Magnetorquer_Board.Magnetorquer_Board_Control;
+                bind SS_Attitude_And_Orbit_Control_System.Power_Bus_3V3 = Sun_Sensor.Power_Bus_3V3;
+                bind SS_Attitude_And_Orbit_Control_System.Power_Bus_5V =
+                    Magnetorquer_Board.Power_Bus_5V;
+                bind SS_Attitude_And_Orbit_Control_System.Data_Bus =
+                    Magnetorquer_Board.Magnetorquer_Board_Control;
 
                 perform action Use_AOCS : UseAOCS {
                     in Command redefines Command;
@@ -421,7 +418,7 @@ package HealiosMissionInstancePackage {
                 attribute Stop_Signal redefines Stop_Signal;
 
                 // ref parts exist in the TCS definition; create concrete instance usages for visibility
-                abstract part EPS_Heater redefines EPS_Heater [1]{
+                abstract part EPS_Heater redefines EPS_Heater [1] {
                     attribute Power redefines Power = 10 [W];
                     attribute Minimal_Temperature redefines Minimal_Temperature = 253 [K];
                 }
@@ -444,7 +441,8 @@ package HealiosMissionInstancePackage {
                 connect EPS_Temp_Sensor.EPS_Temperature_Measurement
                     to SS_Thermal_Control_System.Data_Bus;
 
-                bind EPS_Temp_Sensor.EPS_Temperature_Measurement = Use_TCS.Measured_Temperature_Input;
+                bind EPS_Temp_Sensor.EPS_Temperature_Measurement =
+                    Use_TCS.Measured_Temperature_Input;
                 bind EPS_Heater.Power = Use_TCS.Heating_Power_Input;
                 bind EPS_Heater.Minimal_Temperature = Use_TCS.Minimal_Temperature_Input;
                 bind Data_Bus.Cmd = Use_TCS.Command;
@@ -577,14 +575,13 @@ package HealiosMissionInstancePackage {
                         port Electrode_Connection redefines Electrode_Connection;
                     }
 
-                    bind Solar_Cells_Block.Solar_Input
-                        = Perovskite_Solar_Array_Coupon.Solar_Input;
-                    bind Solar_Cells_Block.Solar_Input
-                        = Reference_Silicon_Solar_Array_Coupon.Solar_Input;
-                    bind Solar_Cells_Block.Mppt_Controller
-                        = Perovskite_Solar_Array_Coupon.Electrode_Connection;
-                    bind Solar_Cells_Block.Mppt_Controller
-                        = Reference_Silicon_Solar_Array_Coupon.Electrode_Connection;
+                    bind Solar_Cells_Block.Solar_Input = Perovskite_Solar_Array_Coupon.Solar_Input;
+                    bind Solar_Cells_Block.Solar_Input =
+                        Reference_Silicon_Solar_Array_Coupon.Solar_Input;
+                    bind Solar_Cells_Block.Mppt_Controller =
+                        Perovskite_Solar_Array_Coupon.Electrode_Connection;
+                    bind Solar_Cells_Block.Mppt_Controller =
+                        Reference_Silicon_Solar_Array_Coupon.Electrode_Connection;
                 }
 
                 bind Mppt_Block.Mppt_Controller = Solar_Cells_Block.Mppt_Controller;
@@ -631,10 +628,10 @@ package HealiosMissionInstancePackage {
             connect SS_Electrical_Power_System.Data_Bus to SS_Thermal_Control_System.Data_Bus;
 
             // sun connections
-            bind HEALIOS_Space_Segment.Satellite_Solar_Environment
-                = SS_Electrical_Power_System.EPS_Solar_Input;
-            bind HEALIOS_Space_Segment.Satellite_Solar_Environment
-                = SS_Satellite_Payload.PL_Solar_Input;
+            bind HEALIOS_Space_Segment.Satellite_Solar_Environment =
+                SS_Electrical_Power_System.EPS_Solar_Input;
+            bind HEALIOS_Space_Segment.Satellite_Solar_Environment =
+                SS_Satellite_Payload.PL_Solar_Input;
         }
 
         part HEALIOS_Ground_Segment redefines Ground_Segment {
@@ -691,8 +688,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Uplink_Action redefines Uplink_Action {
-                    in Modulated_Uplink_Signal : MissionPackage::GroundCommand;
-                    out Uplink_Signal_Sent : MissionPackage::GroundCommand;
+                    in item Modulated_Uplink_Signal : MissionPackage::GroundCommand;
+                    out item Uplink_Signal_Sent : MissionPackage::GroundCommand;
                 }
 
                 perform action Downlink_Action redefines Downlink_Action {
@@ -701,8 +698,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Verify_Decrypt_Action redefines Verify_Decrypt_Action {
-                    in Telemetry_To_Decrypt : MissionPackage::TelemetryData;
-                    out Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
+                    in item Telemetry_To_Decrypt : MissionPackage::TelemetryData;
+                    out item Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
                 }
 
                 perform action Archive_Action redefines Archive_Action {
@@ -711,8 +708,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Tracking_Action redefines Tracking_Action {
-                    in Satellite_plan : PassPlan;
-                    out Tracking_Data : TrackingData;
+                    in item Satellite_plan : PassPlan;
+                    out item Tracking_Data : TrackingData;
                 }
 
                 flow of MissionPackage::GroundCommand
@@ -778,8 +775,8 @@ package HealiosMissionInstancePackage {
                 port Ground_Station_Tracking_Port redefines Ground_Station_Tracking_Port;
 
                 part Auth_Service_Part redefines Auth_Service_Part {
-                    attribute name redefines name = "MCC Authentication";
-                    attribute method redefines method = "MFA (TBD)";
+                    attribute name redefines name = "Mission Control Centre Authentication Service";
+                    attribute method redefines method = "MFA";
 
                     in port Auth_Request_In redefines Auth_Request_In;
                     out port Auth_Token_Out redefines Auth_Token_Out;
@@ -800,12 +797,14 @@ package HealiosMissionInstancePackage {
                     attribute usesTLE redefines usesTLE = true;
 
                     out port PassPlan_Out redefines PassPlan_Out;
+                    in port Tracking_Satellite redefines Tracking_Satellite;
                 }
 
                 connect Operations_Console_Part.Operator_Request_Out
                     to Auth_Service_Part.Auth_Request_In;
                 connect Auth_Service_Part.Auth_Token_Out to Operations_Console_Part.Auth_Token_In;
-
+                connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port
+                    to Pass_Planner_Part.Tracking_Satellite;
                 connect Operations_Console_Part.TC_Out
                     to Mission_Control_Centre.Ground_Station_TC_Port;
                 connect Mission_Control_Centre.Ground_Station_TM_Port
@@ -826,6 +825,7 @@ package HealiosMissionInstancePackage {
 
                 perform action Plan_Passes_Action redefines Plan_Passes_Action {
                     out item Plan_of_Satellite_Path : PassPlan;
+                    in item Track_of_Satellite_Path : TrackingData;
                 }
 
                 perform action Monitor_TM_Action redefines Monitor_TM_Action {
@@ -854,6 +854,10 @@ package HealiosMissionInstancePackage {
                 flow of MissionPackage::TelemetryData
                     from Mission_Control_Centre.Ground_Station_TM_Port
                     to Monitor_TM_Action.Telemetry_For_Monitoring;
+
+                flow of TrackingData
+                    from Mission_Control_Centre.Ground_Station_Pass_Plan_Port
+                    to Plan_Passes_Action.Track_of_Satellite_Path;
             }
 
             part Data_Centre redefines Data_Centre {

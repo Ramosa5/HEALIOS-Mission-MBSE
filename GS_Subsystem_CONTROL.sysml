@@ -36,7 +36,8 @@ package MissionControlCentrePackage {
         attribute name : String;
         attribute usesTLE : Boolean;
 
-        port PassPlan_Out : PassPlanPort;
+        out port PassPlan_Out : PassPlanPort;
+        in port Tracking_Satellite : TrackingPort;
     }
 
     part def MissionControlCentre {
