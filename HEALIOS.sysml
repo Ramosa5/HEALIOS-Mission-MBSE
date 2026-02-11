@@ -258,7 +258,35 @@ package HealiosMissionInstancePackage {
                 connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
                 connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
                 connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
-                
+
+                perform action Transmit_HealthData_Action redefines Transmit_HealthData_Action {
+                    in item Housekeeping_In : MissionPackage::OnBoardStatus;
+                    out item Telemetry_Frame_Out : MissionPackage::TelemetryData;
+                }
+
+                perform action Encrypt_Dowmlink_Action redefines Encrypt_Dowmlink_Action {
+                    in item Telemetry_Frame_In : MissionPackage::TelemetryData;
+                    out RF_Frame_Out : MissionPackage::TelemetryData;  
+                }
+
+                perform action Decrypte_Autheticate_Action redefines Decrypte_Autheticate_Action {
+                    in item RF_Frame_In : MissionPackage::TelemetryData; 
+                    out item Rf_Frmae_Out : MissionPackage::TelemetryData;
+                }    
+
+                flow SS_Communication_System.Data_Bus to Transmit_HealthData_Action.Housekeeping_In;
+
+
+                flow Transmit_HealthData_Action.Telemetry_Frame_Out to Encrypt_Dowmlink_Action.Telemetry_Frame_In;
+
+
+                flow Encrypt_Dowmlink_Action.RF_Frame_Out to SS_Communication_System.RF_Link_Port;
+
+
+                flow SS_Communication_System.RF_Link_Port to Decrypte_Autheticate_Action.RF_Frame_In;
+
+
+                flow Decrypte_Autheticate_Action.Rf_Frmae_Out to SS_Communication_System.Data_Bus;
                 
             }
 

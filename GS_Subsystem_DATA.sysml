@@ -28,8 +28,8 @@ package DataCentrePackage {
         perform action Validate_Action : ValidateTelemetry;
         perform action Store_Action : StoreRecord;
 
-        bind Validate_Action.tm = Ground_Station_TM_Port.TmIn;
-        bind Store_Action.record = Ground_Station_Records_Port.RecordIn;
+        bind Validate_Action.Telemetry_For_Validate = Ground_Station_TM_Port.TmIn;
+        bind Store_Action.Record_of_Satellite_Data = Ground_Station_Records_Port.RecordIn;
         bind Mission_Control_Centre_TM_Products_Port.TmOut = Ground_Station_TM_Port.TmIn;
     }
 }

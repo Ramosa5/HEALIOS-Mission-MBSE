@@ -67,17 +67,17 @@ package GroundStationPackage {
         perform action Verify_Decrypt_Action : VerifyAndDecryptDownlink;
         perform action Auth_Encrypt_Action : AuthenticateAndEncryptUplink;
 
-        bind Auth_Encrypt_Action.tcIn = Mission_Control_Centre_TC_Port.TcIn;
-        bind Uplink_Action.uplinkTc = Auth_Encrypt_Action.tcOut;
+        bind Auth_Encrypt_Action.Telecommand_To_Encrypt = Mission_Control_Centre_TC_Port.TcIn;
+        bind Uplink_Action.Modulated_Uplink_Signal = Auth_Encrypt_Action.Secured_Encrypted_Telecommand;
 
-        bind Verify_Decrypt_Action.tmIn = Downlink_Action.downlinkTm;
-        bind Mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.tmOut;
-        bind Data_Centre_TM_Port.TmOut = Verify_Decrypt_Action.tmOut;
+        bind Verify_Decrypt_Action.Telemetry_To_Decrypt = Downlink_Action.Captured_Encrypted_Telemetry;
+        bind Mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Telemetry_To_Decrypt;
+        bind Data_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
 
-        bind Tracking_Action.plan = Mission_Control_Centre_Pass_Plan_Port.PlanIn;
-        bind Mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.tracking;
+        bind Tracking_Action.Satellite_plan = Mission_Control_Centre_Pass_Plan_Port.PlanIn;
+        bind Mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.Tracking_Data;
 
-        bind Archive_Action.tmIn = Verify_Decrypt_Action.tmOut;
-        bind Data_Centre_Archive_Port.RecordOut = Archive_Action.record;
+        bind Archive_Action.Telemetry_To_Archive = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
+        bind Data_Centre_Archive_Port.RecordOut = Archive_Action.Record_of_Telemetry;
     }
 }

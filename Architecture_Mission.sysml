@@ -114,7 +114,7 @@ package MissionPackage {
         connect Telecommand_Port to SS_On_Board_Data_Handling.Telecommand_In;
         connect Telemetry_Port to SS_On_Board_Data_Handling.Telemetry_Out;
 
-        connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
+        connect SS_Communication_System.Decrypte_Autheticate_Action.Telecommand_Out
             to SS_On_Board_Data_Handling.Telecommand_In;
 
 

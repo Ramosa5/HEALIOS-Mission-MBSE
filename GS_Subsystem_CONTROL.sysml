@@ -42,8 +42,8 @@ package MissionControlCentrePackage {
         perform action Plan_Passes_Action : GeneratePassPlan;
         perform action Monitor_TM_Action : MonitorTelemetryRealtime;
 
-        bind Generate_TC_Action.tc = Ground_Station_TC_Port.TcOut;
-        bind Plan_Passes_Action.plan = Ground_Station_Pass_Plan_Port.PlanOut;
-        bind Monitor_TM_Action.tm = Ground_Station_TM_Port.TmIn;
+        bind Generate_TC_Action.Raw_Unsecured_Telecommand = Ground_Station_TC_Port.TcOut;
+        bind Plan_Passes_Action.Plan_of_Satellite_Path = Ground_Station_Pass_Plan_Port.PlanOut;
+        bind Monitor_TM_Action.Telemetry_For_Monitoring = Ground_Station_TM_Port.TmIn;
     }
 }
