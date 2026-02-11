@@ -387,9 +387,9 @@ package HealiosMissionInstancePackage {
                 to SS_Communication_System.EPS_Power_Port;
 
             connect SS_Electrical_Power_System.Power_Bus_3V3
-                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
-            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V
-                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
+                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_3V3;
+            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
+                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_5V;
 
             connect Telecommand_Port.TC
                 to SS_On_Board_Data_Handling.Telecommand_In;
