@@ -16,27 +16,27 @@ package MissionPackage {
     private import DataCentrePackage::*;
     private import MissionControlCentrePackage::*;
 
+    // PORTS
+    
+    port def TelecommandPort {
+        out item TC : GroundCommand;
+    }
+
+    port def TelemetryPort {
+        out item TM : TelemetryData;
+    }
+
+
+    // Obsolete port, used in the AOCS and COMMS.
+    // --------------------TBA: Refactor to use the above TelecommandPort and TelemetryPort instead-------------------
     port def TmTcPort {
         out item Telecommand : GroundCommand;
         in item Telemetry : TelemetryData;
     }
 
-    interface def TmTcInterface {
-        end groundTransceiver : TmTcPort;
-        end spacecraft : ~TmTcPort;
+    // Ground-to-Space Connection: Nominal Perspective
 
-        flow of GroundCommand from groundTransceiver.Telecommand to spacecraft.Telecommand;
-        flow of TelemetryData from spacecraft.Telemetry to groundTransceiver.Telemetry;
-    }
-
-    connection def TmTcConnection {
-        end transceiverPart : GroundSegment; // your part def name
-        end satellitePart : SpaceSegment; // your part def name
-
-        interface : TmTcInterface connect transceiverPart.TmTc_Port to satellitePart.TmTc_Port;
-    }
-
-    // items that flow in the system
+    // ITEMS
     item def OnBoardCommand {
         attribute Type : String;
     }
@@ -59,12 +59,17 @@ package MissionPackage {
         attribute Channel : String; // optional: "I2C0", "ADC1", ...
     }
 
+
+    
     public part def SpaceSegment {
         // A. Attributes
-
+        
         attribute Total_Mass : ISQ::MassValue;
         attribute CubeSat_Form_Factor : String;
         attribute Center_Of_Mass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
+
+        port Telecommand_Port : ~TelecommandPort;
+        port Telemetry_Port : TelemetryPort;
 
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
@@ -80,8 +85,6 @@ package MissionPackage {
             in item Measured_Spectrum : Real;
             in item Measured_Beta_Angle : Real;
         }
-
-        port TmTc_Port : ~TmTcPort;
 
         connect SS_Electrical_Power_System.EPS_I2C to SS_On_Board_Data_Handling.EPS_I2C;
         // connect SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board_I2C to SS_On_Board_Data_Handling.Magnetorquer_Board_I2C;
@@ -112,8 +115,8 @@ package MissionPackage {
             to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
 
         // Telemetry
-        connect TmTc_Port.Telecommand to SS_On_Board_Data_Handling.Telecommand_In;
-        connect TmTc_Port.Telemetry to SS_On_Board_Data_Handling.Telemetry_Out;
+        connect Telecommand_Port to SS_On_Board_Data_Handling.Telecommand_In;
+        connect Telemetry_Port to SS_On_Board_Data_Handling.Telemetry_Out;
 
         connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
             to SS_On_Board_Data_Handling.Telecommand_In;
@@ -131,7 +134,9 @@ package MissionPackage {
         part <GST> Ground_Station : GroundStation;
         part <MCC> Mission_Control_Centre : MissionControlCentre;
         part <DT> Data_Centre : DataCentre;
-        port TmTc_Port : TmTcPort;
+        
+        port Telecommand_Port : TelecommandPort;
+        port Telemetry_Port : ~TelemetryPort;
 
         connect Mission_Control_Centre.Ground_Station_TC_Port
             to Ground_Station.Mission_Control_Centre_TC_Port;
@@ -165,8 +170,11 @@ package MissionPackage {
         // perform action operateSystem : OperateSystem;
         // perform action maintainOperability : MaintainOperability;
 
+        
         connect Sun_Entity.Sun_Solar_Environment to Space_Segment.satelliteSolarEnvironment;
-        connection TmTc : TmTcConnection
-            connect Ground_Segment to Space_Segment;
+
+        connection Uplink connect Ground_Segment.Telecommand_Port to Space_Segment.Telecommand_Port;
+        connection Downlink connect Space_Segment.Telemetry_Port to Ground_Segment.Telemetry_Port;
+
     }
 }
