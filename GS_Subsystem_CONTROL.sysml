@@ -16,15 +16,27 @@ package MissionControlCentrePackage {
     part def AuthenticationService {
         attribute name : String;
         attribute method : String;
+
+        in port Auth_Request_In : AuthToken;
+        port Auth_Token_Out : AuthToken;
     }
 
     part def OperationsConsole {
         attribute name : String;
+
+        port Operator_Request_Out : OperatorRequest;
+        in port Auth_Token_In : AuthToken;
+
+        // opcjonalnie: żeby console była źródłem TC i odbiornikiem TM
+        port TC_Out : TcPort;
+        in port TM_In : TmPort;
     }
 
     part def PassPlanner {
         attribute name : String;
         attribute usesTLE : Boolean;
+
+        port PassPlan_Out : PassPlanPort;
     }
 
     part def MissionControlCentre {

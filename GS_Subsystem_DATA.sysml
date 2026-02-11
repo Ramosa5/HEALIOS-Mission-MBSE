@@ -11,10 +11,15 @@ package DataCentrePackage {
     part def StructuredArchive {
         attribute name : String;
         attribute retention : ISQ::DurationValue;
+
+        in port Record_In : ArchivePort;
     }
 
     part def DataValidator {
         attribute name : String;
+
+        in port TM_In : TmPort;
+        out port TM_Validated_Out : TmProductPort; // albo TmPort, zależnie od Twojej semantyki
     }
 
     part def DataCentre {

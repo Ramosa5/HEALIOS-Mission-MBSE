@@ -569,6 +569,7 @@ package GroundActionsPackage{
 
     action def ValidateTelemetry {
         in item Telemetry_For_Validate : MissionPackage::TelemetryData;
+        out item Validated_Telemetry : MissionPackage::TelemetryData;
     }
 
     action def StoreRecord {
