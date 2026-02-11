@@ -485,28 +485,28 @@ action def AcquireAndTimestampSubsystemData {
     }
 
 action def TransmitStatusDownlink {
-        in item hkIn : MissionPackage::OnBoardStatus;
-        out item tmOut : MissionPackage::TelemetryData;
+        in item Telemetry_Input : MissionPackage::OnBoardStatus;
+        out item Transmitted_Radio_Signal : MissionPackage::TelemetryData;
     }
 
     action def DecryptAndAuthenticateUplink {
-        in item rfIn : MissionPackage::TelemetryData;
+        in item Telemetry_To_Encrypt : MissionPackage::TelemetryData;
         out item cmdOut : MissionPackage::GroundCommand;
     }
 
     action def EncryptDownlinkTelemetry {
-        in item tmIn : MissionPackage::TelemetryData;
-        out item rfOut : MissionPackage::TelemetryData;
+        in item Telemetry_To_Encrypt : MissionPackage::TelemetryData;
+        out item Secured_Encrypted_Telemetry : MissionPackage::TelemetryData;
     }
 
     action def TransmitBeacon {
-        out item rfOut : MissionPackage::TelemetryData;
+        out item Secured_Encrypted_Telemetry : MissionPackage::TelemetryData;
     }
 
 
     action def ArchiveAndStoreMissionData {
-        in item dataIn : MissionPackage::TelemetryData;
-        out item recordOut : GroundStationPackage::ArchiveRecord;
+        in item Telemetry_To_Archive : MissionPackage::TelemetryData;
+        out item Archived_Record : GroundStationPackage::ArchiveRecord;
     }
 
     //----------------safe mode coomands
@@ -536,61 +536,61 @@ package GroundActionsPackage{
     private import MissionControlCentrePackage::*;
 
     action def ExecuteUplink {
-        in item uplinkTc : MissionPackage::GroundCommand;
-        out item rfOut : MissionPackage::TelemetryData;
+        in item Secured_Command_Input : MissionPackage::GroundCommand;
+        out item Modulated_Uplink_Signal : MissionPackage::TelemetryData;
     }
 
     action def ReceiveDownlink {
-        out item downlinkTm : MissionPackage::TelemetryData;
+        out item Captured_Encrypted_Telemetry : MissionPackage::TelemetryData;
         in item Incoming_Radio_Signal : TelemetryData;
 
     }
 
     action def ComputeTracking {
-        in item plan : PassPlan;
-        out item tracking : TrackingData;
+        in item Satellite_plan : PassPlan;
+        out item Tracking_Data : TrackingData;
     }
 
     action def StreamToArchive {
-        in item tmIn : MissionPackage::TelemetryData;
-        out item record : ArchiveRecord;
+        in item Telemetry_To_Archive : MissionPackage::TelemetryData;
+        out item Record_of_Telemetry : ArchiveRecord;
     }
 
         action def VerifyAndDecryptDownlink {
-        in item tmIn : MissionPackage::TelemetryData;
-        out item tmOut : MissionPackage::TelemetryData;
+        in item Telemetry_To_Decrypt : MissionPackage::TelemetryData;
+        out item Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
     }
 
     action def AuthenticateAndEncryptUplink {
-        in item tcIn : MissionPackage::GroundCommand;
-        out item tcOut : MissionPackage::GroundCommand;
+        in item Telecommand_To_Encrypt : MissionPackage::GroundCommand;
+        out item Secured_Encrypted_Telecommand : MissionPackage::GroundCommand;
     }
 
 
     action def ValidateTelemetry {
-        in item tm : MissionPackage::TelemetryData;
+        in item Telemetry_For_Validate : MissionPackage::TelemetryData;
     }
 
     action def StoreRecord {
-        in item record : ArchiveRecord;
+        in item Record_of_Satellite_Data : ArchiveRecord;
     }
 
     action def AuthorizeCommanding {
-        in item request : OperatorRequest;
-        out item token : AuthToken;
+        in item Access_Request_Input : OperatorRequest;
+        out item Valid_Session_Token : AuthToken;
     }
 
     action def GenerateTelecommand {
-        in item token : AuthToken;
-        out item tc : MissionPackage::GroundCommand;
+        in item Session_Token_Input : AuthToken;
+        out item Raw_Unsecured_Telecommand : MissionPackage::GroundCommand;
     }
 
     action def GeneratePassPlan {
-        out item plan : PassPlan;
+        out item Plan_of_Satellite_Path : PassPlan;
     }
 
     action def MonitorTelemetryRealtime {
-        in item tm : MissionPackage::TelemetryData;
+        in item Telemetry_For_Monitoring : MissionPackage::TelemetryData;
         out item Real_Time_Health_Display : TelemetryData;
     }
 
