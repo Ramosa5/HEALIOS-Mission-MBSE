@@ -201,10 +201,7 @@ package UseCaseDefinitionsPackage {
     }
 
     use case def Utilize_Mission_Scientific_Data {
-        doc /* This use case describes how the processed mission data is accessed 
-               and analyzed by stakeholders. It specifically highlights the dual 
-               benefit for HSB and GUT: receiving scientific data for research 
-               and providing study opportunities for students. */
+        doc /* This use case describes how the processed mission data is accessed and analyzed by stakeholders. It specifically highlights the dual benefit for HSB and GUT: receiving scientific data for research and providing study opportunities for students. */
 
         subject Data_Centre : DataCentre {
             out item Mission_Database_Archive : ArchiveRecord;
@@ -238,33 +235,37 @@ package UseCaseDefinitionsPackage {
 
         // --- Actions ---
 
-        action Transform_Telemetry_Into_Scientific_Datasets : ValidateTelemetry {
+        action Transform_Telemetry_Into_Scientific_Datasets : GetScientificDatasets {
             doc /* Converts raw binary archive records into human-readable datasets. */
+
             in item Raw_Archive_Data_Input : ArchiveRecord;
             out item Validated_Scientific_Dataset : ProcessedScienceData;
         }
 
-        // Action representing the "Study Opportunities"
-        action Conduct_Academic_Studies_And_Theses {
+        action Conduct_Academic_Studies_And_Theses : FacilitateYouthDevelopement {
             doc /* Universities use the live mission data to facilitate student 
                    theses, laboratory exercises, and hands-on operational training. */
+
             in item Mission_Data_For_Students : ProcessedScienceData;
             out item Academic_Educational_Outcome : ProcessedScienceData;
         }
 
-        action Analyze_Perovskite_Self_Healing_Behavior {
+        action Analyze_Perovskite_Self_Healing_Behavior : AnalyzePerovskiteSelfHealingBehavior {
+            doc /* Investigates the self-healing properties of perovskite solar cells in space. */
+
             in item Dataset_For_Investigation : ProcessedScienceData;
             out item Self_Healing_Behaviour_Dataset : ProcessedScienceData;
         }
 
-        action Benchmark_Degradation_Against_Silicon_Standards {
+        action Benchmark_Degradation_Against_Silicon_Standards : BenchmarkDegradationAgainstSiliconStandards {
+            doc /* Compares the degradation rates of perovskite solar cells against established traditional solar cell benchmarks to evaluate their performance improvements and degradation rates. */
+
             in item Comparative_Data_Input : ProcessedScienceData;
             out item Benchmark_Results_Dataset : ProcessedScienceData;
         }
 
-        // --- Signal Flows ---
 
-        // 1. Main Data Flow
+        // Data Flow
         flow Data_Centre.Mission_Database_Archive to Transform_Telemetry_Into_Scientific_Datasets.Raw_Archive_Data_Input;
         
         flow Transform_Telemetry_Into_Scientific_Datasets.Validated_Scientific_Dataset to Conduct_Academic_Studies_And_Theses.Mission_Data_For_Students;
