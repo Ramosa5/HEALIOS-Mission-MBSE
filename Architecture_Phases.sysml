@@ -625,6 +625,11 @@ package MissionPhases {
                 in item Report_Item : Report [0..*];
             }
 
+            flow PreLaunchActivities.PreLaunch_Status to PhaseE_Documentation.Report_Item;
+            flow Commissioning.Commissioning_Report to PhaseE_Documentation.Report_Item;
+            flow NominalOperations.Nominal_Operations_Dataset to PhaseE_Documentation.Report_Item;
+            flow End_Of_Mission_Preparation.Final_Disposal_Plan to PhaseE_Documentation.Report_Item;
+
             timeslice PreLaunchActivities {
                 doc /* Perform all activities at space and ground segment level to prepare for launch */
 
@@ -646,12 +651,16 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
 
                 action Integration_With_Launch_Dispenser {
                     doc /* Integration of the space segment with the launch vehicle through the launch dispenser */
+
+                    out item Integration_Report : Report;
                 }
                 
                 first Integration_With_Launch_Dispenser then Ground_Segment_Final_Validation;
 
                 action Ground_Segment_Final_Validation {
                     doc /* Validation of tracking, comms, and safety systems */
+
+                    out item Ground_Segment_Validation_Report : Report;
                 }
 
                 first Ground_Segment_Final_Validation then Mission_Rehearsal;
@@ -659,6 +668,9 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 action Mission_Rehearsal {
                     doc /* Simulations and rehearsals for the operations team */
                 }
+
+                connect Integration_With_Launch_Dispenser.Integration_Report to PreLaunchActivities.PreLaunch_Status;
+                connect Ground_Segment_Final_Validation.Ground_Segment_Validation_Report to PreLaunchActivities.PreLaunch_Status;
             }
 
             first PreLaunchActivities then FRR;
@@ -681,7 +693,55 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 attribute BaselineApproved : Boolean;
             }
 
-            first LRR then CRR;
+            first LRR then Launch_And_Early_Orbit_Phase;
+
+            timeslice Launch_And_Early_Orbit_Phase {
+                doc /* Conduct launch and early orbit phase (LEOP) operations */
+                
+                action Launch_Injection {
+                    doc /* Injection into orbit */
+                }
+
+                first Launch_Injection then Detumble_AOCS;
+
+                action Detumble_AOCS {
+                    doc /* Detumbling and initial attitude acquisition */
+                }
+
+                first Detumble_AOCS then Critical_Deployments;
+                
+                action Critical_Deployments {
+                    doc /* Solar array, antenna deployments */
+                }
+            }
+
+            // Sequence: LEOP -> Commissioning
+            first Launch_And_Early_Orbit_Phase then Commissioning;
+
+            timeslice Commissioning {
+                doc /* Perform on-orbit verification activities */
+
+                out item Commissioning_Report : Report;
+
+                action Ground_Segment_Contanct {
+
+                    out item Ground_Segment_Contact_Report : Report;
+
+                    doc /* Establish contact with the space segment and verify telemetry and telecommand */
+
+                    action Platform_Verification {
+                    doc /* Verify bus subsystems performance */
+                    }
+
+                    action Payload_Verification {
+                        doc /* Instrument verification */
+                    }
+                }
+
+                connect Ground_Segment_Contanct.Ground_Segment_Contact_Report to Commissioning.Commissioning_Report;  
+            }
+
+            first Commissioning then CRR;
 
             // CRR held after completion of on-orbit commissioning
             snapshot CRR : Report {
@@ -690,11 +750,12 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
 
                 attribute BaselineApproved : Boolean;
             }
-            first CRR then ELR;
+            first CRR then NominalOperations;
 
             timeslice NominalOperations {
-                doc
-                /*  */
+                doc /* Nominal Operations high-level description*/
+
+                out item Nominal_Operations_Dataset : TelemetryData;
 
                 part <SS> Space_Segment : SpaceSegment {
                     in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
@@ -716,7 +777,26 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 connect Ground_Segment.Telecommand_Port to Space_Segment.Telecommand_Port;
                 connect Space_Segment.Telemetry_Port to Ground_Segment.Telemetry_Port;
 
+                connect Ground_Segment.Telemetry_Port to NominalOperations.Nominal_Operations_Dataset;
+
             }
+
+            first NominalOperations then End_Of_Mission_Preparation;
+
+            timeslice End_Of_Mission_Preparation {
+                doc /* Prepare for disposal */
+                
+                out item Final_Disposal_Plan : String;
+
+                action Finalize_Disposal_Plan {
+                    doc /* Update disposal plan based on current fuel/orbit status */
+                    out item Updated_Plan : String;
+                }
+                
+                flow Finalize_Disposal_Plan.Updated_Plan to Final_Disposal_Plan;
+            }
+
+            first End_Of_Mission_Preparation then ELR;
 
             // ELR held at the completion of the mission
             snapshot ELR : Report {
