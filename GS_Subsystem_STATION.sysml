@@ -14,28 +14,15 @@ package GroundStationPackage {
     port def ArchivePort { out item RecordOut : ArchiveRecord; }
 
     part def Antenna {
-        attribute name : String;
-        attribute band : String;
-        attribute gain : Real;
-    }
+            attribute name : String;
+            attribute band : String;
+            attribute gain : Real;
 
-    part def RadioUnit {
-        attribute name : String;
-        attribute supportedBands : String;
-    }
-
-    part def PassPredictor {
-        attribute name : String;
-        attribute usesTLE : Boolean;
-    }
-
-    part def DopplerCompensator {
-        attribute name : String;
-    }
-
-    part def LinkBudgetTool {
-        attribute name : String;
-    }
+            // Uplink (TC) i downlink (TM) na poziomie "przechodzących danych"
+            // (upraszczamy RF do tych typów)
+            port Uplink_In  : MissionPackage::GroundCommand;
+            port Downlink_Out : MissionPackage::TelemetryData;
+        }
 
     part def CryptoUnit {
         attribute name : String;
@@ -43,21 +30,34 @@ package GroundStationPackage {
         attribute downlinkDecryptEnabled : Boolean;
         attribute uplinkAuthEnabled : Boolean;
         attribute uplinkEncryptEnabled : Boolean;
+
+        // TC: MCC -> Crypto -> Antenna
+        port TC_In  : MissionPackage::GroundCommand;
+        port TC_Out : MissionPackage::GroundCommand;
+
+        // TM: Antenna -> Crypto -> MCC/DC
+        port TM_In  : MissionPackage::TelemetryData;
+        port TM_Out : MissionPackage::TelemetryData;
+    }
+
+    part def PassPredictor {
+        attribute name : String;
+        attribute usesTLE : Boolean;
+
+        port PassPlan_Out : PassPlan;
+        port Tracking_Out : TrackingData;
     }
 
     part def GroundStation {
-        port Mission_Control_Centre_TC_Port : TcPort;
-        port Mission_Control_Centre_TM_Port : TmPort;
-        port Data_Centre_TM_Port : TmPort;
-        port Mission_Control_Centre_Pass_Plan_Port : PassPlanPort;
-        port Mission_Control_Centre_Tracking_Port : TrackingPort;
-        port Data_Centre_Archive_Port : ArchivePort;
+        port Mission_Control_Centre_TC_Port : ~TcPort;
+        port Mission_Control_Centre_TM_Port : ~TmPort;
+        port Data_Centre_TM_Port : ~TmPort;
+        port Mission_Control_Centre_Pass_Plan_Port : ~PassPlanPort;
+        port Mission_Control_Centre_Tracking_Port : ~TrackingPort;
+        port Data_Centre_Archive_Port : ~ArchivePort;
 
         part Antenna_Part : Antenna;
-        part Radio_Unit_Part : RadioUnit;
         part Pass_Predictor_Part : PassPredictor;
-        part Doppler_Compensator_Part : DopplerCompensator;
-        part Link_Budget_Tool_Part : LinkBudgetTool;
         part Crypto_Unit_Part : CryptoUnit;
 
         perform action Uplink_Action : ExecuteUplink;

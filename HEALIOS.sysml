@@ -6,6 +6,8 @@ package HealiosMissionInstancePackage {
     public import ISQ::*;
     public import ScalarValues::*;
     public import SpaceActionsPackage::*;
+    private import GroundStationPackage::*;
+    private import MissionControlCentrePackage::*;
 
     attribute yr : year;
 
@@ -588,24 +590,9 @@ package HealiosMissionInstancePackage {
                     attribute name redefines name = "UHF Ground Antenna";
                     attribute band redefines band = "UHF";
                     attribute gain redefines gain = 12.0;
-                }
 
-                part Radio_Unit_Part redefines Radio_Unit_Part {
-                    attribute name redefines name = "SDR Ground Radio";
-                    attribute supportedBands redefines supportedBands = "UHF/VHF";
-                }
-
-                part Pass_Predictor_Part redefines Pass_Predictor_Part {
-                    attribute name redefines name = "Pass Predictor";
-                    attribute usesTLE redefines usesTLE = true;
-                }
-
-                part Doppler_Compensator_Part redefines Doppler_Compensator_Part {
-                    attribute name redefines name = "Doppler Compensator";
-                }
-
-                part Link_Budget_Tool_Part redefines Link_Budget_Tool_Part {
-                    attribute name redefines name = "Link Budget Tool";
+                    in port Uplink_In redefines Uplink_In;
+                    out port Downlink_Out redefines Downlink_Out;
                 }
 
                 part Crypto_Unit_Part redefines Crypto_Unit_Part {
@@ -614,7 +601,113 @@ package HealiosMissionInstancePackage {
                     attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
                     attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
                     attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
+
+                    in port TC_In redefines TC_In;
+                    out port TC_Out redefines TC_Out;
+
+                    in port TM_In redefines TM_In;
+                    out port TM_Out redefines TM_Out;
                 }
+
+                part Pass_Predictor_Part redefines Pass_Predictor_Part {
+                    attribute name redefines name = "Pass Predictor";
+                    attribute usesTLE redefines usesTLE = true;
+
+                    port PassPlan_Out redefines PassPlan_Out;
+                    port Tracking_Out redefines Tracking_Out;
+                }
+
+                perform action Auth_Encrypt_Action redefines Auth_Encrypt_Action {
+                    in Telecommand_To_Encrypt : MissionPackage::GroundCommand;
+                    out Secured_Encrypted_Telecommand : MissionPackage::GroundCommand;
+                }
+
+                perform action Uplink_Action redefines Uplink_Action {
+                    in Modulated_Uplink_Signal : MissionPackage::GroundCommand;
+                    out Uplink_Signal_Sent : MissionPackage::GroundCommand;
+                }
+
+                perform action Downlink_Action redefines Downlink_Action {
+                    out item Captured_Encrypted_Telemetry : MissionPackage::TelemetryData;
+                    in item Incoming_Radio_Signal : TelemetryData;
+                    
+                }
+
+                perform action Verify_Decrypt_Action redefines Verify_Decrypt_Action {
+                    in Telemetry_To_Decrypt : MissionPackage::TelemetryData;
+                    out Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
+                }
+
+                perform action Archive_Action redefines Archive_Action {
+                    in item Telemetry_To_Archive : MissionPackage::TelemetryData;
+                    out item Record_of_Telemetry : ArchiveRecord;
+                }
+
+                perform action Tracking_Action redefines Tracking_Action {
+                    in Satellite_plan : PassPlan;
+                    out Tracking_Data : TrackingData;
+                }   
+
+                 flow of MissionPackage::GroundCommand
+                    from Mission_Control_Centre_TC_Port
+                    to Auth_Encrypt_Action.Telecommand_To_Encrypt;
+
+                flow of MissionPackage::GroundCommand
+                    from Auth_Encrypt_Action.Secured_Encrypted_Telecommand
+                    to Uplink_Action.Modulated_Uplink_Signal;
+
+                flow of MissionPackage::GroundCommand
+                    from Uplink_Action.Uplink_Signal_Sent
+                    to Tc_Port;
+
+                // --- DOWNLINK (TM) ---
+                flow of MissionPackage::TelemetryData
+                    from Tm_Port
+                    to Downlink_Action.Incoming_Radio_Signal;
+
+                flow of MissionPackage::TelemetryData
+                    from Downlink_Action.Captured_Encrypted_Telemetry
+                    to Verify_Decrypt_Action.Telemetry_To_Decrypt;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Mission_Control_Centre_TM_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Data_Centre_TM_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Verify_Decrypt_Action.Verified_Ground_Telemetry_Data
+                    to Archive_Action.Telemetry_To_Archive;
+
+                flow of ArchiveRecord
+                    from Archive_Action.Record_of_Telemetry
+                    to Data_Centre_Archive_Port;
+
+                // --- PASS PLAN / TRACKING ---
+                flow of PassPlan
+                    from Mission_Control_Centre_Pass_Plan_Port
+                    to Tracking_Action.Satellite_plan;
+
+                flow of TrackingData
+                    from Tracking_Action.Tracking_Data
+                    to Mission_Control_Centre_Tracking_Port;
+
+                
+                connect Ground_Station.Mission_Control_Centre_TC_Port to Crypto_Unit_Part.TC_In;
+                connect Crypto_Unit_Part.TC_Out to Antenna_Part.Uplink_In;
+
+                // --- TM downlink ---
+                connect Antenna_Part.Downlink_Out to Crypto_Unit_Part.TM_In;
+                connect Crypto_Unit_Part.TM_Out to Ground_Station.Mission_Control_Centre_TM_Port;
+                connect Crypto_Unit_Part.TM_Out to Ground_Station.Data_Centre_TM_Port;
+
+                // --- pass plan / tracking ---
+                connect Ground_Station.Mission_Control_Centre_Pass_Plan_Port to Pass_Predictor_Part.PassPlan_Out;
+                connect Pass_Predictor_Part.Tracking_Out to Ground_Station.Mission_Control_Centre_Tracking_Port;
+
+
             }
 
             part Mission_Control_Centre redefines Mission_Control_Centre {
@@ -626,16 +719,79 @@ package HealiosMissionInstancePackage {
                 part Auth_Service_Part redefines Auth_Service_Part {
                     attribute name redefines name = "MCC Authentication";
                     attribute method redefines method = "MFA (TBD)";
+
+                    in port Auth_Request_In redefines Auth_Request_In;
+                    out port Auth_Token_Out redefines Auth_Token_Out;
                 }
 
                 part Operations_Console_Part redefines Operations_Console_Part {
                     attribute name redefines name = "Operations Console";
+
+                    out port Operator_Request_Out redefines Operator_Request_Out;
+                    in port Auth_Token_In redefines Auth_Token_In;
+
+                    out port TC_Out redefines TC_Out;
+                    in port TM_In redefines TM_In;
                 }
 
                 part Pass_Planner_Part redefines Pass_Planner_Part {
                     attribute name redefines name = "Pass Planner";
                     attribute usesTLE redefines usesTLE = true;
+
+                    out port PassPlan_Out redefines PassPlan_Out;
                 }
+
+                connect Operations_Console_Part.Operator_Request_Out to Auth_Service_Part.Auth_Request_In;
+                connect Auth_Service_Part.Auth_Token_Out to Operations_Console_Part.Auth_Token_In;
+
+                connect Operations_Console_Part.TC_Out to Mission_Control_Centre.Ground_Station_TC_Port;
+                connect Mission_Control_Centre.Ground_Station_TM_Port to Operations_Console_Part.TM_In;
+
+                connect Pass_Planner_Part.PassPlan_Out to Mission_Control_Centre.Ground_Station_Pass_Plan_Port;
+
+                perform action Authorize_Action redefines Authorize_Action {
+                    in item Operator_Request  : OperatorRequest;
+                    out item  Auth_Token : AuthToken;
+                }
+
+                perform action Generate_TC_Action redefines Generate_TC_Action {
+                    in item Auth_Token  : AuthToken;
+                    out item Raw_Unsecured_Telecommand : MissionPackage::GroundCommand;
+                }
+
+                perform action Plan_Passes_Action redefines Plan_Passes_Action {
+                    out item  Plan_of_Satellite_Path : PassPlan;
+                }
+
+                perform action Monitor_TM_Action redefines Monitor_TM_Action {
+                    in item  Telemetry_For_Monitoring : MissionPackage::TelemetryData;
+                }
+
+                flow of OperatorRequest
+                    from Operations_Console_Part.Operator_Request_Out
+                    to Authorize_Action.Operator_Request;
+
+                flow of AuthToken
+                    from Authorize_Action.Auth_Token
+                    to Operations_Console_Part.Auth_Token_In;
+
+
+                flow of AuthToken
+                    from Operations_Console_Part.Operator_Request_Out
+                    to Generate_TC_Action.Auth_Token;
+
+                flow of MissionPackage::GroundCommand
+                    from Generate_TC_Action.Raw_Unsecured_Telecommand
+                    to Mission_Control_Centre.Ground_Station_TC_Port;
+
+                flow of PassPlan
+                    from Plan_Passes_Action.Plan_of_Satellite_Path
+                    to Mission_Control_Centre.Ground_Station_Pass_Plan_Port;
+
+                flow of MissionPackage::TelemetryData
+                    from Mission_Control_Centre.Ground_Station_TM_Port
+                    to Monitor_TM_Action.Telemetry_For_Monitoring;
+
             }
 
             part Data_Centre redefines Data_Centre {
