@@ -3,6 +3,7 @@ package UnitTypesPackage {
     public import MeasurementReferences::*;
     public import SIPrefixes::*;
     public import ISQ::*;
+    public import SI::*;
 
     // ---- TIME ----
 
@@ -13,7 +14,7 @@ package UnitTypesPackage {
         :>> conversionFactor = 31557600; // Julian year
     }
 
-    attribute def year :> MeasurementUnit {
+    attribute def year :> ISQ::TimeUnit {
         symbol = "yr";
         :>> unitConversion = yearConv;
     }
@@ -36,7 +37,7 @@ package UnitTypesPackage {
         symbol = "MB";
         :>> unitConversion = mbConv;
     }
-
+    
     attribute MB : megabyte;
 
 }

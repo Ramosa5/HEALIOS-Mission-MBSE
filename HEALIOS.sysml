@@ -7,6 +7,9 @@ package HealiosMissionInstancePackage {
     public import ScalarValues::*;
     public import SpaceActionsPackage::*;
 
+    attribute yr : year;
+    //attribute MB : megabyte;
+
     public part Healios_Mission : MissionPackage::MissionSegments {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
@@ -18,21 +21,22 @@ package HealiosMissionInstancePackage {
         // Mission-level refinements
         // =========================
         attribute missionName redefines missionName = "HEALIOS";
-        attribute missionDuration redefines missionDuration = 1 [UnitTypesPackage::yr];
+        attribute missionDuration redefines missionDuration = 1 [yr];
         attribute orbitType redefines orbitType = "LEO (~550 km, ~55 deg inclination)";
 
         // Mirror MissionSegments type connect for visibility
         connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
-        //connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Ground_Segment.TmTc_Port;
-        //connect HEALIOS_Ground_Segment.TmTc_Port to HEALIOS_Space_Segment.TmTc_Port;
-        connect HEALIOS_Space_Segment.TmTc_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
-        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.TmTc_Port;
+        connect HEALIOS_Space_Segment.Telecommand_Port to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
+        connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port to HEALIOS_Space_Segment.Telemetry_Port;
 
-        connection TmTc_Connection : TmTcConnection
-            connect HEALIOS_Ground_Segment to HEALIOS_Space_Segment via TmTc_Connection;
-
+                
+        connection Uplink redefines Uplink 
+            connect HEALIOS_Ground_Segment.Telecommand_Port to HEALIOS_Space_Segment.Telecommand_Port;
+            
+        connection Downlink redefines Downlink 
+            connect HEALIOS_Space_Segment.Telemetry_Port to HEALIOS_Ground_Segment.Telemetry_Port;
         
-        // =========================
+        // ========================
         // Space segment refinements
         // =========================
         part HEALIOS_Space_Segment redefines Space_Segment {
@@ -45,7 +49,9 @@ package HealiosMissionInstancePackage {
 
             // --- SpaceSegment external ports ---
             in port satelliteSolarEnvironment redefines satelliteSolarEnvironment;
-            port TmTc_Port redefines TmTc_Port;
+
+            port Telecommand_Port redefines Telecommand_Port;
+            port Telemetry_Port redefines Telemetry_Port;
 
             // =========================
             // EPS
@@ -381,21 +387,13 @@ package HealiosMissionInstancePackage {
                 to SS_Communication_System.EPS_Power_Port;
 
             connect SS_Electrical_Power_System.Power_Bus_3V3
-                to SS_Attitude_And_Orbit_Control_System.Power_Bus_3V3;
-            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
-                to SS_Attitude_And_Orbit_Control_System.Power_Bus_5V;
+                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_In_3V3;
+            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_In_5V
+                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_In_5V;
 
-            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Satellite_Payload.Power_Bus_5V;
-            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Satellite_Payload.Power_Bus_3V3;
-
-            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_On_Board_Data_Handling.Power_Bus_3V3;
-
-
-
-            connect TmTc_Port.Telecommand
+            connect Telecommand_Port.TC
                 to SS_On_Board_Data_Handling.Telecommand_In;
-            connect TmTc_Port.Telemetry
-                to SS_On_Board_Data_Handling.Telemetry_Out;
+            connect SS_On_Board_Data_Handling.Telemetry_Out to Telemetry_Port.TM;
 
             connect SS_Communication_System.OBDH_Command_Port  
                 to SS_On_Board_Data_Handling.Telecommand_In;
@@ -439,33 +437,33 @@ package HealiosMissionInstancePackage {
 
                 transition Commissioning_To_Nominal
                     first Commissioning_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via TmTc_Port
+                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
                     then Nominal_Sun_Mode;
 
                 transition Sun_To_Eclipse
                     first Nominal_Sun_Mode
-                    accept Proceed_To_Eclipse_Command : OnBoardCommand via TmTc_Port
+                    accept Proceed_To_Eclipse_Command : OnBoardCommand via Telecommand_Port
                     then Nominal_Eclipse_Mode;
 
                 transition Eclipse_To_Sun
                     first Nominal_Eclipse_Mode
-                    accept Proceed_To_Sun_Command : OnBoardCommand via TmTc_Port
+                    accept Proceed_To_Sun_Command : OnBoardCommand via Telecommand_Port
                     then Nominal_Sun_Mode;
 
                 transition Safe_To_Nominal
                     first Safe_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via TmTc_Port
+                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
                     then Nominal_Sun_Mode;
 
                 transition Nominal_Sun_To_Safe
                     first Nominal_Sun_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via TmTc_Port
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
 
                 transition Nominal_Eclipse_To_Safe
                     first Nominal_Eclipse_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via TmTc_Port
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
             }
@@ -474,8 +472,13 @@ package HealiosMissionInstancePackage {
        
        part HEALIOS_Ground_Segment redefines Ground_Segment {
 
-            port TmTc_Port redefines TmTc_Port;
+            port Telecommand_Port redefines Telecommand_Port;
+            port Telemetry_Port redefines Telemetry_Port;
+
             part Ground_Station redefines Ground_Station {
+                port Tc_Port redefines Telecommand_Port;
+                port Tm_Port redefines Telemetry_Port;
+
                 port Mission_Control_Centre_TC_Port redefines Mission_Control_Centre_TC_Port;
                 port Mission_Control_Centre_TM_Port redefines Mission_Control_Centre_TM_Port;
                 port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
@@ -562,7 +565,8 @@ package HealiosMissionInstancePackage {
             connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
 
             connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
-
+            bind Telecommand_Port = Ground_Station.Tc_Port;
             }
+               
     }
 }

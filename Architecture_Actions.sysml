@@ -511,6 +511,11 @@ action def TransmitStatusDownlink {
         out item anomaly : CommsAnomaly;
     }
 
+    action def ArchiveAndStoreMissionData {
+        in item dataIn : MissionPackage::TelemetryData;
+        out item recordOut : GroundStationPackage::ArchiveRecord;
+    }
+
     //----------------safe mode coomands
 
     action def Enter_Safe_Mode_Action specializes PerformSpaceSegmentMission {
@@ -539,10 +544,13 @@ package GroundActionsPackage{
 
     action def ExecuteUplink {
         in item uplinkTc : MissionPackage::GroundCommand;
+        out item rfOut : MissionPackage::TelemetryData;
     }
 
     action def ReceiveDownlink {
         out item downlinkTm : MissionPackage::TelemetryData;
+        in item Incoming_Radio_Signal : TelemetryData;
+
     }
 
     action def ComputeTracking {
@@ -590,6 +598,39 @@ package GroundActionsPackage{
 
     action def MonitorTelemetryRealtime {
         in item tm : MissionPackage::TelemetryData;
+        out item Real_Time_Health_Display : TelemetryData;
+    }
+
+    action def GetScientificDatasets {
+        doc /* Converts archive records into human-readable datasets. */
+
+        in item Raw_Archive_Data_Input : ArchiveRecord;
+        out item Validated_Scientific_Dataset : ProcessedScienceData;
+    }
+
+    action def FacilitateYouthDevelopement {
+        doc /* Universities use the live mission data to facilitate student theses, laboratory exercises, and hands-on operational training. */
+
+        in item Mission_Data_For_Students : ProcessedScienceData;
+        out item Academic_Educational_Outcome : ProcessedScienceData;
+    }
+
+    action def AnalyzePerovskiteSelfHealingBehavior {
+        doc /* Investigates the self-healing properties of perovskite solar cells 
+               in space by analyzing I-V curves and efficiency recovery during 
+               eclipse phases. */
+
+        in item Dataset_For_Investigation : ProcessedScienceData;
+        out item Self_Healing_Behaviour_Dataset : ProcessedScienceData;
+    }
+
+    action def BenchmarkDegradationAgainstSiliconStandards {
+        doc /* Compares the degradation rates of perovskite solar cells against 
+               established traditional solar cell benchmarks (e.g., Triple-Junction 
+               Silicon) to evaluate performance and Technology Readiness Level (TRL). */
+
+        in item Comparative_Data_Input : ProcessedScienceData;
+        out item Benchmark_Results_Dataset : ProcessedScienceData;
     }
 }
 
