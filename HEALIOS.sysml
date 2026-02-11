@@ -803,11 +803,55 @@ package HealiosMissionInstancePackage {
                 part Structured_Archive_Part redefines Structured_Archive_Part {
                     attribute name redefines name = "Structured Archive";
                     attribute retention redefines retention = 1825 [SI::day];
+
+                    in port Record_In redefines Record_In;
                 }
 
                 part Data_Validator_Part redefines Data_Validator_Part {
                     attribute name redefines name = "Telemetry Validator";
+
+                    in port TM_In redefines TM_In;
+                    out port TM_Validated_Out redefines TM_Validated_Out;
                 }
+
+                connect Data_Centre.Ground_Station_TM_Port
+                    to Data_Validator_Part.TM_In;
+
+                // zwalidowane TM do MCC products port
+                connect Data_Validator_Part.TM_Validated_Out
+                    to Data_Centre.Mission_Control_Centre_TM_Products_Port;
+
+                // record do archiwum
+                connect Data_Centre.Ground_Station_Records_Port
+                    to Structured_Archive_Part.Record_In.RecordIn;
+
+
+                connect Data_Centre.Ground_Station_Records_Port to
+                    Structured_Archive_Part.Record_In;
+
+                perform action Validate_Action redefines Validate_Action {
+                    in item Telemetry_For_Validate : MissionPackage::TelemetryData;
+                    out item Validated_Telemetry : MissionPackage::TelemetryData;
+                }
+
+                perform action Store_Action redefines Store_Action {
+                    in item Record_of_Satellite_Data redefines Record_of_Satellite_Data : ArchiveRecord;
+                }
+
+                                // GS TM -> Validate_Action
+                flow of MissionPackage::TelemetryData
+                    from Data_Centre.Ground_Station_TM_Port
+                    to Validate_Action.Telemetry_For_Validate;
+
+                // Validate_Action -> MCC TM products port
+                flow of MissionPackage::TelemetryData
+                    from Validate_Action.Validated_Telemetry
+                    to Data_Centre.Mission_Control_Centre_TM_Products_Port;
+
+                // GS Record -> Store_Action
+                flow of ArchiveRecord
+                    from Data_Centre.Ground_Station_Records_Port
+                    to Store_Action.Record_of_Satellite_Data;
             }
 
             connect Mission_Control_Centre.Ground_Station_TC_Port
