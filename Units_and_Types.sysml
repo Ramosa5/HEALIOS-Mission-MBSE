@@ -54,5 +54,5 @@ package Example {
     part def time_to_launch {
         attribute duration = 2 [UnitTypesPackage::yr];
     }
-
+    
 }

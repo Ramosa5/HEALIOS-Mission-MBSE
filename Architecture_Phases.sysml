@@ -182,7 +182,7 @@ package MissionPhases {
                 /*  */
 
                 part <SS> Space_Segment : SpaceSegment {
-                    in port Satellite_Solar_Environment :> Satellite_Solar_Environment;
+                    in port Satellite_Solar_Environment :>> Satellite_Solar_Environment;
                     in port Telecommand_Port redefines Telecommand_Port;
                     out port Telemetry_Port redefines Telemetry_Port;
 

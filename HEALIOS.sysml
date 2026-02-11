@@ -41,6 +41,7 @@ package HealiosMissionInstancePackage {
         // =========================
         part HEALIOS_Space_Segment redefines Space_Segment {
             state HEALIOS_Mode redefines Satellite_Mode {
+                in abstract port Switch_Command :>> Switch_Command;
                 entry;
                 then Commissioning_Mode;
 
@@ -119,6 +120,7 @@ package HealiosMissionInstancePackage {
                     out port Power_Bus_3V3 redefines Power_Bus_3V3;
                     port Battery_Power_Bus redefines Battery_Power_Bus;
                     in port Power_Supply_Bus redefines Power_Supply_Bus;
+                    port Data_Bus redefines Data_Bus;
                 }
                 part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2] {
                     in port Solar_Input redefines Solar_Input;
@@ -136,7 +138,7 @@ package HealiosMissionInstancePackage {
 
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
                     port Battery_Power_Bus redefines Battery_Power_Bus;
-                    port Heater_Power_Bus redefines Heater_Power_Bus;
+                    port Data_Bus redefines Data_Bus;
 
                     attribute Name redefines Name = "Li-ion Battery Pack";
                     attribute Mass redefines Mass = 0.30 [SI::kg];
@@ -145,7 +147,9 @@ package HealiosMissionInstancePackage {
                     attribute Capacity redefines Capacity = 30.0 [SI::W * h];
                     attribute Max_Power_Generation redefines Max_Power_Generation = 10.0 [SI::W];
                     part Battery_Unit redefines Battery_Unit [4] {
-                        port Battery_Power_Bus;
+                        port Battery_Power_Bus redefines Battery_Power_Bus;
+                        port Heater_Power_Bus redefines Heater_Power_Bus;
+
                     }
                     part Main_Heater redefines Main_Heater {
                         port Heater_Power_Bus;
@@ -163,10 +167,15 @@ package HealiosMissionInstancePackage {
                         attribute Mass redefines Mass = 0.005 [SI::kg];
                         attribute PowerConsumption redefines PowerConsumption = 0.05 [SI::W];
                         attribute Power redefines Power = 0.05 [SI::W];
+                        out port Temperature_Measurement :>> Temperature_Measurement;
                     }
-                    connect Battery_Pack_EPS.Heater_Power_Bus to Main_Heater.Heater_Power_Bus;
+                    connect Battery_Unit.Heater_Power_Bus to Main_Heater.Heater_Power_Bus;
                     connect Battery_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
+                    connect Battery_Pack_EPS.Battery_Power_Bus to Battery_Unit.Battery_Power_Bus;
+                    connect Battery_Pack_EPS.Data_Bus to SS_Electrical_Power_System.Data_Bus;
+                    connect Temp_Sensor.Temperature_Measurement to Battery_Pack_EPS.Data_Bus;
                 }
+
                 connect Mounted_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
                 connect Deployable_Solar_Arrays.Electrode_Connection to MPPT_Unit.MPPT_Control;
                 connect MPPT_Unit.Power_Supply_Bus to Power_Supply_Unit.Power_Supply_Bus;
@@ -177,6 +186,7 @@ package HealiosMissionInstancePackage {
                 connect Power_Supply_Unit.Power_Bus_3V3 to SS_Electrical_Power_System.Power_Bus_3V3;
                 connect SS_Electrical_Power_System.EPS_Solar_Input to Deployable_Solar_Arrays.Solar_Input;
                 connect SS_Electrical_Power_System.EPS_Solar_Input to Mounted_Solar_Arrays.Solar_Input;
+                connect SS_Electrical_Power_System.Data_Bus to Power_Supply_Unit.Data_Bus;
             }
 
             // =========================
@@ -187,7 +197,10 @@ package HealiosMissionInstancePackage {
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
 
                 // I2C buses
-                port Data_Bus redefines Data_Bus;
+                port Data_Bus redefines Data_Bus{
+                    in item Data redefines Data;
+                    out item Cmd redefines Cmd;
+                }
 
                 part Carrier redefines Carrier {
                     attribute Name redefines Name = "OBC Carrier Board";
@@ -196,25 +209,32 @@ package HealiosMissionInstancePackage {
                 part Primary_OBC redefines Primary_OBC {
                     attribute Name redefines Name = "Primary OBC";
                     attribute Role redefines Role = "Command & Data Handling (Primary)";
-                    attribute Warm_Redundant redefines Warm_Redundant = true;
+                    attribute Warm_Redundant redefines Redundant = true;
 
                     // Ports on the OBC that are wired out in the type definition
                     port Data_Bus redefines Data_Bus;
+                    port Power_Bus_3V3 redefines Power_Bus_3V3;
 
-                    part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
+                    part ROM redefines ROM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
 
                 part Secondary_OBC redefines Secondary_OBC {
                     attribute Name redefines Name = "Secondary OBC";
-                    attribute Role redefines Role = "Command & Data Handling (Warm Redundant)";
-                    attribute Warm_Redundant redefines Warm_Redundant = true;
+                    attribute Role redefines Role = "Command & Data Handling (Cold Redundant)";
+                    attribute Warm_Redundant redefines Redundant = true;
 
-                    part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
+                    port Data_Bus redefines Data_Bus;
+                    port Power_Bus_3V3 redefines Power_Bus_3V3;
+
+                    part ROM redefines ROM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
 
                 connect Primary_OBC.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
+                connect Secondary_OBC.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
+                connect SS_On_Board_Data_Handling.Power_Bus_3V3 to Primary_OBC.Power_Bus_3V3;
+                connect SS_On_Board_Data_Handling.Power_Bus_3V3 to Secondary_OBC.Power_Bus_3V3;
             }
 
             
@@ -373,7 +393,7 @@ package HealiosMissionInstancePackage {
                 connect SS_Attitude_And_Orbit_Control_System.Data_Bus
                     to Magnetorquer_Board.Magnetorquer_Board_I2C;
 
-                fgfgfg daje zeby bylo na czerowno zeby to ogarnac perform action Activate_AOCS redefines Activate_AOCS {
+                perform action Activate_AOCS redefines Activate_AOCS {
                     in AOCS_Command : MissionPackage::OnBoardCommand;
 
                     if AOCS_Command.Type == "TurnOn" {
@@ -398,23 +418,26 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_Thermal_Control_System redefines SS_Thermal_Control_System {
                 // Ports defined in ThermalControlSystem.sysml
-                port EPS_Temperature_Port redefines EPS_Temperature_Port;
-                port PL_Temperature_Port redefines PL_Temperature_Port;
-                port OBDH_Temperature_Port redefines OBDH_Temperature_Port;
-                in abstract port Data_Bus redefines Data_Bus;
+                abstract port Data_Bus redefines Data_Bus;
 
                 attribute Stop_Signal redefines Stop_Signal;
 
                 // ref parts exist in the TCS definition; create concrete instance usages for visibility
                 abstract part EPS_Heater redefines EPS_Heater [1];
-                ref part PL_TempSensor redefines PL_Temperature_Sensor [1];
-                ref part OBC_TempSensor redefines OBC_Temperature_Sensor [1];
-                ref part EPS_TempSensor redefines EPS_Temperature_Sensor [1];
+                ref part PL_Temp_Sensor redefines PL_Temperature_Sensor [1] {
+                    out port PL_Temperature_Measurement :>> PL_Temperature_Measurement;
+                }
+                ref part OBC_Temp_Sensor redefines OBC_Temperature_Sensor [1]{
+                    out port OBC_Temperature_Measurement :>> OBC_Temperature_Measurement;
+                }
+                ref part EPS_Temp_Sensor redefines EPS_Temperature_Sensor [1]{
+                    out port EPS_Temperature_Measurement :>> EPS_Temperature_Measurement;
+                }
 
                 // --- MIRROR CONNECTS from ThermalControlSystem.sysml ---
-                connect PL_TempSensor.Temperature_Measurement to PL_Temperature_Port.Temp;
-                connect OBC_TempSensor.Temperature_Measurement to OBDH_Temperature_Port.Temp;
-                connect EPS_TempSensor.Temperature_Measurement to EPS_Temperature_Port.Temp;
+                connect PL_Temp_Sensor.PL_Temperature_Measurement to SS_Thermal_Control_System.Data_Bus ;
+                connect OBC_Temp_Sensor.OBC_Temperature_Measurement to SS_Thermal_Control_System.Data_Bus ;
+                connect EPS_Temp_Sensor.EPS_Temperature_Measurement to SS_Thermal_Control_System.Data_Bus ;
             }
 
             // =========================
@@ -435,52 +458,59 @@ package HealiosMissionInstancePackage {
                 }
 
                 part Mppt_Block redefines Mppt_Block {
-                    part Mppt_Unit[2] redefines Mppt_Unit;
+                    part Mppt_Unit[2] redefines Mppt_Unit{
+                        port Mppt_Controller redefines Mppt_Controller;
+                    }
                     part Power_Dump_Resistor[2] redefines Power_Dump_Resistor;
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
                     port Mppt_Controller redefines Mppt_Controller;
+                    connect Mppt_Unit.Mppt_Controller to Mppt_Block.Mppt_Controller;    
+
                 }
 
                 part Iv_Sweep_And_Reverse_Bias_Block redefines Iv_Sweep_And_Reverse_Bias_Block {
                     port Power_Bus_Filtered_5V redefines Power_Bus_Filtered_5V;
-
+                    port Data_Bus redefines Data_Bus;
                     part Current_And_Voltage_Sensing_Block
                         redefines Current_And_Voltage_Sensing_Block {
-                        port Voltage_Current_Sense_I2C redefines Voltage_Current_Sense_I2C;
+                        port Voltage_Current_Sense_Measurement redefines Voltage_Current_Sense_Measurement;
                     }
+
+                    connect Iv_Sweep_And_Reverse_Bias_Block.Data_Bus to Current_And_Voltage_Sensing_Block.Voltage_Current_Sense_Measurement;
                 }
 
                 part Env_Sensors_Block redefines Env_Sensors_Block {
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
                     in port Solar_Input redefines Solar_Input;
 
-                    port Temp_Out redefines Temp_Out;
-                    port Irr_Out redefines Irr_Out;
-                    port Rad_Out redefines Rad_Out;
-                    port Spec_Out redefines Spec_Out;
+                    port Data_Bus redefines Data_Bus;
 
                     part Temperature_Sensor_At_Environment
                         redefines Temperature_Sensor_At_Environment {
                         port Temperature_Port redefines Temperature_Port;
                     }
                     part Irradiance_Sensor_Block redefines Irradiance_Sensor_Block {
-                        port Irradiance_Sensor_I2C redefines Irradiance_Sensor_I2C;
+                        port Irradiance_Sensor_Measurement redefines Irradiance_Sensor_Measurement;
                         in port Solar_Input redefines Solar_Input;
 
                     }
                     part Radiation_Dose_Sensor redefines Radiation_Dose_Sensor {
-                        port Radiation_Sensor_I2C redefines Radiation_Sensor_I2C;
+                        port Radiation_Sensor_Measurement redefines Radiation_Sensor_Measurement;
                         in port Solar_Input redefines Solar_Input;
 
                     }
                     part Spectrometer redefines Spectrometer {
-                        port Spectrometer_Sensor_I2C redefines Spectrometer_Sensor_I2C;
+                        port Spectrometer_Sensor_Measurement redefines Spectrometer_Sensor_Measurement;
                         in port Solar_Input redefines Solar_Input;
                     }
 
+                    connect Temperature_Sensor_At_Environment.Temperature_Port to Env_Sensors_Block.Data_Bus;
                     connect Env_Sensors_Block.Solar_Input to Irradiance_Sensor_Block.Solar_Input;
                     connect Env_Sensors_Block.Solar_Input to Radiation_Dose_Sensor.Solar_Input;
                     connect Env_Sensors_Block.Solar_Input to Spectrometer.Solar_Input;
+                    connect Irradiance_Sensor_Block.Irradiance_Sensor_Measurement to Env_Sensors_Block.Data_Bus;
+                    connect Spectrometer.Spectrometer_Sensor_Measurement to Env_Sensors_Block.Data_Bus;
+                    connect Radiation_Dose_Sensor.Radiation_Sensor_Measurement to Env_Sensors_Block.Data_Bus;
                 }
 
                 part Solar_Cells_Block redefines Solar_Cells_Block {
@@ -518,7 +548,8 @@ package HealiosMissionInstancePackage {
                     connect Solar_Cells_Block.Mppt_Controller to Reference_Silicon_Solar_Array_Coupon.Electrode_Connection;
                 }
                 connect Mppt_Block.Mppt_Controller to Solar_Cells_Block.Mppt_Controller;
-
+                connect SS_Satellite_Payload.Data_Bus to Env_Sensors_Block.Data_Bus;
+                connect SS_Satellite_Payload.Data_Bus to Iv_Sweep_And_Reverse_Bias_Block.Data_Bus;
                 connect SS_Satellite_Payload.PL_Solar_Input to Solar_Cells_Block.Solar_Input;
                 connect SS_Satellite_Payload.PL_Solar_Input to Env_Sensors_Block.Solar_Input;
                 connect SS_Satellite_Payload.Power_Bus_5V to Power_Filtering_Block.Power_Bus_5V;
@@ -547,9 +578,9 @@ package HealiosMissionInstancePackage {
 
             connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_3V3
-                to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_3V3;
-            connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
-                to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_5V;
+                to SS_Attitude_And_Orbit_Control_System.Power_Bus_3V3;
+            connect SS_Electrical_Power_System.Power_Bus_5V
+                to SS_Attitude_And_Orbit_Control_System.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_5V to SS_Satellite_Payload.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Satellite_Payload.Power_Bus_3V3;
             connect SS_Electrical_Power_System.Power_Bus_3V3
@@ -559,8 +590,6 @@ package HealiosMissionInstancePackage {
 
             connect SS_Electrical_Power_System.Data_Bus
                 to SS_Thermal_Control_System.Data_Bus;
-            connect SS_On_Board_Data_Handling.Data_Bus
-                to SS_Attitude_And_Orbit_Control_System.Data_Bus;
 
             // sun connections
             connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Electrical_Power_System.EPS_Solar_Input;
