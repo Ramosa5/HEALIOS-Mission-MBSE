@@ -825,7 +825,7 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
           
 
             connect PhaseE_Baseline.BaselineReport to DisposalOperations.Final_Disposal_Plan;
-            connect DisposalOperations.Disposal_Report to PhaseF_Documentation.Report_Item;
+            //connect DisposalOperations.Disposal_Report to PhaseF_Documentation.Report_Item;
 
             timeslice DisposalOperations {
                 doc /* Execution of the disposal plan and mission close-out */
@@ -834,7 +834,7 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 in item Final_Disposal_Plan : String;
                 
                 // Outputs: Final reports for MCR
-                out item Disposal_Report : Report;
+                //out item Disposal_Report : Report;
                 out item Final_Mission_Report : Report;
 
                 action Execute_Decommissioning {
@@ -865,7 +865,8 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                     in item Archived_Data_Package : String;
                     out item Mission_Closeout_Report : String;
                 }
-
+                
+                flow Data_Centre_Archive.Ground_Station_Records_Port to Data_Archiving.Dataset;
                 // Flows
                 flow Execute_Decommissioning.Orbit_Status to Passivation.Orbit_Status;
                 
@@ -875,6 +876,8 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 // Outputs to Documentation
                 flow Prepare_Final_Report.Mission_Closeout_Report to Final_Mission_Report;
                 flow Prepare_Final_Report.Mission_Closeout_Report to PhaseF_Documentation.Report_Item;
+                flow Data_Centre_Archive.Ground_Station_Records_Port to Execute_Decommissioning.Final_Disposal_Plan;
+                flow Final_Mission_Report to PhaseF_Documentation.Report_Item;
             }
 
             // Sequence: Operations -> MCR
