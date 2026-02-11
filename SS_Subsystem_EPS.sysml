@@ -6,10 +6,12 @@ package ElectricalPowerSystemPackage {
     private import EnvironmentPackage::*;
 
     // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
+    alias Wattage for ISQ::PowerValue;
+
     part def GeneralElectricalComponent {
         attribute Name : String;
         attribute Mass : ISQ::MassValue;
-        attribute PowerConsumption : ISQ::PowerValue;
+        attribute PowerConsumption : Wattage;
     }
 
     part def Resistor specializes GeneralElectricalComponent {
@@ -21,13 +23,13 @@ package ElectricalPowerSystemPackage {
     }
 
     port def MPPTControl :> DataBus {
-        in Power : ISQ::PowerValue;
+        in Power : Wattage;
         in Voltage : ISQ::SourceVoltageValue;
         in Current : ISQ::ElectricCurrentUnit;
     }
 
     part def TemperatureSensor specializes GeneralElectricalComponent {
-        attribute Power : ISQ::PowerValue;
+        attribute Power : Wattage;
         attribute Temperature_Measurement : ISQ::TemperatureValue;
 
         port Temperature_Port : TemperaturePort;
@@ -39,7 +41,7 @@ package ElectricalPowerSystemPackage {
     }
 
     part def SolarArray specializes GeneralElectricalComponent {
-        attribute Power_Generation : ISQ::PowerValue;
+        attribute Power_Generation : Wattage;
         port Electrode_Connection : ~MPPTControl;
         port Solar_Input : ~MissionPackage::StellarEnvironment;
     }
@@ -65,7 +67,7 @@ package ElectricalPowerSystemPackage {
 
     part def BatteryPack specializes GeneralElectricalComponent {
         attribute Capacity : ISQ::EnergyValue;
-        attribute Max_Power_Generation : ISQ::PowerValue;
+        attribute Max_Power_Generation : Wattage;
 
         part Battery_Pack_Connector : Connector;
         part Battery_Unit[1..*] : Battery;
@@ -83,7 +85,7 @@ package ElectricalPowerSystemPackage {
     }
 
     part def Heater specializes GeneralElectricalComponent {
-        attribute Power : ISQ::PowerValue;
+        attribute Power : Wattage;
         attribute Minimal_Temperature : ISQ::TemperatureValue;
     }
 

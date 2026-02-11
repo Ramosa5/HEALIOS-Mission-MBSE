@@ -19,7 +19,7 @@ package AttitudeAndOrbitControlSystemPackage {
 
     part def MagnetorquerBoard {
         port Power_Bus_5V : ~PowerBus;
-        port Magnetorquer_Board_I2C : ~DataBus;
+        port Magnetorquer_Board_Control : ~DataBus;
 
         part Mounted_Magnetorquer : Magnetorquer [0..*];
     }
@@ -31,7 +31,7 @@ package AttitudeAndOrbitControlSystemPackage {
         port Data_Bus : ~DataBus;
         part Sun_Sensor : SunSensor [0..*];
         part Magnetorquer_Board : MagnetorquerBoard [0..*];
-        attribute Nominal_Force : ISQ::ForceValue;
+        attribute Force_Output : ISQ::ForceValue;
 
         attribute Stop_Signal : Boolean;
         action Activate_AOCS;
