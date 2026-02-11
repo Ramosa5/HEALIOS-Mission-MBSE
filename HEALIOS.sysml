@@ -8,7 +8,6 @@ package HealiosMissionInstancePackage {
     public import SpaceActionsPackage::*;
 
     attribute yr : year;
-    // attribute MB : megabyte;
 
     public part Healios_Mission : MissionPackage::MissionSegments {
         doc
@@ -41,7 +40,59 @@ package HealiosMissionInstancePackage {
         // Space segment refinements
         // =========================
         part HEALIOS_Space_Segment redefines Space_Segment {
-            state Satellite_Mode redefines Satellite_Mode;
+            state HEALIOS_Mode redefines Satellite_Mode {
+                entry;
+                then Commissioning_Mode;
+
+                state Commissioning_Mode {
+                    doc
+                    /* waits for ground command */
+                }
+                state Safe_Mode {
+                    doc
+                    /* charges battery & waits */
+                }
+                state Nominal_Sun_Mode {
+                    doc
+                    /* nominal sun ops */
+                }
+                state Nominal_Eclipse_Mode {
+                    doc
+                    /* nominal eclipse ops */
+                }
+
+                transition Commissioning_To_Nominal
+                    first Commissioning_Mode
+                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
+                    then Nominal_Sun_Mode;
+
+                transition Sun_To_Eclipse
+                    first Nominal_Sun_Mode
+                    accept Proceed_To_Eclipse_Command : OnBoardCommand via Telecommand_Port
+                    then Nominal_Eclipse_Mode;
+
+                transition Eclipse_To_Sun
+                    first Nominal_Eclipse_Mode
+                    accept Proceed_To_Sun_Command : OnBoardCommand via Telecommand_Port
+                    then Nominal_Sun_Mode;
+
+                transition Safe_To_Nominal
+                    first Safe_Mode
+                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
+                    then Nominal_Sun_Mode;
+
+                transition Nominal_Sun_To_Safe
+                    first Nominal_Sun_Mode
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
+                    do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
+                    then Safe_Mode;
+
+                transition Nominal_Eclipse_To_Safe
+                    first Nominal_Eclipse_Mode
+                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
+                    do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
+                    then Safe_Mode;
+            }
 
             attribute Total_Mass redefines Total_Mass = 2.0 [SI::kg];
             attribute CubeSat_Form_Factor redefines CubeSat_Form_Factor = "1U";
@@ -58,7 +109,7 @@ package HealiosMissionInstancePackage {
             // EPS
             // =========================
             part SS_Electrical_Power_System redefines SS_Electrical_Power_System {
-                port I2C_Bus redefines I2C_Bus;
+                port Data_Bus redefines Data_Bus;
                 port Eps_Command_In redefines Eps_Command_In;
                 port Eps_Telemetry_Out redefines Eps_Telemetry_Out;
                 port Power_Bus_5V redefines Power_Bus_5V;
@@ -130,7 +181,7 @@ package HealiosMissionInstancePackage {
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
 
                 // I2C buses
-                port I2C_Bus redefines I2C_Bus;
+                port Data_Bus redefines Data_Bus;
 
                 part Carrier redefines Carrier {
                     attribute Name redefines Name = "OBC Carrier Board";
@@ -142,7 +193,7 @@ package HealiosMissionInstancePackage {
                     attribute Warm_Redundant redefines Warm_Redundant = true;
 
                     // Ports on the OBC that are wired out in the type definition
-                    port I2C_Bus redefines I2C_Bus;
+                    port Data_Bus redefines Data_Bus;
 
                     part NVM redefines NVM { attribute Total_Memory redefines Total_Memory = 8.0; }
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
@@ -157,7 +208,7 @@ package HealiosMissionInstancePackage {
                     part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
                 }
 
-                connect Primary_OBC.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
+                connect Primary_OBC.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
             }
 
             
@@ -167,7 +218,7 @@ package HealiosMissionInstancePackage {
                 port OBDH_Command_Port redefines OBDH_Command_Port;
                 port OBDH_Status_Port redefines OBDH_Status_Port;
                 port RF_Link_Port redefines RF_Link_Port;
-                port I2C_Bus :>> I2C_Bus;
+                port Data_Bus :>> Data_Bus;
 
                     // attributes (usage names with underscores)
                     attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
@@ -247,7 +298,7 @@ package HealiosMissionInstancePackage {
                 port AOCS_Command_In redefines AOCS_Command_In;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
-                port I2C_Bus :>> I2C_Bus;
+                port Data_Bus :>> Data_Bus;
 
                 attribute Nominal_Force redefines Nominal_Force = 0.02 [SI::N];
                 attribute Stop_Signal redefines Stop_Signal = false;
@@ -290,7 +341,7 @@ package HealiosMissionInstancePackage {
                     to Sun_Sensor.Power_Bus_3V3;
                 connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
                     to Magnetorquer_Board.Power_Bus_5V;
-                connect SS_Attitude_And_Orbit_Control_System.I2C_Bus
+                connect SS_Attitude_And_Orbit_Control_System.Data_Bus
                     to Magnetorquer_Board.Magnetorquer_Board_I2C;
 
                 perform action Activate_AOCS redefines Activate_AOCS {
@@ -345,7 +396,7 @@ package HealiosMissionInstancePackage {
                 port Status_Out redefines Status_Out;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
-                port I2C_Bus :>> I2C_Bus;
+                port Data_Bus :>> Data_Bus;
                 in port PL_Solar_Input redefines Solar_Input;
 
                 part Power_Filtering_Block redefines Power_Filtering_Block {
@@ -449,12 +500,12 @@ package HealiosMissionInstancePackage {
             // SpaceSegment connects (already in type; mirrored here)
             // =========================
             // i2c connections_____________________________________________________________________________________
-            connect SS_Electrical_Power_System.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
+            connect SS_Electrical_Power_System.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
 
-            connect SS_Satellite_Payload.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
-            connect SS_Communication_System.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
-            connect SS_Attitude_And_Orbit_Control_System.I2C_Bus
-                to SS_On_Board_Data_Handling.I2C_Bus;
+            connect SS_Satellite_Payload.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
+            connect SS_Communication_System.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
+            connect SS_Attitude_And_Orbit_Control_System.Data_Bus
+                to SS_On_Board_Data_Handling.Data_Bus;
 
             // electrical connections_____________________________________________________________________________________
 
@@ -488,60 +539,6 @@ package HealiosMissionInstancePackage {
             // sun connections
             connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Electrical_Power_System.EPS_Solar_Input;
             connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Satellite_Payload.PL_Solar_Input;
-
-            state HEALIOS_Mode redefines Satellite_Mode {
-                entry;
-                then Commissioning_Mode;
-
-                state Commissioning_Mode {
-                    doc
-                    /* waits for ground command */
-                }
-                state Safe_Mode {
-                    doc
-                    /* charges battery & waits */
-                }
-                state Nominal_Sun_Mode {
-                    doc
-                    /* nominal sun ops */
-                }
-                state Nominal_Eclipse_Mode {
-                    doc
-                    /* nominal eclipse ops */
-                }
-
-                transition Commissioning_To_Nominal
-                    first Commissioning_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
-                    then Nominal_Sun_Mode;
-
-                transition Sun_To_Eclipse
-                    first Nominal_Sun_Mode
-                    accept Proceed_To_Eclipse_Command : OnBoardCommand via Telecommand_Port
-                    then Nominal_Eclipse_Mode;
-
-                transition Eclipse_To_Sun
-                    first Nominal_Eclipse_Mode
-                    accept Proceed_To_Sun_Command : OnBoardCommand via Telecommand_Port
-                    then Nominal_Sun_Mode;
-
-                transition Safe_To_Nominal
-                    first Safe_Mode
-                    accept Proceed_To_Nominal_Command : GroundCommand via Telecommand_Port
-                    then Nominal_Sun_Mode;
-
-                transition Nominal_Sun_To_Safe
-                    first Nominal_Sun_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
-                    do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
-                    then Safe_Mode;
-
-                transition Nominal_Eclipse_To_Safe
-                    first Nominal_Eclipse_Mode
-                    accept Enter_Safe_Mode_Command : OnBoardCommand via Telecommand_Port
-                    do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
-                    then Safe_Mode;
-            }
         }
 
         part HEALIOS_Ground_Segment redefines Ground_Segment {

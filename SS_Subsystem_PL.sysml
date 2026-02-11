@@ -15,17 +15,17 @@ package PayloadPackage {
     part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
     part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
     part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent{
-        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
+        port Voltage_Current_Sense_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
     part def IrradianceSensorBlock specializes GeneralElectricalComponent {
-        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
+        port Irradiance_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def RadiationDoseSensor specializes GeneralElectricalComponent {
-        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
+        port Radiation_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def SpectrometerPackage specializes GeneralElectricalComponent{
-        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::I2CBus;
+        port Spectrometer_Sensor_I2C : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;
@@ -90,7 +90,7 @@ package PayloadPackage {
         port Status_Out : MissionPackage::OnBoardStatus;
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;
-        port I2C_Bus : ~I2CBus;
+        port Data_Bus : ~DataBus;
         port Solar_Input : ~StellarEnvironment;
         
         // Subparts (NO default names here)

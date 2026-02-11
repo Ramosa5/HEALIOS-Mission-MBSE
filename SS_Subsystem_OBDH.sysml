@@ -9,14 +9,15 @@ package OnBoardDataHandlingSystemPackage {
     // ------------------------------------------------------------------------------------------------
     // Generic data/command plumbing (abstracted physical buses)
     // ------------------------------------------------------------------------------------------------
-    port def I2CBus {
+    port def DataBus {
+        attribute name : String;
         in Data : MissionPackage::OnBoardStatus;
         out Cmd : MissionPackage::OnBoardCommand;
     }
 
     interface def I2CInterface {
-        end Rx : ~I2CBus;
-        end Tx : I2CBus;
+        end Rx : ~DataBus;
+        end Tx : DataBus;
     }
 
     port def AnalogADCInput {
@@ -64,7 +65,7 @@ package OnBoardDataHandlingSystemPackage {
         port Command_In : MissionPackage::OnBoardCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        port I2C_Bus[1] : I2CBus;
+        port Data_Bus[1] : DataBus;
 
         perform action Read_OBC_Temperature : ReadTemperature;
     }
@@ -83,7 +84,7 @@ package OnBoardDataHandlingSystemPackage {
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;
 
-        port I2C_Bus[1] : I2CBus;
+        port Data_Bus[1] : DataBus;
 
         port Analog_ADC_Input[0..*] : AnalogADCInput;
 

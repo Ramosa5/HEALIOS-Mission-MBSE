@@ -16,7 +16,7 @@ package ElectricalPowerSystemPackage {
         attribute Resistance : ISQ::ResistanceValue;
     }
 
-    port def TemperaturePort specializes I2CBus{
+    port def TemperaturePort specializes DataBus{
         out Temp : ISQ::TemperatureValue [1..*];
     }
 
@@ -93,7 +93,7 @@ package ElectricalPowerSystemPackage {
     // Electrical Power System
     part def ElectricalPowerSystem {
         // Interfaces (telecommand/telemetry + power rails)
-        port I2C_Bus : ~I2CBus;
+        port Data_Bus : ~DataBus;
         port EPS_Solar_Input : ~StellarEnvironment;
 
         // Internal EPS command/telemetry ports used to bind actions
