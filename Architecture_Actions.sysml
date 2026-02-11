@@ -511,6 +511,11 @@ action def TransmitStatusDownlink {
         out item anomaly : CommsAnomaly;
     }
 
+    action def ArchiveAndStoreMissionData {
+        in item dataIn : MissionPackage::TelemetryData;
+        out item recordOut : GroundStationPackage::ArchiveRecord;
+    }
+
     //----------------safe mode coomands
 
     action def Enter_Safe_Mode_Action specializes PerformSpaceSegmentMission {

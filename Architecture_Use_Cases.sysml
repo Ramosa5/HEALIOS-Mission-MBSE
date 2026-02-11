@@ -10,13 +10,13 @@ package UseCaseDefinitionsPackage {
     private import GroundStationPackage::*;
     private import ISQ::*;
 
-    use case def SendCommand {
+    use case def Send_Telecommand {
         doc /* Detailed operational flow for sending a secure command to the CubeSat. 
                This process ensures that only authorized personnel (HEALIOS Team) can influence the 
                satellite's state through a secured communication link. */
 
         subject Satellite : SpaceSegment {
-            in item Received_Satellite_Command : GroundCommand;
+            in item Received_Telecommand : GroundCommand;
         }
 
         actor Operator : HEALIOSTeam {
@@ -74,7 +74,7 @@ package UseCaseDefinitionsPackage {
 
         flow Protect_Uplink_Integrity.Secured_Encrypted_Telecommand to Execute_Physical_Radio_Uplink.Secured_Command_Input;
 
-        flow Execute_Physical_Radio_Uplink.Modulated_Uplink_Signal to Satellite.Received_Satellite_Command;
+        flow Execute_Physical_Radio_Uplink.Modulated_Uplink_Signal to Satellite.Received_Telecommand;
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         objective SendCommandObjective {
@@ -86,12 +86,12 @@ package UseCaseDefinitionsPackage {
         }
     }
 
-    use case def Receive_Satellite_Telemetry {
+    use case def Receive_Telemetry {
         doc /* Detailed operational flow for acquiring, downlinking, and processing 
                satellite data. This ensures mission health is monitored and scientific 
                objectives are archived for analysis. */
 
-        subject satellite : SpaceSegment {
+        subject Satellite : SpaceSegment {
             out item Time_Reference : ISQ::TimeValue;
             out item Housekeeping_Data : HousekeepingData;
             out item Science_Data : ScienceData;
@@ -155,7 +155,7 @@ package UseCaseDefinitionsPackage {
         }
 
         // 6. Archiving Phase
-        action Archive_And_Store_Mission_Data {
+        action Archive_And_Store_Mission_Data : ArchiveAndStoreMissionData {
             doc /* Streams the verified data to the Data Centre for persistent 
                    storage and future scientific retrieval. */
             in item Telemetry_To_Archive : TelemetryData;
@@ -170,9 +170,9 @@ package UseCaseDefinitionsPackage {
             out item Real_Time_Health_Display : TelemetryData;
         }
 
-        flow satellite.Time_Reference to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
-        flow satellite.Housekeeping_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
-        flow satellite.Science_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+        flow Satellite.Time_Reference to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+        flow Satellite.Housekeeping_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+        flow Satellite.Science_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
 
         flow Acquire_And_Tag_Subsystem_Telemetry.Time_Tagged_Telemetry_Records to Secure_Telemetry_For_Downlink.Telemetry_To_Encrypt;
 
@@ -197,6 +197,98 @@ package UseCaseDefinitionsPackage {
             frame concern DataAvailabilityConcern;
             frame concern LinkCompatibilityConcern;
             frame concern AmateurRadioAccessConcern;
+        }
+    }
+
+    use case def Utilize_Mission_Scientific_Data {
+        doc /* This use case describes how the processed mission data is accessed 
+               and analyzed by stakeholders. It specifically highlights the dual 
+               benefit for HSB and GUT: receiving scientific data for research 
+               and providing study opportunities for students. */
+
+        subject Data_Centre : DataCentre {
+            out item Mission_Database_Archive : ArchiveRecord;
+        }
+
+        // --- Actors ---
+        actor Scientists : PerovskiteResearchInstitutes {
+            in item Investigation_Opportunities : ProcessedScienceData {
+                attribute redefines Processing_Level = "Level 2: Processed Dataset";
+                }
+        }
+        actor Manufacturers : PerovskiteSolarCellManufacturers {
+            in item TRL_Advancement_Evidence : ProcessedScienceData {
+                attribute redefines Processing_Level = "Level 3: Comparative Analysis Dataset";}
+}
+            
+        actor Academic_Community : AcademicInstitutions {
+            in item Peer_Reviewed_Publication : ProcessedScienceData {
+                attribute redefines Processing_Level = "Level 4: Published Research Findings";}
+        }
+ 
+        actor HSB_Hochschule_Bremen : HSBHochschuleBremen {
+            
+            in item HSB_Student_Opportunities;
+        }
+        
+        actor Gdansk_University_Of_Technology : GdanskUniversityOfTechnology {
+            
+            in item GUT_Student_Opportunities;
+        }
+
+        // --- Actions ---
+
+        action Transform_Telemetry_Into_Scientific_Datasets : ValidateTelemetry {
+            doc /* Converts raw binary archive records into human-readable datasets. */
+            in item Raw_Archive_Data_Input : ArchiveRecord;
+            out item Validated_Scientific_Dataset : ProcessedScienceData;
+        }
+
+        // Action representing the "Study Opportunities"
+        action Conduct_Academic_Studies_And_Theses {
+            doc /* Universities use the live mission data to facilitate student 
+                   theses, laboratory exercises, and hands-on operational training. */
+            in item Mission_Data_For_Students : ProcessedScienceData;
+            out item Academic_Educational_Outcome : ProcessedScienceData;
+        }
+
+        action Analyze_Perovskite_Self_Healing_Behavior {
+            in item Dataset_For_Investigation : ProcessedScienceData;
+            out item Self_Healing_Behaviour_Dataset : ProcessedScienceData;
+        }
+
+        action Benchmark_Degradation_Against_Silicon_Standards {
+            in item Comparative_Data_Input : ProcessedScienceData;
+            out item Benchmark_Results_Dataset : ProcessedScienceData;
+        }
+
+        // --- Signal Flows ---
+
+        // 1. Main Data Flow
+        flow Data_Centre.Mission_Database_Archive to Transform_Telemetry_Into_Scientific_Datasets.Raw_Archive_Data_Input;
+        
+        flow Transform_Telemetry_Into_Scientific_Datasets.Validated_Scientific_Dataset to Conduct_Academic_Studies_And_Theses.Mission_Data_For_Students;
+        flow Transform_Telemetry_Into_Scientific_Datasets.Validated_Scientific_Dataset to Scientists.Investigation_Opportunities;
+        flow Transform_Telemetry_Into_Scientific_Datasets.Validated_Scientific_Dataset to Analyze_Perovskite_Self_Healing_Behavior.Dataset_For_Investigation;
+        
+        flow Analyze_Perovskite_Self_Healing_Behavior.Self_Healing_Behaviour_Dataset to Benchmark_Degradation_Against_Silicon_Standards.Comparative_Data_Input;
+        flow Benchmark_Degradation_Against_Silicon_Standards.Benchmark_Results_Dataset to Manufacturers.TRL_Advancement_Evidence;
+
+        flow Conduct_Academic_Studies_And_Theses.Academic_Educational_Outcome to Academic_Community.Peer_Reviewed_Publication;
+        flow Conduct_Academic_Studies_And_Theses.Academic_Educational_Outcome to HSB_Hochschule_Bremen.HSB_Student_Opportunities;
+        flow Conduct_Academic_Studies_And_Theses.Academic_Educational_Outcome to Gdansk_University_Of_Technology.GUT_Student_Opportunities;
+
+        /* Mission Data will be available as open-source. Presented usage of data is representative to typical scenarioes. */
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        objective ScientificUtilizationObjective {
+            doc /* Maximize scientific return and fulfill educational mandates for HSB and GUT. */
+            frame concern PerovskiteTRLAdvancementConcern;
+            frame concern PerovskiteInvestigationConcern;
+            frame concern ComparativeStudyConcern;
+            frame concern DataAvailabilityConcern;
+            frame concern InstitutionalVisibilityConcern;
+            frame concern EducationalValueConcern;
         }
     }
 }

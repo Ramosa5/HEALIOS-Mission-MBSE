@@ -68,6 +68,10 @@ package MissionPackage {
         item Housekeeping_Data : HousekeepingData;
     }
 
+    item def ProcessedScienceData specializes ScienceData {
+        attribute Processing_Level : String;
+    }
+
     item def TimeTaggedStatus specializes OnBoardStatus {
         attribute Time_Tag : ISQ::TimeValue;
         attribute Source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
