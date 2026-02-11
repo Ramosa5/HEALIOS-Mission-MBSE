@@ -4,6 +4,9 @@ package MissionPhases {
     private import MissionPackage::*;
     private import ScalarValues::*;
     private import EnvironmentPackage::*;
+    private import ManagementEnvironment::*;
+    private import LaunchEnvironment::*;
+
     occurrence def MissionLifecycle {
         doc
         /* Mission Lifecycle according to ECSS-M-ST-10C Rev.1 – Project planning and implementation (6 March 2009) */
@@ -44,6 +47,72 @@ package MissionPhases {
 
                     out item PreliminaryMissionRequirements : String;
                 }
+
+                action Define_Altermative_Mission_Concepts {
+                    doc /* Define alternative mission concepts (can be done in parallel with the above actions) */
+
+                    in item PreliminaryMissionRequirements : String;
+                    out item AlternativeMissionConcepts : String;
+
+                    part High_Level_Risk_Assessment : Report {
+                        doc /* High-level risk assessment for each concept */
+                    }
+
+                    part High_Level_Cost_Estimate : Report {
+                        doc /* High-level cost estimate for each concept */
+                    }
+
+                    part Mission_Architecture : Report {
+                        doc /* Mission architecture for each concept (overall design and key drivers) */
+                    }
+
+                    part Concept_of_Operations : Report {
+                        doc /* Concept of operations (ConOps) for each concept */
+                    }
+                }
+
+                action Evaluate_Alternative_Mission_Concepts {
+                    doc /* Evaluate alternative mission concepts against complaince with defined requirement, as well as external factors (e.g., cost, time, fesibility) and select a preferred one */
+
+                    in item AlternativeMissionConcepts : String;
+                    out item PreferredMissionConcept : String;
+                }
+
+                part Early_System_Engineering_Plan : Report {
+                    doc /* System engineering plan prepared for the overall mission */
+
+                }
+
+                part Early_Project_Management_Plan : Report {
+                    doc /* Project management plan prepared for the overall mission */
+                }
+
+                part System_Concept_Report : Report {
+                    doc /* System concept report:
+                    
+                    Assesses the different concept from technical, programmatic and risk perspective */
+
+                    in item PreferredMissionConcept : String;
+                }
+
+                flow Define_Objectives_And_Constraints.Objectives_And_Constraints to Formulate_Mission_Statment.Objectives_And_Constraints;
+                flow Define_Objectives_And_Constraints.Objectives_And_Constraints to Define_Preliminary_Mission_Requirements.Objectives_And_Constraints;
+                flow Define_Objectives_And_Constraints.Objectives_And_Constraints to Identify_Stakeholders.Objectives_And_Constraints;
+
+                flow Formulate_Mission_Statment.MissionStatement to Define_Preliminary_Mission_Requirements.MissionStatement;
+                flow Formulate_Mission_Statment.MissionStatement to Identify_Stakeholders.MissionStatement;
+
+                flow Identify_Stakeholders.Stakeholders to Define_Preliminary_Mission_Requirements.Stakeholders;
+
+                flow Define_Preliminary_Mission_Requirements.PreliminaryMissionRequirements to Define_Altermative_Mission_Concepts.PreliminaryMissionRequirements;
+
+                flow Define_Altermative_Mission_Concepts.AlternativeMissionConcepts to Evaluate_Alternative_Mission_Concepts.AlternativeMissionConcepts;
+
+                flow Evaluate_Alternative_Mission_Concepts.PreferredMissionConcept to System_Concept_Report.PreferredMissionConcept;
+
+
+                connect Early_System_Engineering_Plan to System_Concept_Report;
+                connect Early_Project_Management_Plan to System_Concept_Report;
             }
 
             first MissionAnalysisProcess then MDR;
@@ -51,7 +120,9 @@ package MissionPhases {
             // The review is held at the end of phase 0
             snapshot MDR {
                 doc
-                /* Mission Definition Review */
+                /* Mission Definition Review:
+                
+                The primary objective of this review is to release the mission statement and assess the preliminary technical requirements specification and programmatic aspects */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -63,9 +134,15 @@ package MissionPhases {
             /* Feasibility */
 
             // The review is held at the end of Phase A
-            snapshot PRR {
+            snapshot PRR : Report {
                 doc
-                /* Preliminary Requirements Review */
+                /* Preliminary Requirements Review:
+                
+                1)The primary objectives of this review are: 
+                Release of preliminary management, engineering and product assurance plans.
+                2) Release of the technical requirements specification.
+                3) Confirmation of the technical and programmatic feasibility of the system concept(s).
+                4) Selection of system and operations concept(s) and technical solutions, including model philosophy and verification approach, to be carried forward into Phase B. */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -77,7 +154,7 @@ package MissionPhases {
             /* Preliminary Definition */
 
             // SRR is held during the course of Phase B
-            snapshot SRR {
+            snapshot SRR : Report {
                 doc
                 /* System Requirements Review */
 
@@ -87,7 +164,7 @@ package MissionPhases {
             first SRR then PDR;
 
             // PDR is held at the end of Phase B
-            snapshot PDR {
+            snapshot PDR : Report {
                 doc
                 /* Preliminary Design Review */
 
@@ -101,7 +178,7 @@ package MissionPhases {
             /* Detailed Definition */
 
             // CDR is held at the end of phase C
-            snapshot CDR {
+            snapshot CDR : Report {
                 doc
                 /* Critical Design Review */
 
@@ -115,7 +192,7 @@ package MissionPhases {
             /* Qualification and Production */
 
             // QR held during the course of the phase
-            snapshot QR {
+            snapshot QR : Report {
                 doc
                 /* Qualification Review */
 
@@ -125,7 +202,7 @@ package MissionPhases {
             first QR then AR;
 
             // AR held at the end of the phase
-            snapshot AR {
+            snapshot AR : Report {
                 doc
                 /* Acceptance Review */
 
@@ -135,7 +212,7 @@ package MissionPhases {
             first AR then ORR;
 
             // ORR held at the end of the phase
-            snapshot ORR {
+            snapshot ORR : Report {
                 doc
                 /* Operational Readiness Review */
 
@@ -149,7 +226,7 @@ package MissionPhases {
             /* Utilization */
 
             // FRR held prior to launch
-            snapshot FRR {
+            snapshot FRR : Report {
                 doc
                 /* Flight Readiness Review */
 
@@ -159,7 +236,7 @@ package MissionPhases {
             first FRR then LRR;
 
             // LRR held immediately prior to launch
-            snapshot LRR {
+            snapshot LRR : Report {
                 doc
                 /* Launch Readiness Review */
 
@@ -169,7 +246,7 @@ package MissionPhases {
             first LRR then CRR;
 
             // CRR held after completion of on-orbit commissioning
-            snapshot CRR {
+            snapshot CRR : Report {
                 doc
                 /* Commissioning Result Review */
 
@@ -182,7 +259,7 @@ package MissionPhases {
                 /*  */
 
                 part <SS> Space_Segment : SpaceSegment {
-                    in port Satellite_Solar_Environment :> Satellite_Solar_Environment;
+                    in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
                     in port Telecommand_Port redefines Telecommand_Port;
                     out port Telemetry_Port redefines Telemetry_Port;
 
@@ -204,7 +281,7 @@ package MissionPhases {
             }
 
             // ELR held at the completion of the mission
-            snapshot ELR {
+            snapshot ELR : Report {
                 doc
                 /* End-of-Life Review */
 
@@ -218,7 +295,7 @@ package MissionPhases {
             /* Disposal */
 
             // MCR held at the end of this phase
-            snapshot MCR {
+            snapshot MCR : Report {
                 doc
                 /* Mission Close-out Review */
 

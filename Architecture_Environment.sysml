@@ -47,3 +47,11 @@ package LaunchEnvironment {
   }
 
 }
+
+package ManagementEnvironment {
+
+  part def Report {
+    attribute Approved : Boolean;
+  }
+
+}
