@@ -26,7 +26,6 @@ package EnvironmentPackage {
     attribute Visible : Boolean;
     out port Stellar_Environment : StellarEnvironment;
   }
-
 }
 
 package LaunchEnvironment {
@@ -45,13 +44,31 @@ package LaunchEnvironment {
 
     port Mounting_Port : DispenserContactInterface;
   }
-
 }
 
 package ManagementEnvironment {
 
   part def Report {
     attribute Approved : Boolean;
+  }
+
+  part def PhaseBaseline {
+    attribute PhaseName : String;
+    attribute Date : String;
+
+    out item BaselineReport : Report;
+  }
+
+  part def Phase {
+    attribute Name : String;
+    attribute StartDate : String;
+    attribute EndDate : String;
+
+    out item PhaseReport : Report;
+  }
+
+  part def MissionDocumentation {
+    in item ReportItem : Report [0..*];
   }
 
 }
