@@ -35,23 +35,6 @@ package AttitudeAndOrbitControlSystemPackage {
         attribute Nominal_Force : ISQ::ForceValue;
 
         attribute Stop_Signal : Boolean;
-
-        perform action Activate_AOCS {
-            in AOCS_Command : MissionPackage::OnBoardCommand;
-
-            if AOCS_Command.Type == "TurnOn" {
-                loop {
-                    perform action Read_Sun_Angle : ReadSunAngle {
-                        bind Beta_Angle = Sun_Sensor.Beta_Angle;
-                    }
-                    then perform action Correct_Attitude : CorrectAttitude {
-                        bind Force = Magnetorquer_Board.Mounted_Magnetorquer.Force;
-                        bind Sun_Sensor_Reading = Read_Sun_Angle.Beta_Angle;
-                        bind Force_Value = Nominal_Force;
-                    }
-                    then assign Stop_Signal := AOCS_Command.Type == "TurnOff";
-                } until Stop_Signal;
-            }
-        }
+        action Activate_AOCS;
     }
 }
