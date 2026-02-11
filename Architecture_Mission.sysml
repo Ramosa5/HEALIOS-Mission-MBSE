@@ -139,7 +139,7 @@ package MissionPackage {
 
         connect SS_Communication_System.DEC_AUTH_Action.Cmd_Out
             to SS_On_Board_Data_Handling.Telecommand_In;
-        connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.OBDH_HK_Port.HK;
+
 
         // Commands
         connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Thermal_Control_System.Command_IN;

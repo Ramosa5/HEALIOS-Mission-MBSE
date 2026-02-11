@@ -166,18 +166,14 @@ package HealiosMissionInstancePackage {
             // top-level comms ports (usage names with underscores)
             port EPS_Power_Port redefines EPS_Power_Port;
             port OBDH_Command_Port redefines OBDH_Command_Port;
-            port OBDH_HK_Port redefines OBDH_HK_Port;
             port OBDH_Status_Port redefines OBDH_Status_Port;
             port RF_Link_Port redefines RF_Link_Port;
-            port OBDH_Anomaly_Port redefines OBDH_Anomaly_Port;
 
             // attributes (usage names with underscores)
             attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
             attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
             attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
-            attribute Beacon_Enabled redefines Beacon_Enabled = true;
-            attribute Beacon_Contains_Vital_Telemetry redefines Beacon_Contains_Vital_Telemetry = true;
 
             // parts (usage names with underscores)
             part Antenna_Part redefines Antenna_Part {
@@ -204,6 +200,16 @@ package HealiosMissionInstancePackage {
                 attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
                 attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
             }
+
+            connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
+            connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
+            connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
+            connect Antenna_Part.Antenna_RF_Link_Port to RF_Link_Port;
+            connect RF_Link_Port to Antenna_Part.Antenna_Command_Port;
+            connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
+            connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
+            connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
+            
         }
 
             // =========================
@@ -416,11 +422,7 @@ package HealiosMissionInstancePackage {
             connect SS_On_Board_Data_Handling.Telemetry_Out
                 to SS_Communication_System.OBDH_Status_Port;
             
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_HK_Port;
-            
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_Anomaly_Port;
+
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
