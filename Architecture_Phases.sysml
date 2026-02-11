@@ -15,7 +15,7 @@ package SystemLifeCycle {
         }
 
         // Phase A: Feasibility
-        timeslice PhaseA {
+        then timeslice PhaseA {
             // The review is held at the end of Phase A
             snapshot PRR {
                 doc /* Preliminary Requirements Review */
@@ -23,7 +23,7 @@ package SystemLifeCycle {
         }
 
         // Phase B: Preliminary Definition
-        timeslice PhaseB {
+        then timeslice PhaseB {
             // SRR is held during the course of Phase B
             snapshot SRR {
                 doc /* System Requirements Review */
@@ -36,7 +36,7 @@ package SystemLifeCycle {
         }
 
         // Phase C: Detailed Definition
-        timeslice PhaseC {
+        then timeslice PhaseC {
             // CDR is held at the end of phase C
             snapshot CDR {
                 doc /* Critical Design Review */
@@ -44,7 +44,7 @@ package SystemLifeCycle {
         }
 
         // Phase D: Qualification and Production
-        timeslice PhaseD {
+        then timeslice PhaseD {
             // QR held during the course of the phase
             snapshot QR {
                 doc /* Qualification Review */
@@ -67,7 +67,7 @@ package SystemLifeCycle {
         }
 
         // Phase E: Operations/Utilization
-        timeslice PhaseE {
+        then timeslice PhaseE {
             // FRR held prior to launch
             snapshot FRR {
                 doc /* Flight Readiness Review */
@@ -95,19 +95,12 @@ package SystemLifeCycle {
         }
 
         // Phase F: Disposal
-        timeslice PhaseF {
+        then timeslice PhaseF {
             // MCR held at the end of this phase
             snapshot MCR {
                 doc /* Mission Close-out Review */
             }
         }
 
-        // Define the sequence of the project life cycle phases
-        first Phase0 then PhaseA;
-        first PhaseA then PhaseB;
-        first PhaseB then PhaseC;
-        first PhaseC then PhaseD;
-        first PhaseD then PhaseE;
-        first PhaseE then PhaseF;
     }
 }
