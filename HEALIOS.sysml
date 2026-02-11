@@ -154,51 +154,65 @@ package HealiosMissionInstancePackage {
                 connect Primary_OBC.I2C_Bus to SS_On_Board_Data_Handling.I2C_Bus;
             }
 
-            part SS_Communication_System redefines SS_Communication_System {
-                // top-level comms ports (usage names with underscores)
-                port Power_Bus_5V redefines Power_Bus_5V;
-                port OBDH_Command_Port redefines OBDH_Command_Port;
-                port OBDH_HK_Port redefines OBDH_HK_Port;
-                port OBDH_Status_Port redefines OBDH_Status_Port;
-                port RF_Link_Port redefines RF_Link_Port;
-                port OBDH_Anomaly_Port redefines OBDH_Anomaly_Port;
-                port I2C_Bus :>> I2C_Bus;
+            
+        part SS_Communication_System redefines SS_Communication_System {
+            // top-level comms ports (usage names with underscores)
+            port Power_Bus_5V redefines Power_Bus_5V;
+            port OBDH_Command_Port redefines OBDH_Command_Port;
+            port OBDH_Status_Port redefines OBDH_Status_Port;
+            port RF_Link_Port redefines RF_Link_Port;
+            port I2C_Bus :>> I2C_Bus;
 
                 // attributes (usage names with underscores)
                 attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
                 attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
                 attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
-                attribute Beacon_Enabled redefines Beacon_Enabled = true;
-                attribute Beacon_Contains_Vital_Telemetry
-                    redefines Beacon_Contains_Vital_Telemetry = true;
 
-                // parts (usage names with underscores)
-                part Antenna_Part redefines Antenna_Part {
-                    attribute Name redefines Name = "UHF Antenna";
-                    attribute Band redefines Band = "UHF";
-                    attribute Gain redefines Gain = 2.0;
-                }
-
-                part Transceiver_Part redefines Transceiver_Part {
-                    attribute Name redefines Name = "UHF Transceiver";
-                    attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
-                    attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
-                    attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
-                    attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
-                    attribute FECEnabled redefines FECEnabled = true;
-                    attribute CRCEnabled redefines CRCEnabled = true;
-                    attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
-                }
-
-                part Crypto_Part redefines Crypto_Part {
-                    attribute Name redefines Name = "Comms Crypto/Integrity";
-                    attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
-                    attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
-                    attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
-                    attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
-                }
+            // parts (usage names with underscores)
+            part Antenna_Part redefines Antenna_Part {
+                port Antenna_Command_Port redefines Antenna_Command_Port ;
+                port Antenna_Status_Port redefines Antenna_Status_Port ;
+                port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
+                attribute Name redefines Name = "UHF Antenna";
+                attribute Band redefines Band = "UHF";
+                attribute Gain redefines Gain = 2.0;
             }
+
+            part Transceiver_Part redefines Transceiver_Part {
+                port Transceiver_Status_Port redefines Transceiver_Status_Port;
+                port Transceiver_Command_Port redefines Transceiver_Command_Port;
+                attribute Name redefines Name = "UHF Transceiver";
+                attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
+                attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
+                attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
+                attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
+                attribute FECEnabled redefines FECEnabled = true;
+                attribute CRCEnabled redefines CRCEnabled = true;
+                attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
+            }
+
+            part Crypto_Part redefines Crypto_Part {
+                port Crypto_Status_Port redefines Crypto_Status_Port;
+                port Crypto_Command_Port redefines Crypto_Command_Port;
+                attribute Name redefines Name = "Comms Crypto/Integrity";
+                attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
+                attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
+                attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
+                attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
+            }
+
+            connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
+            connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
+            connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
+            connect Antenna_Part.Antenna_RF_Link_Port to RF_Link_Port;
+            connect RF_Link_Port to Antenna_Part.Antenna_Command_Port;
+            connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
+            connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
+            connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
+            
+            
+        }
 
             // =========================
             // STRUCTURE
@@ -431,11 +445,8 @@ package HealiosMissionInstancePackage {
                 to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out
                 to SS_Communication_System.OBDH_Status_Port;
+            
 
-            connect SS_On_Board_Data_Handling.Telemetry_Out to SS_Communication_System.OBDH_HK_Port;
-
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_Anomaly_Port;
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
@@ -615,6 +626,8 @@ package HealiosMissionInstancePackage {
             connect Data_Centre.Mission_Control_Centre_TM_Products_Port
                 to Mission_Control_Centre.Ground_Station_TM_Port;
             bind Telecommand_Port = Ground_Station.Tc_Port;
-        }
+            bind Telemetry_Port= Ground_Station.Tm_Port;
+            }
+               
     }
 }
