@@ -652,8 +652,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Uplink_Action redefines Uplink_Action {
-                    in Modulated_Uplink_Signal : MissionPackage::GroundCommand;
-                    out Uplink_Signal_Sent : MissionPackage::GroundCommand;
+                    in item Modulated_Uplink_Signal : MissionPackage::GroundCommand;
+                    out item Uplink_Signal_Sent : MissionPackage::GroundCommand;
                 }
 
                 perform action Downlink_Action redefines Downlink_Action {
@@ -663,8 +663,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Verify_Decrypt_Action redefines Verify_Decrypt_Action {
-                    in Telemetry_To_Decrypt : MissionPackage::TelemetryData;
-                    out Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
+                    in item Telemetry_To_Decrypt : MissionPackage::TelemetryData;
+                    out item Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
                 }
 
                 perform action Archive_Action redefines Archive_Action {
@@ -673,8 +673,8 @@ package HealiosMissionInstancePackage {
                 }
 
                 perform action Tracking_Action redefines Tracking_Action {
-                    in Satellite_plan : PassPlan;
-                    out Tracking_Data : TrackingData;
+                    in item Satellite_plan : PassPlan;
+                    out item Tracking_Data : TrackingData;
                 }   
 
                  flow of MissionPackage::GroundCommand
@@ -746,8 +746,8 @@ package HealiosMissionInstancePackage {
                 port Ground_Station_Tracking_Port redefines Ground_Station_Tracking_Port;
 
                 part Auth_Service_Part redefines Auth_Service_Part {
-                    attribute name redefines name = "MCC Authentication";
-                    attribute method redefines method = "MFA (TBD)";
+                    attribute name redefines name = "Mission Control Centre Authentication Service";
+                    attribute method redefines method = "MFA";
 
                     in port Auth_Request_In redefines Auth_Request_In;
                     out port Auth_Token_Out redefines Auth_Token_Out;
@@ -768,11 +768,12 @@ package HealiosMissionInstancePackage {
                     attribute usesTLE redefines usesTLE = true;
 
                     out port PassPlan_Out redefines PassPlan_Out;
+                    in port Tracking_Satellite redefines Tracking_Satellite;
                 }
 
                 connect Operations_Console_Part.Operator_Request_Out to Auth_Service_Part.Auth_Request_In;
                 connect Auth_Service_Part.Auth_Token_Out to Operations_Console_Part.Auth_Token_In;
-
+                connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port to Pass_Planner_Part.Tracking_Satellite;
                 connect Operations_Console_Part.TC_Out to Mission_Control_Centre.Ground_Station_TC_Port;
                 connect Mission_Control_Centre.Ground_Station_TM_Port to Operations_Console_Part.TM_In;
 
@@ -790,6 +791,7 @@ package HealiosMissionInstancePackage {
 
                 perform action Plan_Passes_Action redefines Plan_Passes_Action {
                     out item  Plan_of_Satellite_Path : PassPlan;
+                    in item  Track_of_Satellite_Path : TrackingData;
                 }
 
                 perform action Monitor_TM_Action redefines Monitor_TM_Action {
@@ -820,6 +822,10 @@ package HealiosMissionInstancePackage {
                 flow of MissionPackage::TelemetryData
                     from Mission_Control_Centre.Ground_Station_TM_Port
                     to Monitor_TM_Action.Telemetry_For_Monitoring;
+                
+                flow of TrackingData
+                from Mission_Control_Centre.Ground_Station_Pass_Plan_Port 
+                to Plan_Passes_Action.Track_of_Satellite_Path;
 
             }
 
