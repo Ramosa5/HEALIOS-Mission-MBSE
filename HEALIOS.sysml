@@ -7,6 +7,9 @@ package HealiosMissionInstancePackage {
     public import ScalarValues::*;
     public import SpaceActionsPackage::*;
 
+    attribute yr : year;
+    //attribute MB : megabyte;
+
     public part Healios_Mission : MissionPackage::MissionSegments {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
@@ -18,7 +21,7 @@ package HealiosMissionInstancePackage {
         // Mission-level refinements
         // =========================
         attribute missionName redefines missionName = "HEALIOS";
-        attribute missionDuration redefines missionDuration = 1 [UnitTypesPackage::yr];
+        attribute missionDuration redefines missionDuration = 1 [yr];
         attribute orbitType redefines orbitType = "LEO (~550 km, ~55 deg inclination)";
 
         // Mirror MissionSegments type connect for visibility

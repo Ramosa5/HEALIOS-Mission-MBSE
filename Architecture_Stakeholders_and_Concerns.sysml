@@ -36,6 +36,7 @@ package StakeholdersDefinitionPackage {
     }
     part def HEALIOSTeam {
         doc /* The core team responsible for the HEALIOS mission. Interested in successfully executing the mission objectives and advancing space technology. */
+
     }
     part def RegulatoryBodies {
         doc /* Organizations that regulate space activities and satellite operations. Interested in ensuring compliance with international space law and safety standards. */

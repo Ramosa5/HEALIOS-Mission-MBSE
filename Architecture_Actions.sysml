@@ -539,6 +539,7 @@ package GroundActionsPackage{
 
     action def ExecuteUplink {
         in item uplinkTc : MissionPackage::GroundCommand;
+        out item rfOut : MissionPackage::TelemetryData;
     }
 
     action def ReceiveDownlink {
