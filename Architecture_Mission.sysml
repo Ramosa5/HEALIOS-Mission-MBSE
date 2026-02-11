@@ -3,7 +3,7 @@ package MissionPackage {
     private import Quantities::*;
     public import ISQ::*;
     public import StakeholdersDefinitionPackage::*;
-    public import Environment::*;
+    public import EnvironmentPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import PayloadPackage::*;
     private import ThermalControlSystemPackage::*;
@@ -99,11 +99,7 @@ package MissionPackage {
         part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
         part <PL> SS_Satellite_Payload : Payload;
 
-        in port satelliteSolarEnvironment : SolarEnvironment {
-            in item Measured_Radiation : Real;
-            in item Measured_Spectrum : Real;
-            in item Measured_Beta_Angle : Real;
-        }
+        in port Satellite_Solar_Environment : StellarEnvironment;
 
 
        
@@ -160,18 +156,15 @@ package MissionPackage {
         public part <SS> Space_Segment : SpaceSegment;
         public part <GS> Ground_Segment : GroundSegment;
 
-        attribute missionName : String;
-        attribute missionDuration : ScalarQuantityValue;
-        attribute orbitType : String;
+        attribute Mission_Name : String;
+        attribute Mission_Duration : ScalarQuantityValue;
+        attribute Orbit_Type : String;
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // perform action performScience : PerformScienceOperations;
         // perform action operateSystem : OperateSystem;
         // perform action maintainOperability : MaintainOperability;
-
-        
-        connect Sun_Entity.Sun_Solar_Environment to Space_Segment.satelliteSolarEnvironment;
 
         connection Uplink connect Ground_Segment.Telecommand_Port to Space_Segment.Telecommand_Port;
         connection Downlink connect Space_Segment.Telemetry_Port to Ground_Segment.Telemetry_Port;

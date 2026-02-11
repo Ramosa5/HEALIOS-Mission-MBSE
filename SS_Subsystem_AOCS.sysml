@@ -2,7 +2,7 @@ package AttitudeAndOrbitControlSystemPackage {
     private import MissionPackage::*;
     private import SpaceActionsPackage::*;
     private import ISQ::*;
-    private import Environment::*;
+    private import EnvironmentPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
 

@@ -1,46 +1,51 @@
 package MissionPhases {
     private import StakeholdersDefinitionPackage::*;
     private import Time;
+    private import MissionPackage::*;
     private import ScalarValues::*;
-    
+    private import EnvironmentPackage::*;
     occurrence def MissionLifecycle {
-        doc /* Mission Lifecycle according to ECSS-M-ST-10C Rev.1 – Project planning and implementation (6 March 2009) */
-        
+        doc
+        /* Mission Lifecycle according to ECSS-M-ST-10C Rev.1 – Project planning and implementation (6 March 2009) */
+
         // Phase 0: Mission analysis/needs identification
         timeslice Phase0 {
-            doc /* Mission Analysis and Needs Identification */
+            doc
+            /* Mission Analysis and Needs Identification */
 
             timeslice MissionAnalysisProcess {
-                doc /* Mission Analysis */
+                doc
+                /* Mission Analysis */
 
                 action Define_Objectives_And_Constraints {
-                    doc /* Define mission objectives and constraints */
+                    doc
+                    /* Define mission objectives and constraints */
 
                     out MissionObjectives : String;
                     out MissionConstraints : String;
-                    
                 }
-       
             }
 
             first MissionAnalysisProcess then MDR;
 
             // The review is held at the end of phase 0
             snapshot MDR {
-                doc /* Mission Definition Review */
+                doc
+                /* Mission Definition Review */
 
                 attribute BaselineApproved : Boolean;
             }
-            
         }
 
         // Phase A: Feasibility
         then timeslice PhaseA {
-            doc /* Feasibility */
+            doc
+            /* Feasibility */
 
             // The review is held at the end of Phase A
             snapshot PRR {
-                doc /* Preliminary Requirements Review */
+                doc
+                /* Preliminary Requirements Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -48,21 +53,23 @@ package MissionPhases {
 
         // Phase B: Preliminary Definition
         then timeslice PhaseB {
-            doc /* Preliminary Definition */
+            doc
+            /* Preliminary Definition */
 
             // SRR is held during the course of Phase B
             snapshot SRR {
-                doc /* System Requirements Review */
+                doc
+                /* System Requirements Review */
 
                 attribute BaselineApproved : Boolean;
             }
 
             first SRR then PDR;
 
-
             // PDR is held at the end of Phase B
             snapshot PDR {
-                doc /* Preliminary Design Review */
+                doc
+                /* Preliminary Design Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -70,11 +77,13 @@ package MissionPhases {
 
         // Phase C: Detailed Definition
         then timeslice PhaseC {
-            doc /* Detailed Definition */
+            doc
+            /* Detailed Definition */
 
             // CDR is held at the end of phase C
             snapshot CDR {
-                doc /* Critical Design Review */
+                doc
+                /* Critical Design Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -82,11 +91,13 @@ package MissionPhases {
 
         // Phase D: Qualification and Production
         then timeslice PhaseD {
-            doc /* Qualification and Production */
+            doc
+            /* Qualification and Production */
 
             // QR held during the course of the phase
             snapshot QR {
-                doc /* Qualification Review */
+                doc
+                /* Qualification Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -95,7 +106,8 @@ package MissionPhases {
 
             // AR held at the end of the phase
             snapshot AR {
-                doc /* Acceptance Review */
+                doc
+                /* Acceptance Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -104,20 +116,22 @@ package MissionPhases {
 
             // ORR held at the end of the phase
             snapshot ORR {
-                doc /* Operational Readiness Review */
+                doc
+                /* Operational Readiness Review */
 
                 attribute BaselineApproved : Boolean;
             }
-
         }
 
         // Phase E: Utilization
         then timeslice PhaseE {
-            doc /* Utilization */
+            doc
+            /* Utilization */
 
             // FRR held prior to launch
             snapshot FRR {
-                doc /* Flight Readiness Review */
+                doc
+                /* Flight Readiness Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -126,7 +140,8 @@ package MissionPhases {
 
             // LRR held immediately prior to launch
             snapshot LRR {
-                doc /* Launch Readiness Review */
+                doc
+                /* Launch Readiness Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -135,15 +150,43 @@ package MissionPhases {
 
             // CRR held after completion of on-orbit commissioning
             snapshot CRR {
-                doc /* Commissioning Result Review */
+                doc
+                /* Commissioning Result Review */
 
                 attribute BaselineApproved : Boolean;
             }
             first CRR then ELR;
 
+            timeslice NominalOperations {
+                doc
+                /*  */
+
+                part <SS> Space_Segment : SpaceSegment {
+                    in port Satellite_Solar_Environment :> Satellite_Solar_Environment;
+                    in port Telecommand_Port redefines Telecommand_Port;
+                    out port Telemetry_Port redefines Telemetry_Port;
+
+                }
+
+                part Sun : Star {
+                    out port Solar_Environment :> Stellar_Environment;
+                }
+                
+                part <GS> Ground_Segment : GroundSegment {
+                    out port Telecommand_Port redefines Telecommand_Port;
+                    in port Telemetry_Port redefines Telemetry_Port;
+                }
+
+                connect Sun.Solar_Environment to Space_Segment.Satellite_Solar_Environment;
+                connect Ground_Segment.Telecommand_Port to Space_Segment.Telecommand_Port;
+                connect Space_Segment.Telemetry_Port to Ground_Segment.Telemetry_Port;
+
+            }
+
             // ELR held at the completion of the mission
             snapshot ELR {
-                doc /* End-of-Life Review */
+                doc
+                /* End-of-Life Review */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -151,15 +194,16 @@ package MissionPhases {
 
         // Phase F: Disposal
         then timeslice PhaseF {
-            doc /* Disposal */
+            doc
+            /* Disposal */
 
             // MCR held at the end of this phase
             snapshot MCR {
-                doc /* Mission Close-out Review */
+                doc
+                /* Mission Close-out Review */
 
                 attribute BaselineApproved : Boolean;
             }
         }
-
     }
 }
