@@ -14,11 +14,31 @@ package MissionPhases {
                 doc /* Mission Analysis */
 
                 action Define_Objectives_And_Constraints {
-                    doc /* Define mission objectives and constraints */
+                    doc /* Define mission objectives and constraints (can be derived from primary stakeholder needs) */
 
-                    out MissionObjectives : String;
-                    out MissionConstraints : String;
-                    
+                    out item Objectives_And_Constraints : String;
+                }
+                action Formulate_Mission_Statment {
+                    doc /* Formulate mission statement */
+
+                    in item Objectives_And_Constraints : String;
+                    out item MissionStatement : String;
+                }
+
+                action Identify_Stakeholders {
+                    doc /* Identify stakeholders (broader context) and their needs */
+                    in item MissionStatement : String;
+                    in item Objectives_And_Constraints : String;
+                    out item Stakeholders : String;
+                }
+
+                action Define_Preliminary_Mission_Requirements {
+                    doc /* Define preliminary mission requirements */
+                    in item Objectives_And_Constraints : String;
+                    in item MissionStatement : String;
+                    in item Stakeholders : String;
+
+                    out item PreliminaryMissionRequirements : String;
                 }
        
             }
