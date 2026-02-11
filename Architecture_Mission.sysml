@@ -14,6 +14,7 @@ package MissionPackage {
     public part def Software;
     private import GroundStationPackage::*;
     private import DataCentrePackage::*;
+    private import ManagementEnvironment::*;
     private import MissionControlCentrePackage::*;
 
     // PORTS
@@ -70,6 +71,12 @@ package MissionPackage {
 
     item def ProcessedScienceData specializes ScienceData {
         attribute Processing_Level : String;
+    }
+
+    item def Dataset {
+        item Data_Products : ScienceData [0..*];
+        item Housekeeping_Records : HousekeepingData [0..*];
+        item Mission_Documentation : MissionDocumentation [0..*];
     }
 
     item def TimeTaggedStatus specializes OnBoardStatus {

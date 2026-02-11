@@ -7,6 +7,7 @@ package MissionPhases {
     private import ManagementEnvironment::*;
     private import LaunchEnvironment::*;
 
+
     occurrence def MissionLifecycle {
         doc
         /* Mission Lifecycle according to ECSS-M-ST-10C Rev.1 – Project planning and implementation (6 March 2009) */
@@ -811,6 +812,73 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
         then timeslice PhaseF {
             doc
             /* Disposal */
+
+            part PhaseF_Documentation : MissionDocumentation {
+                in item Report_Item : Report [0..*];
+            }
+
+            part PhaseE_Baseline : PhaseBaseline {
+                doc /* Baseline established at the end of Phase E (ELR) */
+                attribute PhaseName redefines PhaseName = "Phase E";
+                out item BaselineReport redefines BaselineReport;
+            }
+          
+
+            connect PhaseE_Baseline.BaselineReport to DisposalOperations.Final_Disposal_Plan;
+            connect DisposalOperations.Disposal_Report to PhaseF_Documentation.Report_Item;
+
+            timeslice DisposalOperations {
+                doc /* Execution of the disposal plan and mission close-out */
+
+                // Input: Status from end of Phase E
+                in item Final_Disposal_Plan : String;
+                
+                // Outputs: Final reports for MCR
+                out item Disposal_Report : Report;
+                out item Final_Mission_Report : Report;
+
+                action Execute_Decommissioning {
+                    doc /* Maneuver to disposal orbit (if applicable) and switch off */
+                    in item Final_Disposal_Plan : String;
+                    out item Orbit_Status : String;
+                }
+
+                action Passivation {
+                    doc /* Depletion of energy sources (batteries, propellant) to prevent debris generation */
+                    in item Orbit_Status : String;
+                    out item Passivation_Confirmation : String;
+                }
+
+                part Data_Centre_Archive: DataCentrePackage::DataCentre {
+                    port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
+                }
+
+                action Data_Archiving {
+                    doc /* Compilation and archiving of all technical, operational, and scientific data */
+                    in item Dataset : MissionPackage::Dataset;
+                    out item Archived_Data_Package : String;
+                }
+
+                action Prepare_Final_Report {
+                    doc /* Compile the final mission report summarizing technical and programmatic performance */
+                    in item Passivation_Confirmation : String;
+                    in item Archived_Data_Package : String;
+                    out item Mission_Closeout_Report : String;
+                }
+
+                // Flows
+                flow Execute_Decommissioning.Orbit_Status to Passivation.Orbit_Status;
+                
+                flow Passivation.Passivation_Confirmation to Prepare_Final_Report.Passivation_Confirmation;
+                flow Data_Archiving.Archived_Data_Package to Prepare_Final_Report.Archived_Data_Package;
+
+                // Outputs to Documentation
+                flow Prepare_Final_Report.Mission_Closeout_Report to Final_Mission_Report;
+                flow Prepare_Final_Report.Mission_Closeout_Report to PhaseF_Documentation.Report_Item;
+            }
+
+            // Sequence: Operations -> MCR
+            first DisposalOperations then MCR;
 
             // MCR held at the end of this phase
             snapshot MCR : Report {
