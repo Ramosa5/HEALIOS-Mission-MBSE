@@ -87,8 +87,8 @@ package CommunicationsSystemPackage {
         port OBDH_Command_Port : OutCommandPort;
         port OBDH_Status_Port : InStatusPort;
         port RF_Link_Port : RFLinkPort;
-        port OBDH_Anomaly_Port : OutAnomalyPort;
         port I2C_Bus : I2CBus;
+        
         part Antenna_Part : Antenna;
         part Transceiver_Part : Transceiver;
         part Crypto_Part : CryptoUnit;

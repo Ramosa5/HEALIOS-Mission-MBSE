@@ -157,7 +157,6 @@ package HealiosMissionInstancePackage {
             port OBDH_Command_Port redefines OBDH_Command_Port;
             port OBDH_Status_Port redefines OBDH_Status_Port;
             port RF_Link_Port redefines RF_Link_Port;
-            port OBDH_Anomaly_Port redefines OBDH_Anomaly_Port;
             port I2C_Bus :>> I2C_Bus;
 
             // attributes (usage names with underscores)
@@ -168,12 +167,17 @@ package HealiosMissionInstancePackage {
 
             // parts (usage names with underscores)
             part Antenna_Part redefines Antenna_Part {
+                port Antenna_Command_Port redefines Antenna_Command_Port ;
+                port Antenna_Status_Port redefines Antenna_Status_Port ;
+                port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
                 attribute Name redefines Name = "UHF Antenna";
                 attribute Band redefines Band = "UHF";
                 attribute Gain redefines Gain = 2.0;
             }
 
             part Transceiver_Part redefines Transceiver_Part {
+                port Transceiver_Status_Port redefines Transceiver_Status_Port;
+                port Transceiver_Command_Port redefines Transceiver_Command_Port;
                 attribute Name redefines Name = "UHF Transceiver";
                 attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
                 attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
@@ -185,6 +189,8 @@ package HealiosMissionInstancePackage {
             }
 
             part Crypto_Part redefines Crypto_Part {
+                port Crypto_Status_Port redefines Crypto_Status_Port;
+                port Crypto_Command_Port redefines Crypto_Command_Port;
                 attribute Name redefines Name = "Comms Crypto/Integrity";
                 attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
                 attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
@@ -200,6 +206,7 @@ package HealiosMissionInstancePackage {
             connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
             connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
             connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
+            
             
         }
 
@@ -573,6 +580,7 @@ package HealiosMissionInstancePackage {
 
             connect Data_Centre.Mission_Control_Centre_TM_Products_Port to Mission_Control_Centre.Ground_Station_TM_Port;
             bind Telecommand_Port = Ground_Station.Tc_Port;
+            bind Telemetry_Port= Ground_Station.Tm_Port;
             }
                
     }
