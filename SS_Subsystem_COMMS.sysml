@@ -4,9 +4,6 @@ package CommunicationsSystemPackage {
     private import SpaceActionsPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
-    port def PowerBusPort {
-        in Voltage : ISQ::SourceVoltageValue;
-    }
 
     port def OutCommandPort {
         out item Cmd : MissionPackage::GroundCommand;
@@ -91,7 +88,7 @@ package CommunicationsSystemPackage {
     }
 
     part def CommunicationsSystem {
-        port EPS_Power_Port : PowerBusPort;
+        port Power_Bus_5V: PowerBus;
         port OBDH_Command_Port : OutCommandPort;
         port OBDH_HK_Port : InHKPort;
         port OBDH_Status_Port : OutStatusPort;

@@ -153,7 +153,7 @@ package HealiosMissionInstancePackage {
             
         part SS_Communication_System redefines SS_Communication_System {
             // top-level comms ports (usage names with underscores)
-            port EPS_Power_Port redefines EPS_Power_Port;
+            port Power_Bus_5V redefines Power_Bus_5V;
             port OBDH_Command_Port redefines OBDH_Command_Port;
             port OBDH_HK_Port redefines OBDH_HK_Port;
             port OBDH_Status_Port redefines OBDH_Status_Port;
@@ -384,12 +384,16 @@ package HealiosMissionInstancePackage {
             // electrical connections_____________________________________________________________________________________
 
             connect SS_Electrical_Power_System.Power_Bus_5V
-                to SS_Communication_System.EPS_Power_Port;
-
+                to SS_Communication_System.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_3V3
                 to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_3V3;
             connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
                 to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_5V;
+            connect SS_Electrical_Power_System.Power_Bus_5V to SS_Satellite_Payload.Power_Bus_5V;
+            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_Satellite_Payload.Power_Bus_3V3;
+            connect SS_Electrical_Power_System.Power_Bus_3V3 to SS_On_Board_Data_Handling.Power_Bus_3V3;
+
+
 
             connect Telecommand_Port.TC
                 to SS_On_Board_Data_Handling.Telecommand_In;
