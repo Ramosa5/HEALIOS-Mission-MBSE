@@ -90,6 +90,8 @@ package MissionPackage {
         port Telecommand_Port : ~TelecommandPort;
         port Telemetry_Port : TelemetryPort;
 
+        port Deployment_Interface : ~LaunchEnvironment::DispenserContactInterface;
+
         // B. Subsystems
         part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
         part <COMMS> SS_Communication_System : CommunicationsSystem;
