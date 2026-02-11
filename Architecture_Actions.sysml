@@ -544,6 +544,8 @@ package GroundActionsPackage{
 
     action def ReceiveDownlink {
         out item downlinkTm : MissionPackage::TelemetryData;
+        in item Incoming_Radio_Signal : TelemetryData;
+
     }
 
     action def ComputeTracking {
@@ -591,6 +593,7 @@ package GroundActionsPackage{
 
     action def MonitorTelemetryRealtime {
         in item tm : MissionPackage::TelemetryData;
+        out item Real_Time_Health_Display : TelemetryData;
     }
 }
 

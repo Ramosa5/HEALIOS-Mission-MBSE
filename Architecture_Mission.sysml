@@ -49,8 +49,23 @@ package MissionPackage {
         attribute Type : String;
     }
 
+    item def OnBoardData {
+        attribute Type : String;
+    }
+    item def ScienceData specializes OnBoardData {
+        attribute Data_Product_Type : String; // e.g., "Radiation_Spectrum", "Irradiance_Profile", ...
+    }
+
+    item def HousekeepingData specializes OnBoardData {
+        attribute Subsystem : String; // e.g., "EPS", "AOCS", "Thermal", ...
+        attribute Parameter : String; // e.g., "Battery_Voltage", "Magnetometer_X", "Temperature_Sensor_1", ...
+    }
+
     item def TelemetryData {
         attribute Type : String;
+
+        item Science_Data : ScienceData;
+        item Housekeeping_Data : HousekeepingData;
     }
 
     item def TimeTaggedStatus specializes OnBoardStatus {

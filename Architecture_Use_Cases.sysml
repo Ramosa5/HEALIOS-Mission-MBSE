@@ -4,8 +4,11 @@ package UseCaseDefinitionsPackage {
     private import StakeholderConcernsPackage::*;
     private import MissionPackage::*;
     private import GroundActionsPackage::*;
-    private import ISQ::*;
+    private import SpaceActionsPackage::*;
     private import MissionControlCentrePackage::*;
+    private import DataCentrePackage::*;
+    private import GroundStationPackage::*;
+    private import ISQ::*;
 
     use case def SendCommand {
         doc /* Detailed operational flow for sending a secure command to the CubeSat. 
@@ -73,12 +76,127 @@ package UseCaseDefinitionsPackage {
 
         flow Execute_Physical_Radio_Uplink.Modulated_Uplink_Signal to Satellite.Received_Satellite_Command;
 
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         objective SendCommandObjective {
             frame concern CommandSecurityConcern;
             frame concern LinkCompatibilityConcern;
             frame concern FrequencyAllocationConcern;
             frame concern ProgrammaticComplianceConcern;
             frame concern EducationalValueConcern;
+        }
+    }
+
+    use case def Receive_Satellite_Telemetry {
+        doc /* Detailed operational flow for acquiring, downlinking, and processing 
+               satellite data. This ensures mission health is monitored and scientific 
+               objectives are archived for analysis. */
+
+        subject satellite : SpaceSegment {
+            out item Time_Reference : ISQ::TimeValue;
+            out item Housekeeping_Data : HousekeepingData;
+            out item Science_Data : ScienceData;
+
+        }
+
+        actor Operator : HEALIOSTeam {
+            in item Real_Time_Health_Display : TelemetryData;
+        }
+
+        actor Ground_Station : GroundSegment {
+            doc /* The ground station infrastructure responsible for receiving telemetry 
+                   from the CubeSat via radio downlink. */
+        }
+
+        actor Data_Centre : GroundSegment {
+            doc /* The data centre responsible for archiving the received telemetry and 
+                   making it available for scientific analysis. */
+
+                   in item Archived_Record : ArchiveRecord;
+        }
+
+        // 1. Data Collection Phase
+        action Acquire_And_Tag_Subsystem_Telemetry : AcquireAndTimestampSubsystemData {
+            doc /* Gathers raw health and science data from all satellite subsystems 
+                   and applies high-precision timestamps. */
+            in item Current_Time_Reference : ISQ::TimeValue;
+            out item Time_Tagged_Telemetry_Records : TimeTaggedStatus;
+        }
+
+        // 2. Security Phase
+        action Secure_Telemetry_For_Downlink : EncryptDownlinkTelemetry {
+            doc /* Encrypts the telemetry packets to ensure data privacy and integrity 
+                   during the radio transmission. */
+            in item Telemetry_To_Encrypt : TelemetryData;
+            out item Secured_Encrypted_Telemetry : TelemetryData;
+        }
+
+        // 3. Transmission Phase
+        action Broadcast_Satellite_Telemetry_Signal : TransmitStatusDownlink {
+            doc /* Modulates the secured data into an RF signal for transmission 
+                   back to the Ground Station. */
+            in item Telemetry_Input : TelemetryData;
+            out item Transmitted_Radio_Signal : TelemetryData;
+        }
+
+        // 4. Signal Reception Phase
+        action Capture_Downlink_Radio_Signal : ReceiveDownlink {
+            doc /* The Ground Station antenna detects the satellite signal and 
+                   converts it into a digital telemetry stream. */
+            out item Captured_Encrypted_Telemetry : TelemetryData;
+            in item Incoming_Radio_Signal : TelemetryData;
+        }
+
+        // 5. Ground Processing Phase
+        action Decrypt_And_Verify_Telemetry_Packet : VerifyAndDecryptDownlink {
+            doc /* Decrypts the received stream and validates the checksums to 
+                   ensure no data was corrupted during transit. */
+            in item Telemetry_To_Decrypt : TelemetryData;
+            out item Verified_Ground_Telemetry_Data : TelemetryData;
+        }
+
+        // 6. Archiving Phase
+        action Archive_And_Store_Mission_Data {
+            doc /* Streams the verified data to the Data Centre for persistent 
+                   storage and future scientific retrieval. */
+            in item Telemetry_To_Archive : TelemetryData;
+            out item Archived_Record : ArchiveRecord;
+        }
+
+        // 7. Monitoring Phase
+        action Monitor_Satellite_Health : MonitorTelemetryRealtime {
+            doc /* Displays the verified telemetry to the operators in the MCC 
+                   for real-time health assessment. */
+            in item Telemetry_For_Monitoring : TelemetryData;
+            out item Real_Time_Health_Display : TelemetryData;
+        }
+
+        flow satellite.Time_Reference to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+        flow satellite.Housekeeping_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+        flow satellite.Science_Data to Acquire_And_Tag_Subsystem_Telemetry.Current_Time_Reference;
+
+        flow Acquire_And_Tag_Subsystem_Telemetry.Time_Tagged_Telemetry_Records to Secure_Telemetry_For_Downlink.Telemetry_To_Encrypt;
+
+        flow Secure_Telemetry_For_Downlink.Secured_Encrypted_Telemetry to Broadcast_Satellite_Telemetry_Signal.Telemetry_Input;
+
+        flow Broadcast_Satellite_Telemetry_Signal.Transmitted_Radio_Signal to Capture_Downlink_Radio_Signal.Incoming_Radio_Signal;
+
+        flow Capture_Downlink_Radio_Signal.Captured_Encrypted_Telemetry to Decrypt_And_Verify_Telemetry_Packet.Telemetry_To_Decrypt;
+
+        // Splitting verified data to Archive and Monitor
+        flow Decrypt_And_Verify_Telemetry_Packet.Verified_Ground_Telemetry_Data to Archive_And_Store_Mission_Data.Telemetry_To_Archive;
+        flow Archive_And_Store_Mission_Data.Archived_Record to Data_Centre.Archived_Record;
+
+        flow Decrypt_And_Verify_Telemetry_Packet.Verified_Ground_Telemetry_Data to Monitor_Satellite_Health.Telemetry_For_Monitoring;
+        flow Monitor_Satellite_Health.Real_Time_Health_Display to Operator.Real_Time_Health_Display;
+
+        
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        objective ReceiveTelemetryObjective {
+            doc /* Ensure the continuous availability of mission data and the safety of the satellite through robust telemetry acquisition. */
+            frame concern DataAcquisitionConcern;
+            frame concern DataAvailabilityConcern;
+            frame concern LinkCompatibilityConcern;
+            frame concern AmateurRadioAccessConcern;
         }
     }
 }
