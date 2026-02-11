@@ -1,7 +1,7 @@
 private import ScalarValues::*;
 private import StructureSystemPackage::*;
 
-package Environment {
+package EnvironmentPackage {
 
   item def SolarSpectrum {
     Wavelength : Real; // in nm
@@ -16,18 +16,17 @@ package Environment {
     Angle : Real; // in degrees
   }
 
-  port def SolarEnvironment {
+  port def StellarEnvironment {
     out item Radiation : SolarRadiation;
     out item Spectrum : SolarSpectrum;
     out item Angle_Beta : SolarAngle;
   }
 
-  part def Sun {
+  part def Star {
     attribute Visible : Boolean;
-    out port Sun_Solar_Environment : SolarEnvironment;
+    out port Stellar_Environment : StellarEnvironment;
   }
 
-  part Sun_Entity : Sun;
 }
 
 package LaunchEnvironment {

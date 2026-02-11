@@ -3,7 +3,7 @@ package ElectricalPowerSystemPackage {
     private import SpaceActionsPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
     private import ISQ::*;
-    private import Environment::*;
+    private import EnvironmentPackage::*;
 
     // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
     part def GeneralElectricalComponent {
@@ -35,7 +35,7 @@ package ElectricalPowerSystemPackage {
     part def SolarArray specializes GeneralElectricalComponent {
         attribute Power_Generation : ISQ::PowerValue;
         port Electrode_Connection : SolarArrayElectrodeConnection;
-        port Solar_Environment : MissionPackage::SolarEnvironment;
+        port Solar_Input : ~MissionPackage::StellarEnvironment;
     }
 
     part def DeployableSolarArray specializes SolarArray {
@@ -94,6 +94,7 @@ package ElectricalPowerSystemPackage {
     part def ElectricalPowerSystem {
         // Interfaces (telecommand/telemetry + power rails)
         port I2C_Bus : ~I2CBus;
+        port EPS_Solar_Input : ~StellarEnvironment;
 
         // Internal EPS command/telemetry ports used to bind actions
         port Eps_Command_In  : MissionPackage::OnBoardCommand;
@@ -109,7 +110,7 @@ package ElectricalPowerSystemPackage {
         part Power_Supply_Unit[1..*] : PowerSupplyUnit;
 
         part Deployable_Solar_Arrays[0..*] : DeployableSolarArray;
-        part Mounted_Solar_Cells[0..*] : SolarArray;
+        part Mounted_Solar_Arrays[0..*] : SolarArray;
 
         // Map internal bus outputs to EPS external ports
         //bind Heater_Power_Bus = Battery_Pack_EPS.Heater_Power_Bus;

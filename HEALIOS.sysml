@@ -20,12 +20,11 @@ package HealiosMissionInstancePackage {
         // =========================
         // Mission-level refinements
         // =========================
-        attribute missionName redefines missionName = "HEALIOS";
-        attribute missionDuration redefines missionDuration = 1 [yr];
-        attribute orbitType redefines orbitType = "LEO (~550 km, ~55 deg inclination)";
+        attribute missionName redefines Mission_Name = "HEALIOS";
+        attribute missionDuration redefines Mission_Duration = 1 [yr];
+        attribute orbitType redefines Orbit_Type = "LEO (~550 km, ~55 deg inclination)";
 
         // Mirror MissionSegments type connect for visibility
-        connect Sun_Entity.Sun_Solar_Environment to HEALIOS_Space_Segment.satelliteSolarEnvironment;
         connect HEALIOS_Space_Segment.Telecommand_Port
             to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
         connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port
@@ -50,7 +49,7 @@ package HealiosMissionInstancePackage {
                 "TBD (set after CAD mass properties)";
 
             // --- SpaceSegment external ports ---
-            in port satelliteSolarEnvironment redefines satelliteSolarEnvironment;
+            in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
 
             port Telecommand_Port redefines Telecommand_Port;
             port Telemetry_Port redefines Telemetry_Port;
@@ -64,14 +63,19 @@ package HealiosMissionInstancePackage {
                 port Eps_Telemetry_Out redefines Eps_Telemetry_Out;
                 port Power_Bus_5V redefines Power_Bus_5V;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
+                port EPS_Solar_Input redefines EPS_Solar_Input;
 
                 part Power_Supply_Unit redefines Power_Supply_Unit {
                     port Power_Bus_5V redefines Power_Bus_5V;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
                     port Battery_Power_Bus redefines Battery_Power_Bus;
                 }
-                part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2];
-                part Mounted_Solar_Cells redefines Mounted_Solar_Cells [1];
+                part Deployable_Solar_Arrays redefines Deployable_Solar_Arrays [2] {
+                    in port Solar_Input redefines Solar_Input;
+                }
+                part Mounted_Solar_Arrays redefines Mounted_Solar_Arrays [1] {
+                    in port Solar_Input redefines Solar_Input;
+                }
 
                 part Battery_Pack_EPS redefines Battery_Pack_EPS {
                     port Battery_Power_Bus redefines Battery_Power_Bus;
@@ -111,6 +115,8 @@ package HealiosMissionInstancePackage {
                 connect Power_Supply_Unit.Battery_Power_Bus to Battery_Pack_EPS.Battery_Power_Bus;
                 connect Power_Supply_Unit.Power_Bus_5V to SS_Electrical_Power_System.Power_Bus_5V;
                 connect Power_Supply_Unit.Power_Bus_3V3 to SS_Electrical_Power_System.Power_Bus_3V3;
+                connect SS_Electrical_Power_System.EPS_Solar_Input to Deployable_Solar_Arrays.Solar_Input;
+                connect SS_Electrical_Power_System.EPS_Solar_Input to Mounted_Solar_Arrays.Solar_Input;
             }
 
             // =========================
@@ -155,64 +161,64 @@ package HealiosMissionInstancePackage {
             }
 
             
-        part SS_Communication_System redefines SS_Communication_System {
-            // top-level comms ports (usage names with underscores)
-            port Power_Bus_5V redefines Power_Bus_5V;
-            port OBDH_Command_Port redefines OBDH_Command_Port;
-            port OBDH_Status_Port redefines OBDH_Status_Port;
-            port RF_Link_Port redefines RF_Link_Port;
-            port I2C_Bus :>> I2C_Bus;
+            part SS_Communication_System redefines SS_Communication_System {
+                // top-level comms ports (usage names with underscores)
+                port Power_Bus_5V redefines Power_Bus_5V;
+                port OBDH_Command_Port redefines OBDH_Command_Port;
+                port OBDH_Status_Port redefines OBDH_Status_Port;
+                port RF_Link_Port redefines RF_Link_Port;
+                port I2C_Bus :>> I2C_Bus;
 
-                // attributes (usage names with underscores)
-                attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
-                attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
-                attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
+                    // attributes (usage names with underscores)
+                    attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
+                    attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
+                    attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
 
-            // parts (usage names with underscores)
-            part Antenna_Part redefines Antenna_Part {
-                port Antenna_Command_Port redefines Antenna_Command_Port ;
-                port Antenna_Status_Port redefines Antenna_Status_Port ;
-                port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
-                attribute Name redefines Name = "UHF Antenna";
-                attribute Band redefines Band = "UHF";
-                attribute Gain redefines Gain = 2.0;
+                // parts (usage names with underscores)
+                part Antenna_Part redefines Antenna_Part {
+                    port Antenna_Command_Port redefines Antenna_Command_Port ;
+                    port Antenna_Status_Port redefines Antenna_Status_Port ;
+                    port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
+                    attribute Name redefines Name = "UHF Antenna";
+                    attribute Band redefines Band = "UHF";
+                    attribute Gain redefines Gain = 2.0;
+                }
+
+                part Transceiver_Part redefines Transceiver_Part {
+                    port Transceiver_Status_Port redefines Transceiver_Status_Port;
+                    port Transceiver_Command_Port redefines Transceiver_Command_Port;
+                    attribute Name redefines Name = "UHF Transceiver";
+                    attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
+                    attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
+                    attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
+                    attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
+                    attribute FECEnabled redefines FECEnabled = true;
+                    attribute CRCEnabled redefines CRCEnabled = true;
+                    attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
+                }
+
+                part Crypto_Part redefines Crypto_Part {
+                    port Crypto_Status_Port redefines Crypto_Status_Port;
+                    port Crypto_Command_Port redefines Crypto_Command_Port;
+                    attribute Name redefines Name = "Comms Crypto/Integrity";
+                    attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
+                    attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
+                    attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
+                    attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
+                }
+
+                connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
+                connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
+                connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
+                connect Antenna_Part.Antenna_RF_Link_Port to SS_Communication_System.RF_Link_Port;
+                connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
+                connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
+                connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
+                connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
+                
+                
             }
-
-            part Transceiver_Part redefines Transceiver_Part {
-                port Transceiver_Status_Port redefines Transceiver_Status_Port;
-                port Transceiver_Command_Port redefines Transceiver_Command_Port;
-                attribute Name redefines Name = "UHF Transceiver";
-                attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
-                attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
-                attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
-                attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
-                attribute FECEnabled redefines FECEnabled = true;
-                attribute CRCEnabled redefines CRCEnabled = true;
-                attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
-            }
-
-            part Crypto_Part redefines Crypto_Part {
-                port Crypto_Status_Port redefines Crypto_Status_Port;
-                port Crypto_Command_Port redefines Crypto_Command_Port;
-                attribute Name redefines Name = "Comms Crypto/Integrity";
-                attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
-                attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
-                attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
-                attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
-            }
-
-            connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
-            connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
-            connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
-            connect Antenna_Part.Antenna_RF_Link_Port to SS_Communication_System.RF_Link_Port;
-            connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
-            connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
-            connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
-            connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
-            
-            
-        }
 
             // =========================
             // STRUCTURE
@@ -284,6 +290,8 @@ package HealiosMissionInstancePackage {
                     to Sun_Sensor.Power_Bus_3V3;
                 connect SS_Attitude_And_Orbit_Control_System.Power_Bus_5V
                     to Magnetorquer_Board.Power_Bus_5V;
+                connect SS_Attitude_And_Orbit_Control_System.I2C_Bus
+                    to Magnetorquer_Board.Magnetorquer_Board_I2C;
 
                 perform action Activate_AOCS redefines Activate_AOCS {
                     in AOCS_Command : MissionPackage::OnBoardCommand;
@@ -338,6 +346,7 @@ package HealiosMissionInstancePackage {
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
                 port I2C_Bus :>> I2C_Bus;
+                in port PL_Solar_Input redefines Solar_Input;
 
                 part Power_Filtering_Block redefines Power_Filtering_Block {
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
@@ -361,6 +370,7 @@ package HealiosMissionInstancePackage {
 
                 part Env_Sensors_Block redefines Env_Sensors_Block {
                     port Power_Bus_Filtered_3V3 redefines Power_Bus_Filtered_3V3;
+                    in port Solar_Input redefines Solar_Input;
 
                     port Temp_Out redefines Temp_Out;
                     port Irr_Out redefines Irr_Out;
@@ -373,16 +383,27 @@ package HealiosMissionInstancePackage {
                     }
                     part Irradiance_Sensor_Block redefines Irradiance_Sensor_Block {
                         port Irradiance_Sensor_I2C redefines Irradiance_Sensor_I2C;
+                        in port Solar_Input redefines Solar_Input;
+
                     }
                     part Radiation_Dose_Sensor redefines Radiation_Dose_Sensor {
                         port Radiation_Sensor_I2C redefines Radiation_Sensor_I2C;
+                        in port Solar_Input redefines Solar_Input;
+
                     }
                     part Spectrometer redefines Spectrometer {
                         port Spectrometer_Sensor_I2C redefines Spectrometer_Sensor_I2C;
+                        in port Solar_Input redefines Solar_Input;
                     }
+
+                    connect Env_Sensors_Block.Solar_Input to Irradiance_Sensor_Block.Solar_Input;
+                    connect Env_Sensors_Block.Solar_Input to Radiation_Dose_Sensor.Solar_Input;
+                    connect Env_Sensors_Block.Solar_Input to Spectrometer.Solar_Input;
                 }
 
                 part Solar_Cells_Block redefines Solar_Cells_Block {
+                    in port Solar_Input redefines Solar_Input;
+
                     part Psc_Connector_And_Protection redefines Psc_Connector_And_Protection {
                         attribute Name redefines Name = "Perovskite Coupon Protection";
                         attribute Mass redefines Mass = 0.05 [SI::kg];
@@ -394,6 +415,8 @@ package HealiosMissionInstancePackage {
                         attribute PowerConsumption redefines PowerConsumption = 0.0 [SI::W];
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
                         attribute Manufacturer redefines Manufacturer = "TBD";
+                        in port Solar_Input redefines Solar_Input;
+
                     }
 
                     part Reference_Silicon_Solar_Array_Coupon
@@ -402,11 +425,18 @@ package HealiosMissionInstancePackage {
                         attribute Mass redefines Mass = 0.02 [SI::kg];
                         attribute PowerConsumption redefines PowerConsumption = 0.0 [SI::W];
                         attribute Power_Generation redefines Power_Generation = 1.0 [SI::W];
+                        in port Solar_Input redefines Solar_Input;
                     }
+
+                    connect Solar_Cells_Block.Solar_Input to Perovskite_Solar_Array_Coupon.Solar_Input;
+                    connect Solar_Cells_Block.Solar_Input to Reference_Silicon_Solar_Array_Coupon.Solar_Input;
                 }
 
+                connect SS_Satellite_Payload.PL_Solar_Input to Solar_Cells_Block.Solar_Input;
+                connect SS_Satellite_Payload.PL_Solar_Input to Env_Sensors_Block.Solar_Input;
                 connect SS_Satellite_Payload.Power_Bus_5V to Power_Filtering_Block.Power_Bus_5V;
                 connect SS_Satellite_Payload.Power_Bus_3V3 to Power_Filtering_Block.Power_Bus_3V3;
+
                 connect Power_Filtering_Block.Power_Bus_Filtered_3V3
                     to Env_Sensors_Block.Power_Bus_Filtered_3V3;
                 connect Power_Filtering_Block.Power_Bus_Filtered_3V3
@@ -438,6 +468,8 @@ package HealiosMissionInstancePackage {
             connect SS_Electrical_Power_System.Power_Bus_3V3
                 to SS_On_Board_Data_Handling.Power_Bus_3V3;
 
+            // command connections
+
             connect Telecommand_Port.TC to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out to Telemetry_Port.TM;
 
@@ -445,8 +477,6 @@ package HealiosMissionInstancePackage {
                 to SS_On_Board_Data_Handling.Telecommand_In;
             connect SS_On_Board_Data_Handling.Telemetry_Out
                 to SS_Communication_System.OBDH_Status_Port;
-            
-
 
             connect SS_On_Board_Data_Handling.Out_Command_Port
                 to SS_Thermal_Control_System.Command_IN;
@@ -455,18 +485,10 @@ package HealiosMissionInstancePackage {
 
             connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Satellite_Payload.Cmd_In;
 
-            // connect SS_Satellite_Payload.Status_Out to
-            // SS_On_Board_Data_Handling.Voltage_Current_Sense_I2C;
-            // connect SS_Satellite_Payload.Status_Out to
-            // SS_On_Board_Data_Handling.Radiation_Sensor_I2C;
-            // connect SS_Satellite_Payload.Status_Out to
-            // SS_On_Board_Data_Handling.Irradiance_Sensor_I2C;
-            // connect SS_Satellite_Payload.Status_Out to
-            // SS_On_Board_Data_Handling.Temperature_Sensor_I2C;
-            // connect SS_Satellite_Payload.Status_Out to
-            // SS_On_Board_Data_Handling.Spectrometer_I2C;
+            // sun connections
+            connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Electrical_Power_System.EPS_Solar_Input;
+            connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Satellite_Payload.PL_Solar_Input;
 
-            // Keep your state refinement as-is
             state HEALIOS_Mode redefines Satellite_Mode {
                 entry;
                 then Commissioning_Mode;

@@ -3,7 +3,7 @@ package PayloadPackage {
     private import SpaceActionsPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import ISQ::*;
-    private import Environment::*;
+    private import EnvironmentPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
 
     // --- COTS blocks (definitions WITHOUT "name") ---
@@ -47,6 +47,7 @@ package PayloadPackage {
         part Perovskite_Solar_Array_Coupon : PerovskiteSolarArray [1..*];
         part Reference_Silicon_Solar_Array_Coupon : SolarArray [1..*];
         part Psc_Connector_And_Protection : PerovskiteCellConnectorAndProtection;
+        port Solar_Input : ~StellarEnvironment;
     }
 
     part def MPPTBlock {
@@ -73,14 +74,14 @@ package PayloadPackage {
         port Irr_Out : MissionPackage::OnBoardStatus;
         port Rad_Out : MissionPackage::OnBoardStatus;
         port Spec_Out : MissionPackage::OnBoardStatus;
+        port Solar_Input : ~StellarEnvironment;
 
-        // instances (NO default names here)
         part Temperature_Sensor_At_Environment : TemperatureSensor;
         part Irradiance_Sensor_Block : IrradianceSensorBlock;
         part Radiation_Dose_Sensor : RadiationDoseSensor;
         part Spectrometer : SpectrometerPackage;
 
-        perform action Read_PL_Temperature : ReadTemperature;
+        action Read_PL_Temperature : ReadTemperature;
     }
 
     part def Payload {
@@ -90,6 +91,7 @@ package PayloadPackage {
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;
         port I2C_Bus : ~I2CBus;
+        port Solar_Input : ~StellarEnvironment;
         
         // Subparts (NO default names here)
         part Power_Filtering_Block : PowerFilteringBlock;
