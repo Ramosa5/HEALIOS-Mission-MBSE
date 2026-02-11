@@ -110,8 +110,6 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_Electrical_Power_System redefines SS_Electrical_Power_System {
                 port Data_Bus redefines Data_Bus;
-                port Eps_Command_In redefines Eps_Command_In;
-                port Eps_Telemetry_Out redefines Eps_Telemetry_Out;
                 port Power_Bus_5V redefines Power_Bus_5V;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
                 port EPS_Solar_Input redefines EPS_Solar_Input;
@@ -175,9 +173,6 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_On_Board_Data_Handling redefines SS_On_Board_Data_Handling {
                 // System ports
-                port Telecommand_In redefines Telecommand_In;
-                port Telemetry_Out redefines Telemetry_Out;
-                port Out_Command_Port redefines Out_Command_Port;
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
 
                 // I2C buses
@@ -215,8 +210,6 @@ package HealiosMissionInstancePackage {
             part SS_Communication_System redefines SS_Communication_System {
                 // top-level comms ports (usage names with underscores)
                 port Power_Bus_5V redefines Power_Bus_5V;
-                port OBDH_Command_Port redefines OBDH_Command_Port;
-                port OBDH_Status_Port redefines OBDH_Status_Port;
                 port RF_Link_Port redefines RF_Link_Port;
                 port Data_Bus :>> Data_Bus;
 
@@ -259,14 +252,12 @@ package HealiosMissionInstancePackage {
                     attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
                 }
 
-                connect OBDH_Status_Port to Crypto_Part.Crypto_Status_Port;
                 connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
                 connect Transceiver_Part.Transceiver_Status_Port to Antenna_Part.Antenna_Status_Port;
                 connect Antenna_Part.Antenna_RF_Link_Port to SS_Communication_System.RF_Link_Port;
                 connect SS_Communication_System.RF_Link_Port to Antenna_Part.Antenna_Command_Port;
                 connect Antenna_Part.Antenna_Command_Port to Transceiver_Part.Transceiver_Command_Port;
                 connect Transceiver_Part.Transceiver_Command_Port to Crypto_Part.Crypto_Command_Port;
-                connect Crypto_Part.Crypto_Command_Port to OBDH_Command_Port;
                 
                 
             }
@@ -295,7 +286,6 @@ package HealiosMissionInstancePackage {
             // =========================
             part SS_Attitude_And_Orbit_Control_System
                 redefines SS_Attitude_And_Orbit_Control_System {
-                port AOCS_Command_In redefines AOCS_Command_In;
                 port Power_Bus_3V3 :>> Power_Bus_3V3;
                 port Power_Bus_5V :>> Power_Bus_5V;
                 port Data_Bus :>> Data_Bus;
@@ -344,7 +334,7 @@ package HealiosMissionInstancePackage {
                 connect SS_Attitude_And_Orbit_Control_System.Data_Bus
                     to Magnetorquer_Board.Magnetorquer_Board_I2C;
 
-                perform action Activate_AOCS redefines Activate_AOCS {
+                fgfgfg daje zeby bylo na czerowno zeby to ogarnac perform action Activate_AOCS redefines Activate_AOCS {
                     in AOCS_Command : MissionPackage::OnBoardCommand;
 
                     if AOCS_Command.Type == "TurnOn" {
@@ -372,7 +362,7 @@ package HealiosMissionInstancePackage {
                 port EPS_Temperature_Port redefines EPS_Temperature_Port;
                 port PL_Temperature_Port redefines PL_Temperature_Port;
                 port OBDH_Temperature_Port redefines OBDH_Temperature_Port;
-                port Command_IN redefines Command_IN;
+                in abstract port Data_Bus redefines Data_Bus;
 
                 attribute Stop_Signal redefines Stop_Signal;
 
@@ -521,20 +511,10 @@ package HealiosMissionInstancePackage {
 
             // command connections
 
-            connect Telecommand_Port.TC to SS_On_Board_Data_Handling.Telecommand_In;
-            connect SS_On_Board_Data_Handling.Telemetry_Out to Telemetry_Port.TM;
-
-            connect SS_Communication_System.OBDH_Command_Port
-                to SS_On_Board_Data_Handling.Telecommand_In;
-            connect SS_On_Board_Data_Handling.Telemetry_Out
-                to SS_Communication_System.OBDH_Status_Port;
-
-            connect SS_On_Board_Data_Handling.Out_Command_Port
-                to SS_Thermal_Control_System.Command_IN;
-            connect SS_On_Board_Data_Handling.Out_Command_Port
-                to SS_Attitude_And_Orbit_Control_System.AOCS_Command_In;
-
-            connect SS_On_Board_Data_Handling.Out_Command_Port to SS_Satellite_Payload.Cmd_In;
+            connect SS_Electrical_Power_System.Data_Bus
+                to SS_Thermal_Control_System.Data_Bus;
+            connect SS_On_Board_Data_Handling.Data_Bus
+                to SS_Attitude_And_Orbit_Control_System.Data_Bus;
 
             // sun connections
             connect HEALIOS_Space_Segment.Satellite_Solar_Environment to SS_Electrical_Power_System.EPS_Solar_Input;

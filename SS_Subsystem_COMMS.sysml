@@ -84,8 +84,6 @@ package CommunicationsSystemPackage {
 
     part def CommunicationsSystem {
         port Power_Bus_5V: PowerBus;
-        port OBDH_Command_Port : OutCommandPort;
-        port OBDH_Status_Port : InStatusPort;
         port RF_Link_Port : RFLinkPort;
         port Data_Bus : DataBus;
         
@@ -110,7 +108,5 @@ package CommunicationsSystemPackage {
         bind ENC_DL_Action.TM_In = TX_HK_Action.TM_Out;
         bind RF_Link_Port.RF_Out = ENC_DL_Action.RF_Out;
         bind DEC_AUTH_Action.RF_In = RF_Link_Port.RF_In;
-        bind OBDH_Command_Port.Cmd = DEC_AUTH_Action.Cmd_Out;
-
     }
 }

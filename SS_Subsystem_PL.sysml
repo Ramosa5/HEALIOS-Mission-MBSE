@@ -86,8 +86,6 @@ package PayloadPackage {
 
     part def Payload {
         // Ports for integration
-        port Cmd_In : MissionPackage::OnBoardCommand;
-        port Status_Out : MissionPackage::OnBoardStatus;
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;
         port Data_Bus : ~DataBus;
