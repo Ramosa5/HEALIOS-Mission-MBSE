@@ -8,7 +8,7 @@ package AttitudeAndOrbitControlSystemPackage {
 
 
     part def SunSensor :> GeneralElectricalComponent {
-        port Power_Bus_In_3V3 : PowerBus;
+        port Power_Bus_3V3 : PowerBus;
         out Beta_Angle : Boolean;
     }
 
@@ -18,8 +18,8 @@ package AttitudeAndOrbitControlSystemPackage {
     }
 
     part def MagnetorquerBoard {
-        port Power_Bus_In_5V : ~PowerBus;
-        port Magnetorquer_Board_I2C : ~OnBoardDataHandlingSystemPackage::I2CPort;
+        port Power_Bus_5V : ~PowerBus;
+        port Magnetorquer_Board_I2C : ~I2CBus;
 
         part Mounted_Magnetorquer : Magnetorquer [0..*];
     }
@@ -27,8 +27,9 @@ package AttitudeAndOrbitControlSystemPackage {
     // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
     part def AttitudeAndOrbitControlSystem {
         port AOCS_Command_In : ~TmTcPort;
-        port Power_Bus_In_3V3 : ~PowerBus;
-        port Power_Bus_In_5V : ~PowerBus;
+        port Power_Bus_3V3 : ~PowerBus;
+        port Power_Bus_5V : ~PowerBus;
+        port I2C_Bus : ~I2CBus;
         part Sun_Sensor : SunSensor [0..*];
         part Magnetorquer_Board : MagnetorquerBoard [0..*];
         attribute Nominal_Force : ISQ::ForceValue;
