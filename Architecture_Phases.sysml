@@ -205,7 +205,7 @@ package MissionPhases {
                     
                     in item System_Operations_Concepts : String;
                     in item System_Architectures : String;
-                    out item Feasibility_Assessment_Report : String; // Includes cost, schedule, org constraints
+                    out item Feasibility_Assessment_Report : String;
                 }
 
                 action Elaborate_Risk_Assessment {
@@ -311,7 +311,7 @@ package MissionPhases {
                 action Prepare_System_Requirements {
                     doc /* Prepare the next level specification (System Requirements) */
                     in item Selected_System_Concept : String;
-                    out item Updated_Technical_Specs : String; // Key input for SRR
+                    out item Updated_Technical_Specs : String;
                 }
 
                 action Initial_Design_Definition {
@@ -454,8 +454,8 @@ package MissionPhases {
                 action Elaborate_Detailed_Design {
                     doc /* Completion of the detailed design definition of the system at all levels */
                     
-                    in item PhaseB_Baseline_Report : Report; // Contains Preliminary Design
-                    out item Detailed_Design_Definition : String; // E.g., Schematics, CAD, Code
+                    in item PhaseB_Baseline_Report : Report;
+                    out item Detailed_Design_Definition : String;
                 }
 
                 action Finalize_Interface_Definitions {
@@ -476,7 +476,7 @@ package MissionPhases {
                     doc /* Completion of assembly, integration and test (AIT) planning */
                     
                     in item Detailed_Design_Definition : String;
-                    in item PhaseB_Baseline_Report : Report; // Contains Verification Plan
+                    in item PhaseB_Baseline_Report : Report;
                     out item Detailed_AIT_Plan : String;
                     //out item AIT_Procedures : String;
                 }
