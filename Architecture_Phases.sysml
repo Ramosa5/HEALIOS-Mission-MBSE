@@ -161,8 +161,6 @@ package MissionPhases {
                 in item Phase0_Baseline_Report : Report;
                 out item PhaseA_Documentation_Item : Report [0..*];
 
-
-                // 1. Establish Plans
                 action Establish_Preliminary_Plans {
                     doc /* Establish preliminary management, SE, and PA plans */
                     in item Last_Iteration_Artifacts : Report;
@@ -172,7 +170,6 @@ package MissionPhases {
                     out item Product_Assurance_Plan : String;
                 }
 
-                // 2. Function Tree
                 action Establish_Function_Tree {
                     doc /* Establish the function tree based on requirements */
 
@@ -180,7 +177,6 @@ package MissionPhases {
                     out item Function_Tree : String;
                 }
 
-                // 3. Elaborate Concepts (Iterative loop with Phase 0 output usually implies input here)
                 action Elaborate_Concepts_And_Architecture {
                     doc /* Elaborate possible system/ops concepts and architectures */
                     
@@ -189,7 +185,6 @@ package MissionPhases {
                     out item System_Architectures : String;
                 }
 
-                // 4. Critical Technologies
                 action Identify_Critical_Technologies {
                     doc /* Identify critical technologies and propose pre-development */
                     
@@ -198,7 +193,6 @@ package MissionPhases {
                     out item Pre_Development_Activities : String;
                 }
 
-                // 5. Critical Elements Characterization
                 action Characterize_Critical_Elements {
                     doc /* Quantify and characterize critical elements for technical/economic feasibility */
                     
@@ -206,7 +200,6 @@ package MissionPhases {
                     out item Critical_Elements_Definition : String;
                 }
 
-                // 6. Feasibility Assessment
                 action Assess_Feasibility {
                     doc /* Assess technical and programmatic feasibility by identifying constraints */
                     
@@ -215,7 +208,6 @@ package MissionPhases {
                     out item Feasibility_Assessment_Report : String; // Includes cost, schedule, org constraints
                 }
 
-                // 7. Risk Assessment
                 action Elaborate_Risk_Assessment {
                     doc /* Elaborate the risk assessment based on architectures and needs */
                     
@@ -223,7 +215,6 @@ package MissionPhases {
                     out item Risk_Assessment : String;
                 }
 
-                // 8. Proposal for Phase B
                 action Propose_System_Solution {
                     doc /* Propose system/ops concept, technical solutions, model philosophy and verification approach for Phase B */
                     
@@ -236,17 +227,14 @@ package MissionPhases {
                     out item Verification_Approach : String;
                 }
 
-                // Function Tree drives the Concepts
                 flow Establish_Function_Tree.Function_Tree to Elaborate_Concepts_And_Architecture.Function_Tree;
 
-                // Concepts and Architecture drive Tech, Elements, Feasibility, and Risk
                 flow Elaborate_Concepts_And_Architecture.System_Architectures to Identify_Critical_Technologies.System_Architectures;
                 flow Identify_Critical_Technologies.Critical_Technologies to Characterize_Critical_Elements.Critical_Technologies;
                 flow Elaborate_Concepts_And_Architecture.System_Architectures to Assess_Feasibility.System_Architectures;
                 flow Elaborate_Concepts_And_Architecture.System_Architectures to Elaborate_Risk_Assessment.System_Architectures;
                 flow Elaborate_Concepts_And_Architecture.System_Operations_Concepts to Assess_Feasibility.System_Operations_Concepts;
 
-                // Aggregating results into the Final Proposal
                 flow Assess_Feasibility.Feasibility_Assessment_Report to Propose_System_Solution.Feasibility_Assessment_Report;
                 flow Elaborate_Risk_Assessment.Risk_Assessment to Propose_System_Solution.Risk_Assessment;
                 flow Characterize_Critical_Elements.Critical_Elements_Definition to Propose_System_Solution.Critical_Technologies;
@@ -310,7 +298,6 @@ package MissionPhases {
             timeslice SystemDefinitionProcess {
                 doc /* Work leading up to the System Requirements Review (SRR) */
 
-                // Input from Phase A
                 in item PhaseA_Baseline_Report : Report;
                 out item PhaseB_Documentation_Item : Report [0..*];
 
@@ -339,12 +326,10 @@ package MissionPhases {
                 flow Prepare_System_Requirements.Updated_Technical_Specs to PhaseB_Documentation_Item;
                 flow Initial_Design_Definition.Initial_Design_Definition to PhaseB_Documentation_Item;
 
-                // Internal Flows
                 flow Conduct_Trade_Offs.Selected_System_Concept to Prepare_System_Requirements.Selected_System_Concept;
                 flow Conduct_Trade_Offs.Selected_System_Concept to Initial_Design_Definition.Selected_System_Concept;
             }
 
-            // Define the sequence: Process -> Review
             first SystemDefinitionProcess then SRR;
 
             snapshot SRR : Report {
@@ -369,11 +354,9 @@ package MissionPhases {
                 doc /* Work leading up to the Preliminary Design Review (PDR).
                        This is where the actual design based on SRR requirements happens. */
 
-                // Inputs (Baselines from SRR)
                 in item Approved_Technical_Specification : String;
                 out item PhaseB_Documentation_Item : Report [0..*];
 
-                // --- Design Actions ---
                 action Elaborate_Preliminary_Design {
                     doc /* Create the detailed preliminary design definition */
                     in item Approved_Technical_Specsification : String;
@@ -392,7 +375,6 @@ package MissionPhases {
                     out item Verification_Plan : String;
                 }
 
-                // --- Planning & RAMS Actions ---
                 action Perform_RAMS {
                     doc /* Reliability, Availability, Maintainability, Safety Analysis */
                     in item Final_Preliminary_Design : String;
@@ -449,34 +431,25 @@ package MissionPhases {
             doc
             /* Detailed Definition */
 
-            // 1. Establish the Baseline from Phase B (PDR)
             part PhaseB_Baseline : PhaseBaseline {
                 doc /* Baseline established at the end of Phase B (PDR) */
                 attribute PhaseName redefines PhaseName = "Phase B";
                 out item BaselineReport redefines BaselineReport;
             }
 
-            // 2. Container for Phase C Documents
             part PhaseC_Documentation : MissionDocumentation {
                 doc /* Documentation Created through Phase C */
                 in item Report_Item : Report [0..*];
             }
 
-            // 3. Connect Baseline to Process, and Process to Documentation
             connect PhaseB_Baseline.BaselineReport to DetailedDefinitionProcess.PhaseB_Baseline_Report;
             connect DetailedDefinitionProcess.PhaseC_Documentation_Item to PhaseC_Documentation.Report_Item;
 
-            // 4. The Engineering Process
             timeslice DetailedDefinitionProcess {
                 doc /* The workflow to reach Critical Design Review (CDR) */
 
-                // Input: Data frozen at PDR
                 in item PhaseB_Baseline_Report : Report;
-                
-                // Output: Data generated for CDR
                 out item PhaseC_Documentation_Item : Report [0..*];
-
-                // --- Design & Interface Actions ---
 
                 action Elaborate_Detailed_Design {
                     doc /* Completion of the detailed design definition of the system at all levels */
@@ -492,16 +465,12 @@ package MissionPhases {
                     out item Final_Interface_Control_Documents : String;
                 }
 
-                // --- Hardware/Software Realization & Testing ---
-
                 action Develop_And_Test_Engineering_Models {
-                    doc /* Production and development testing of engineering models (EM) and pre-qualification of critical elements */
+                    doc /* Production and development testing of engineering models (EM) and pre-qualification of critical elements (Hardware and Software Realization)*/
                     
                     in item Detailed_Design_Definition : String;
                     out item EM_Test_Reports : String;
                 }
-
-                // --- AIT Planning ---
 
                 action Plan_AIT {
                     doc /* Completion of assembly, integration and test (AIT) planning */
@@ -511,8 +480,6 @@ package MissionPhases {
                     out item Detailed_AIT_Plan : String;
                     //out item AIT_Procedures : String;
                 }
-
-                // --- Operations & Risk ---
 
                 action Prepare_User_Manual {
                     doc /* Issue of preliminary user manual */
@@ -536,7 +503,6 @@ package MissionPhases {
                     out item Procurement_And_Manufacturing_Plan : String;
                 }
 
-                // 1. Detailed Design drives everything
                 flow PhaseB_Baseline_Report to Elaborate_Detailed_Design.PhaseB_Baseline_Report;
                 
                 flow Elaborate_Detailed_Design.Detailed_Design_Definition to Finalize_Interface_Definitions.Detailed_Design_Definition;
@@ -561,7 +527,6 @@ package MissionPhases {
                 flow Finalize_Procurement_And_Manufacturing_Plan.Procurement_And_Manufacturing_Plan to PhaseC_Documentation_Item;
             }
 
-            // Sequence: Process -> CDR
             first DetailedDefinitionProcess then CDR;
 
             snapshot CDR : Report {
@@ -588,30 +553,51 @@ package MissionPhases {
 
             /* Deliberately left empty; the Phase D content is currently revised. Namely, Testing Campaign is under revision. */
 
-            // QR held during the course of the phase
             snapshot QR : Report {
                 doc
-                /* Qualification Review */
+                /* Qualification Review (QR)
+                
+                QR held during the course of the phase and assesses the following:
+                
+                1) To confirm that the verification process has demonstrated that the design, including margins, meets the applicable requirements.
+                2) To verify that the verification record is complete at this and all lower levels in the customer‐supplier chain.
+                3) To verify the acceptability of all waivers and deviations.*/
 
                 attribute BaselineApproved : Boolean;
             }
 
             first QR then AR;
 
-            // AR held at the end of the phase
             snapshot AR : Report {
                 doc
-                /* Acceptance Review */
+                /* Acceptance Review 
+                
+                AR held at the end of the phase and assesses the following:
+
+                1) To confirm that the verification process has demonstrated that the product is free of workmanship errors and is ready for subsequent operational use.
+                2) To verify that the acceptance verification record is complete at this and all lower levels in the customer‐supplier chain.
+                3) To verify that all deliverable products are available per the approved deliverable items list.
+                4) To verify the “as‐built” product and its constituent components against
+                the required “as designed” product and its constituent components.
+                5) To verify the acceptability of all waivers and deviations.
+                6) To verify that the Acceptance Data Package is complete.
+                7) To authorize delivery of the product.
+                8) To release the certificate of acceptance. */
 
                 attribute BaselineApproved : Boolean;
             }
 
             first AR then ORR;
 
-            // ORR held at the end of the phase
             snapshot ORR : Report {
                 doc
-                /* Operational Readiness Review */
+                /* Operational Readiness Review 
+                
+                ORR held at the end of the phase and assesses the following:
+                 
+                1) To verify readiness of the operational procedures and their compatibility with the flight system.
+                2) To verify readiness of the operations teams.
+                3) To accept and release the ground segment for operations. */
 
                 attribute BaselineApproved : Boolean;
             }
@@ -676,20 +662,26 @@ package MissionPhases {
 
             first PreLaunchActivities then FRR;
 
-            // FRR held prior to launch
             snapshot FRR : Report {
                 doc
-                /* Flight Readiness Review */
+                /* Flight Readiness Review 
+                
+                The flight readiness review is conducted prior to launch. 
+                
+                The objective of this review is to verify that the flight and ground segments including all supporting systems such as tracking systems, communication systems and safety systems are ready for launch.*/
 
                 attribute BaselineApproved : Boolean;
             }
 
             first FRR then LRR;
 
-            // LRR held immediately prior to launch
             snapshot LRR : Report {
                 doc
-                /* Launch Readiness Review */
+                /* Launch Readiness Review 
+                
+                The launch readiness review is conducted just prior to launch. 
+                
+                The objective of this review is to declare readiness for launch of the launch vehicle, the space and ground segments including all supporting systems such as tracking systems, communication systems and safety systems and to provide the authorization to proceed for launch.*/
 
                 attribute BaselineApproved : Boolean;
             }
@@ -736,7 +728,7 @@ package MissionPhases {
                 }
             }
 
-            // Sequence: LEOP -> Commissioning
+            
             first Launch_And_Early_Orbit_Phase then Commissioning;
 
             timeslice Commissioning {
@@ -764,10 +756,11 @@ package MissionPhases {
 
             first Commissioning then CRR;
 
-            // CRR held after completion of on-orbit commissioning
             snapshot CRR : Report {
                 doc
-                /* Commissioning Result Review */
+                /* Commissioning Result Review 
+                
+                The commissioning result review is held at the end of the commissioning as part of the in‐orbit stage verification. It allows declaring readiness for routine operations/utilization.*/
 
                 attribute BaselineApproved : Boolean;
             }
@@ -818,10 +811,14 @@ package MissionPhases {
 
             first End_Of_Mission_Preparation then ELR;
 
-            // ELR held at the completion of the mission
             snapshot ELR : Report {
                 doc
-                /* End-of-Life Review */
+                /* End-of-Life Review 
+                
+                ELR held at the completion of the mission and assesses the following:
+                
+                1) To verify that the mission has completed its useful operation or service.
+                2) To ensure that all on‐orbit elements are configured to allow safe disposal.*/
 
                 attribute BaselineApproved : Boolean;
             }
@@ -849,10 +846,7 @@ package MissionPhases {
             timeslice DisposalOperations {
                 doc /* Execution of the disposal plan and mission close-out */
 
-                // Input: Status from end of Phase E
                 in item Final_Disposal_Plan : String;
-                
-                // Outputs: Final reports for MCR
                 //out item Disposal_Report : Report;
                 out item Final_Mission_Report : Report;
 
@@ -888,26 +882,24 @@ package MissionPhases {
                 connect DisposalOperations.Final_Disposal_Plan to Data_Centre_Archive.Ground_Station_Records_Port;
                 
                 flow Data_Centre_Archive.Ground_Station_Records_Port to Data_Archiving.Dataset;
-                // Flows
                 flow Execute_Decommissioning.Orbit_Status to Passivation.Orbit_Status;
                 
                 flow Passivation.Passivation_Confirmation to Prepare_Final_Report.Passivation_Confirmation;
                 flow Data_Archiving.Archived_Data_Package to Prepare_Final_Report.Archived_Data_Package;
 
-                // Outputs to Documentation
                 flow Prepare_Final_Report.Mission_Closeout_Report to Final_Mission_Report;
                 flow Prepare_Final_Report.Mission_Closeout_Report to PhaseF_Documentation.Report_Item;
                 flow Data_Centre_Archive.Ground_Station_Records_Port to Execute_Decommissioning.Final_Disposal_Plan;
                 flow Final_Mission_Report to PhaseF_Documentation.Report_Item;
             }
 
-            // Sequence: Operations -> MCR
             first DisposalOperations then MCR;
 
-            // MCR held at the end of this phase
             snapshot MCR : Report {
                 doc
-                /* Mission Close-out Review */
+                /* Mission Close-out Review 
+                
+                MCR held at the end of this phase with the goal to ensure that all mission disposal activities are adequately completed.*/
 
                 attribute BaselineApproved : Boolean;
             }
