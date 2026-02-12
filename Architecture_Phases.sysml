@@ -636,24 +636,24 @@ package MissionPhases {
 
                 out item PreLaunch_Status : Report;
 
-                part CubeSat : MissionPackage::SpaceSegment {
-                    port Deployment_Interface redefines Deployment_Interface;
-                }
-                part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
-                    port Deployment_Slot redefines Deployment_Slot;
-                    port Mounting_Plate redefines Mounting_Plate;
-                }
-                part LaunchVehicle : LaunchEnvironment::Launcher {
-                    port Payload_Adapter redefines Payload_Adapter;
-                }
-
-                connect LaunchVehicle.Payload_Adapter to CubeSat_Dispenser.Mounting_Plate;
-connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
-
                 action Integration_With_Launch_Dispenser {
                     doc /* Integration of the space segment with the launch vehicle through the launch dispenser */
 
                     out item Integration_Report : Report;
+
+                    part CubeSat : MissionPackage::SpaceSegment {
+                        port Deployment_Interface redefines Deployment_Interface;
+                    }
+                    part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
+                        port Deployment_Slot redefines Deployment_Slot;
+                        port Mounting_Plate redefines Mounting_Plate;
+                    }
+                    part LaunchVehicle : LaunchEnvironment::Launcher {
+                        port Payload_Adapter redefines Payload_Adapter;
+                    }
+
+                    connect LaunchVehicle.Payload_Adapter to CubeSat_Dispenser.Mounting_Plate;
+                    connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                 }
                 
                 first Integration_With_Launch_Dispenser then Ground_Segment_Final_Validation;
@@ -698,9 +698,29 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
 
             timeslice Launch_And_Early_Orbit_Phase {
                 doc /* Conduct launch and early orbit phase (LEOP) operations */
+
+                action Launch {
+                    doc /* Launch and ascent phase */
+                }
+
+                first Launch then Launch_Injection;
                 
                 action Launch_Injection {
                     doc /* Injection into orbit */
+
+                    part CubeSat : MissionPackage::SpaceSegment {
+                        port Deployment_Interface redefines Deployment_Interface;
+                    }
+                    part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
+                        port Deployment_Slot redefines Deployment_Slot;
+                        port Mounting_Plate redefines Mounting_Plate;
+                    }
+                    part LaunchVehicle : LaunchEnvironment::Launcher {
+                        port Payload_Adapter redefines Payload_Adapter;
+                    }
+                    connect LaunchVehicle.Payload_Adapter to CubeSat_Dispenser.Mounting_Plate;
+                    //connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
+
                 }
 
                 first Launch_Injection then Detumble_AOCS;
@@ -731,7 +751,7 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                     doc /* Establish contact with the space segment and verify telemetry and telecommand */
 
                     action Platform_Verification {
-                    doc /* Verify bus subsystems performance */
+                        doc /* Verify bus subsystems performance */
                     }
 
                     action Payload_Verification {
@@ -762,7 +782,6 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                     in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
                     in port Telecommand_Port redefines Telecommand_Port;
                     out port Telemetry_Port redefines Telemetry_Port;
-
                 }
 
                 part Sun : Star {
@@ -825,7 +844,7 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
           
 
             connect PhaseE_Baseline.BaselineReport to DisposalOperations.Final_Disposal_Plan;
-            //connect DisposalOperations.Disposal_Report to PhaseF_Documentation.Report_Item;
+            
 
             timeslice DisposalOperations {
                 doc /* Execution of the disposal plan and mission close-out */
@@ -865,6 +884,8 @@ connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
                     in item Archived_Data_Package : String;
                     out item Mission_Closeout_Report : String;
                 }
+
+                connect DisposalOperations.Final_Disposal_Plan to Data_Centre_Archive.Ground_Station_Records_Port;
                 
                 flow Data_Centre_Archive.Ground_Station_Records_Port to Data_Archiving.Dataset;
                 // Flows
