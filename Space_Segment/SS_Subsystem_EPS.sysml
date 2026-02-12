@@ -5,7 +5,6 @@ package ElectricalPowerSystemPackage {
     private import ISQ::*;
     private import EnvironmentPackage::*;
 
-    // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
     alias Wattage for ISQ::PowerValue;
 
     part def GeneralElectricalComponent {
@@ -100,31 +99,23 @@ package ElectricalPowerSystemPackage {
 
     // Electrical Power System
     part def ElectricalPowerSystem {
-        // Interfaces (telecommand/telemetry + power rails)
         port Data_Bus : ~DataBus;
         port EPS_Solar_Input : ~StellarEnvironment;
 
-        // Internal EPS command/telemetry ports used to bind actions
         port Eps_Command_In  : MissionPackage::OnBoardCommand;
         port Eps_Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        // Regulated rails commonly referenced in your DAQ chapter
         port Power_Bus_5V : PowerBus;
         port Power_Bus_3V3 : PowerBus;
 
         part Battery_Pack_EPS[1..*] : BatteryPack;
         part MPPT_Unit[0..*] : MPPTUnit;
 
-        // Chosen / documented elements
         part Power_Supply_Unit[1..*] : PowerSupplyUnit;
 
         part Deployable_Solar_Arrays[0..*] : DeployableSolarArray;
         part Mounted_Solar_Arrays[0..*] : SolarArray;
 
-        // Map internal bus outputs to EPS external ports
-        //bind Heater_Power_Bus = Battery_Pack_EPS.Heater_Power_Bus;
-
-        // --- EPS actions (wired to EPS command/telemetry ports) ---
         perform action Mppt : performMPPT;
         perform action Battery_Energy : manageBatteryEnergy;
         perform action Distribute : distributePowerToLoads;
@@ -132,7 +123,6 @@ package ElectricalPowerSystemPackage {
         perform action Switch_State : switchEPSState;
         perform action Report_Health : reportEPSHealth;
 
-        // Bind EPS ports into all EPS actions (command in, telemetry out)
         bind Mppt.Mppt_Command = Eps_Command_In;
         bind Battery_Energy.Battery_Command = Eps_Command_In;
         bind Distribute.Distribution_Command = Eps_Command_In;
@@ -146,9 +136,5 @@ package ElectricalPowerSystemPackage {
         bind Eps_Telemetry_Out = Load_Mgmt.Load_Mgmt_Status;
         bind Eps_Telemetry_Out = Switch_State.Switch_Status;
         bind Eps_Telemetry_Out = Report_Health.Health_Telemetry;
-
-        // Optional: tie I2C payload into the same channels (if you want I2C to carry these)
-        // bind EPS_I2C.Cmd  = Eps_Command_In;
-        // bind Eps_Telemetry_Out = EPS_I2C.Data;
     }
 }

@@ -18,14 +18,10 @@ package HealiosMissionInstancePackage {
          * exist in the TYPE definitions so SysIDE can render them in instance diagrams.
          */
 
-        // =========================
-        // Mission-level refinements
-        // =========================
         attribute missionName redefines Mission_Name = "HEALIOS";
         attribute missionDuration redefines Mission_Duration = 1 [yr];
         attribute orbitType redefines Orbit_Type = "LEO (~550 km, ~55 deg inclination)";
 
-        // Mirror MissionSegments type connect for visibility
         connect HEALIOS_Space_Segment.Telecommand_Port
             to HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port;
         connect HEALIOS_Space_Segment.SS_Communication_System.RF_Link_Port
@@ -39,7 +35,7 @@ package HealiosMissionInstancePackage {
             connect HEALIOS_Space_Segment.Telemetry_Port to HEALIOS_Ground_Segment.Telemetry_Port;
 
         // ========================
-        // Space segment refinements
+        // Space segment
         // =========================
         part HEALIOS_Space_Segment redefines Space_Segment {
             state HEALIOS_Mode redefines Satellite_Mode {
@@ -102,7 +98,6 @@ package HealiosMissionInstancePackage {
             attribute Center_Of_Mass redefines Center_Of_Mass =
                 "TBD (set after CAD mass properties)";
 
-            // --- SpaceSegment external ports ---
             in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
 
             port Telecommand_Port redefines Telecommand_Port;
@@ -192,10 +187,8 @@ package HealiosMissionInstancePackage {
             // OBDH
             // =========================
             part SS_On_Board_Data_Handling redefines SS_On_Board_Data_Handling {
-                // System ports
                 port Power_Bus_3V3 redefines Power_Bus_3V3;
 
-                // Data buses
                 port Data_Bus redefines Data_Bus {
                     in item Data redefines Data;
                     out item Cmd redefines Cmd;
@@ -210,7 +203,6 @@ package HealiosMissionInstancePackage {
                     attribute Role redefines Role = "Command & Data Handling (Primary)";
                     attribute Warm_Redundant redefines Redundant = true;
 
-                    // Ports on the OBC that are wired out in the type definition
                     port Data_Bus redefines Data_Bus;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
 
@@ -237,17 +229,14 @@ package HealiosMissionInstancePackage {
             }
 
             part SS_Communication_System redefines SS_Communication_System {
-                // top-level comms ports (usage names with underscores)
                 port Power_Bus_5V redefines Power_Bus_5V;
                 port RF_Link_Port redefines RF_Link_Port;
                 port Data_Bus :>> Data_Bus;
 
-                // attributes (usage names with underscores)
                 attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
                 attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
                 attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
 
-                // parts (usage names with underscores)
                 part Antenna_Part redefines Antenna_Part {
                     port Antenna_Command_Port redefines Antenna_Command_Port;
                     port Antenna_Status_Port redefines Antenna_Status_Port;
@@ -334,7 +323,6 @@ package HealiosMissionInstancePackage {
                 }
                 part Deployment_Switches redefines Deployment_Switches;
 
-                // --- MIRROR CONNECT from StructureSystem.sysml ---
                 connect Secondary_Structure.Structural_Port to Primary_Structure.Structural_Port;
             }
 
@@ -409,15 +397,13 @@ package HealiosMissionInstancePackage {
             }
 
             // =========================
-            // TCS  (ports + internal connects were missing in your instance)
+            // TCS
             // =========================
             part SS_Thermal_Control_System redefines SS_Thermal_Control_System {
-                // Ports defined in ThermalControlSystem.sysml
                 abstract port Data_Bus redefines Data_Bus;
 
                 attribute Stop_Signal redefines Stop_Signal;
 
-                // ref parts exist in the TCS definition; create concrete instance usages for visibility
                 abstract part EPS_Heater redefines EPS_Heater [1] {
                     attribute Power redefines Power = 10 [W];
                     attribute Minimal_Temperature redefines Minimal_Temperature = 253 [K];
@@ -433,7 +419,6 @@ package HealiosMissionInstancePackage {
                     out port EPS_Temperature_Measurement :>> EPS_Temperature_Measurement;
                 }
 
-                // --- MIRROR CONNECTS from ThermalControlSystem.sysml ---
                 connect PL_Temp_Sensor.PL_Temperature_Measurement
                     to SS_Thermal_Control_System.Data_Bus;
                 connect OBC_Temp_Sensor.OBC_Temperature_Measurement
@@ -601,9 +586,8 @@ package HealiosMissionInstancePackage {
             }
 
             // =========================
-            // SpaceSegment connects (already in type; mirrored here)
+            // SS connections
             // =========================
-            // Control connections_____________________________________________________________________________________
             connect SS_Electrical_Power_System.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
 
             connect SS_Satellite_Payload.Data_Bus to SS_On_Board_Data_Handling.Data_Bus;
@@ -611,7 +595,7 @@ package HealiosMissionInstancePackage {
             connect SS_Attitude_And_Orbit_Control_System.Data_Bus
                 to SS_On_Board_Data_Handling.Data_Bus;
 
-            // electrical connections_____________________________________________________________________________________
+            // electrical
 
             connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.Power_Bus_5V;
             connect SS_Electrical_Power_System.Power_Bus_3V3
@@ -723,7 +707,6 @@ package HealiosMissionInstancePackage {
                 flow of MissionPackage::GroundCommand
                     from Uplink_Action.Uplink_Signal_Sent to Tc_Port;
 
-                // --- DOWNLINK (TM) ---
                 flow of MissionPackage::TelemetryData
                     from Tm_Port to Downlink_Action.Incoming_Radio_Signal;
 
@@ -746,7 +729,6 @@ package HealiosMissionInstancePackage {
                 flow of ArchiveRecord
                     from Archive_Action.Record_of_Telemetry to Data_Centre_Archive_Port;
 
-                // --- PASS PLAN / TRACKING ---
                 flow of PassPlan
                     from Mission_Control_Centre_Pass_Plan_Port to Tracking_Action.Satellite_plan;
 
@@ -756,12 +738,10 @@ package HealiosMissionInstancePackage {
                 connect Ground_Station.Mission_Control_Centre_TC_Port to Crypto_Unit_Part.TC_In;
                 connect Crypto_Unit_Part.TC_Out to Antenna_Part.Uplink_In;
 
-                // --- TM downlink ---
                 connect Antenna_Part.Downlink_Out to Crypto_Unit_Part.TM_In;
                 connect Crypto_Unit_Part.TM_Out to Ground_Station.Mission_Control_Centre_TM_Port;
                 connect Crypto_Unit_Part.TM_Out to Ground_Station.Data_Centre_TM_Port;
 
-                // --- pass plan / tracking ---
                 connect Ground_Station.Mission_Control_Centre_Pass_Plan_Port
                     to Pass_Predictor_Part.PassPlan_Out;
                 connect Pass_Predictor_Part.Tracking_Out
@@ -882,11 +862,9 @@ package HealiosMissionInstancePackage {
 
                 connect Data_Centre.Ground_Station_TM_Port to Data_Validator_Part.TM_In;
 
-                // zwalidowane TM do MCC products port
                 connect Data_Validator_Part.TM_Validated_Out
                     to Data_Centre.Mission_Control_Centre_TM_Products_Port;
 
-                // record do archiwum
                 connect Data_Centre.Ground_Station_Records_Port
                     to Structured_Archive_Part.Record_In.RecordIn;
 
@@ -903,17 +881,14 @@ package HealiosMissionInstancePackage {
                         redefines Record_of_Satellite_Data : ArchiveRecord;
                 }
 
-                // GS TM -> Validate_Action
                 flow of MissionPackage::TelemetryData
                     from Data_Centre.Ground_Station_TM_Port
                     to Validate_Action.Telemetry_For_Validate;
 
-                // Validate_Action -> MCC TM products port
                 flow of MissionPackage::TelemetryData
                     from Validate_Action.Validated_Telemetry
                     to Data_Centre.Mission_Control_Centre_TM_Products_Port;
 
-                // GS Record -> Store_Action
                 flow of ArchiveRecord
                     from Data_Centre.Ground_Station_Records_Port
                     to Store_Action.Record_of_Satellite_Data;

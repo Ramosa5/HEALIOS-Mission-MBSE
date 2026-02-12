@@ -24,7 +24,6 @@ package AttitudeAndOrbitControlSystemPackage {
         part Mounted_Magnetorquer : Magnetorquer [0..*];
     }
 
-    // --- EPS structure (Requirements: solar arrays + rechargeable batteries; inhibit; regulated rails) ---
     part def AttitudeAndOrbitControlSystem {
         port Power_Bus_3V3 : ~PowerBus;
         port Power_Bus_5V : ~PowerBus;

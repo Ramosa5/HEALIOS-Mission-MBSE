@@ -27,7 +27,6 @@ package MissionControlCentrePackage {
         port Operator_Request_Out : OperatorRequest;
         in port Auth_Token_In : AuthToken;
 
-        // opcjonalnie: żeby console była źródłem TC i odbiornikiem TM
         port TC_Out : TcPort;
         in port TM_In : TmPort;
     }

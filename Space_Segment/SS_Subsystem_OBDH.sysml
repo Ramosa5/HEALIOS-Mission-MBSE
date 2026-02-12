@@ -6,9 +6,6 @@ package OnBoardDataHandlingSystemPackage {
     private import ISQ::*;
     public import UnitTypesPackage::*;
 
-    // ------------------------------------------------------------------------------------------------
-    // Generic data/command plumbing (abstracted physical buses)
-    // ------------------------------------------------------------------------------------------------
     port def DataBus {
         attribute name : String;
         in Data : MissionPackage::OnBoardStatus;
@@ -28,9 +25,6 @@ package OnBoardDataHandlingSystemPackage {
         out Cmd : MissionPackage::OnBoardCommand;
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // Memory & state types
-    // ------------------------------------------------------------------------------------------------
     part def Memory {
         attribute Total_Memory : Real;
     }
@@ -38,9 +32,6 @@ package OnBoardDataHandlingSystemPackage {
     part def NonVolatileMemory specializes Memory;
     part def VolatileMemory specializes Memory;
 
-    // ------------------------------------------------------------------------------------------------
-    // OBC building blocks
-    // ------------------------------------------------------------------------------------------------
     part def Magnetometer :> GeneralElectricalComponent {
         attribute Force : Real;
         attribute Axes : Integer;
@@ -72,9 +63,6 @@ package OnBoardDataHandlingSystemPackage {
         attribute Name : String;
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // OBDH System (top-level)
-    // ------------------------------------------------------------------------------------------------
     part def OnBoardDataHandlingSystem {
         port Telecommand_In : MissionPackage::GroundCommand;
         port Telemetry_Out : MissionPackage::OnBoardStatus;
@@ -91,9 +79,6 @@ package OnBoardDataHandlingSystemPackage {
         part Primary_OBC : OnBoardComputerUnit;
         part Secondary_OBC : OnBoardComputerUnit;
 
-        // ------------------------------------------------------------------------------------------------
-        // OBDH Actions
-        // ------------------------------------------------------------------------------------------------
         perform action Acquire_And_Time_Tag : AcquireAndTimestampSubsystemData;
         perform action Manage_Persistent_Store : ManagePersistentStorageAndBuffers;
         perform action Prioritize_For_Downlink : SelectAndPrioritizeDownlinkData;
@@ -110,7 +95,6 @@ package OnBoardDataHandlingSystemPackage {
 
         perform action Update_Flight_Software : PerformDualBankSoftwareUpdateAndRollback;
 
-        // Bind command distribution
         bind Acquire_And_Time_Tag.Obdh_Command = Telecommand_In;
         bind Manage_Persistent_Store.Obdh_Command = Telecommand_In;
         bind Prioritize_For_Downlink.Obdh_Command = Telecommand_In;
@@ -123,7 +107,6 @@ package OnBoardDataHandlingSystemPackage {
         bind Sync_Authority_State.Obdh_Command = Telecommand_In;
         bind Update_Flight_Software.Obdh_Command = Telecommand_In;
 
-        // Bind telemetry aggregation
         bind Telemetry_Out = Acquire_And_Time_Tag.Obdh_Telemetry;
         bind Telemetry_Out = Manage_Persistent_Store.Obdh_Telemetry;
         bind Telemetry_Out = Prioritize_For_Downlink.Obdh_Telemetry;

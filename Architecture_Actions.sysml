@@ -4,10 +4,8 @@ package SpaceActionsPackage {
     private import ISQ::*;
     private import CommunicationsSystemPackage::*;
 
-    // Top-level definition for the Space Segment's behavior
     action def PerformSpaceSegmentMission {}
 
-    // 1. Provide scientific measurements
     action def provideScientificMeasurements specializes PerformSpaceSegmentMission {
         in Perform_Scientific_Action_Command : MissionPackage::OnBoardCommand [0..*] {
             :>> Type = "MeasurementCommand";
@@ -15,7 +13,6 @@ package SpaceActionsPackage {
         out Measured_Data : MissionPackage::OnBoardStatus [0..*];
     }
 
-    // 1.1 Apply controlled reverse-bias voltage to perovskite solar cells
     action def applyControlledReverseBiasToPSC specializes provideScientificMeasurements {
         in Apply_Reverse_Bias_Voltage_Command redefines Perform_Scientific_Action_Command;
         out Voltage_Application_Status redefines Measured_Data;
@@ -92,7 +89,7 @@ package SpaceActionsPackage {
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------------------EPS functions
+    // -----EPS
 
     action def ManageElectricalPower specializes PerformSpaceSegmentMission {
         in Eps_Command : MissionPackage::OnBoardCommand [0..*] { :>> Type = "PowerCommand"; }
@@ -177,41 +174,28 @@ package SpaceActionsPackage {
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // ACTION DEFINITIONS (aligned to HEALIOS OBDH concept & requirements)
-    // ------------------------------------------------------------------------------------------------
+    // obdh
     action def AcquireAndTimestampSubsystemData {
-        // Command in / telemetry out (keep as you have)
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
         out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
 
-        // -------- Raw inputs from subsystems (expand to match your architecture) --------
         in Eps_Data : MissionPackage::OnBoardStatus [0..*];
         in Aocs_Data : MissionPackage::OnBoardStatus [0..*];
         in Tcs_Data : MissionPackage::OnBoardStatus [0..*];
 
-        // Payload / DAQ-style feeds (your existing naming)
         in Daq_Housekeeping : MissionPackage::OnBoardStatus [0..*];
         in Daq_Science_Raw : MissionPackage::OnBoardStatus [0..*];
 
-        // (Optional but useful) explicit payload sensor streams
         in Pl_Radiation : MissionPackage::OnBoardStatus [0..*];
         in Pl_Irradiance : MissionPackage::OnBoardStatus [0..*];
         in Pl_Spectrum : MissionPackage::OnBoardStatus [0..*];
         in Pl_Temperature : MissionPackage::OnBoardStatus [0..*];
 
-        // Time source (modelled as input; could be GPS time, OBC time, etc.)
         in Current_Time : ISQ::TimeValue [1];
 
-        // Outputs: actually time-tagged types
         out Time_Tagged_HK : MissionPackage::TimeTaggedStatus [0..*];
         out Time_Tagged_Science : MissionPackage::TimeTaggedStatus [0..*];
 
-        // ------------------------------------------------------------------------------------------------
-        // Internal actions
-        // ------------------------------------------------------------------------------------------------
-
-        // A) Tag HK records
         action Tag_HK {
             in time : ISQ::TimeValue [1];
 
@@ -221,12 +205,8 @@ package SpaceActionsPackage {
             in daqHK : MissionPackage::OnBoardStatus [0..*];
 
             out tagged : MissionPackage::TimeTaggedStatus [0..*];
-
-            // semantic intent (you can later replace with transformations / mapping rules)
-            // Here we simply state that each input becomes a TimeTaggedStatus with same content + timestamp.
         }
 
-        // B) Tag Science records
         action Tag_Science {
             in time : ISQ::TimeValue [1];
 
@@ -239,25 +219,16 @@ package SpaceActionsPackage {
             out tagged : MissionPackage::TimeTaggedStatus [0..*];
         }
 
-        // C) Publish (select what goes immediately to OBDH telemetry vs stored later)
         action Publish {
             in hkTagged : MissionPackage::TimeTaggedStatus [0..*];
             in sciTagged : MissionPackage::TimeTaggedStatus [0..*];
 
             out outTelemetry : MissionPackage::OnBoardStatus [0..*];
-
-            // e.g. "HK always; science maybe only summaries"
         }
 
-        // ------------------------------------------------------------------------------------------------
-        // Bindings / flows (this is the “perform action on them” wiring)
-        // ------------------------------------------------------------------------------------------------
-
-        // Bind time source
         bind Tag_HK.time = Current_Time;
         bind Tag_Science.time = Current_Time;
 
-        // Bind raw inputs into taggers
         bind Tag_HK.eps = Eps_Data;
         bind Tag_HK.aocs = Aocs_Data;
         bind Tag_HK.tcs = Tcs_Data;
@@ -269,15 +240,11 @@ package SpaceActionsPackage {
         bind Tag_Science.spec = Pl_Spectrum;
         bind Tag_Science.temp = Pl_Temperature;
 
-        // Outputs
         bind Time_Tagged_HK = Tag_HK.tagged;
         bind Time_Tagged_Science = Tag_Science.tagged;
-
-        // Publish step
         bind Publish.hkTagged = Time_Tagged_HK;
         bind Publish.sciTagged = Time_Tagged_Science;
 
-        // What is sent onward as "Obdh_Telemetry"
         bind Obdh_Telemetry = Publish.outTelemetry;
     }
 
@@ -411,7 +378,7 @@ package SpaceActionsPackage {
         flow from Rollback_Done to Obdh_Telemetry;
     }
 
-    // ------------------------------------------------------------------------------------------------Thermal actions
+    // tcs
 
     action def EvaluateThreshold {
         in Temp : ISQ::TemperatureValue;
@@ -477,7 +444,7 @@ package SpaceActionsPackage {
         out Temp : ISQ::TemperatureValue;
     }
 
-    // aocsssssssssssssssssssssssssssssssssssss_______________________________________________________
+    // aocs
 
     action def ReadSunAngle {
         out Beta_Angle : ISQ::AngularMeasureValue;
@@ -553,14 +520,9 @@ package SpaceActionsPackage {
         out Safe_Mode_Cmd : MissionPackage::OnBoardCommand [0..*] { :>> Type = "ModeCommand"; }
         out Safe_Mode_Status : MissionPackage::OnBoardStatus [0..*];
 
-        // 1) Shed non-essential loads (incl. payload) via EPS load management
         action Shed_Payload_Loads : manageLoadSheddingAndReactivation;
         bind Shed_Payload_Loads.Load_Mgmt_Command = Payload_Power_Off_Cmd;
         flow from Shed_Payload_Loads.Load_Mgmt_Status to Safe_Mode_Status;
-
-        // 2) Command the spacecraft to transition into Safe Mode
-        // (interpreted by the mode manager / OBDH)
-        // NOTE: Specific decoding of Safe_Mode_Cmd is handled elsewhere; here we only emit it.
     }
 }
 
