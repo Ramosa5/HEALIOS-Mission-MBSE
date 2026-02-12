@@ -226,6 +226,13 @@ package HealiosMissionInstancePackage {
                 bind Secondary_OBC.Data_Bus = SS_On_Board_Data_Handling.Data_Bus;
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Primary_OBC.Power_Bus_3V3;
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Secondary_OBC.Power_Bus_3V3;
+
+                perform action Prepare_Data : PrepareData {
+                    attribute Subsystem_Count :>> Subsystem_Count;
+                    out Time_Tagged_Packed_Data redefines Time_Tagged_Packed_Data;
+                    in Data_In[Subsystem_Count] :>> Data_In;
+                    in Current_Time :>> Current_Time;
+                }
             }
 
             part SS_Communication_System redefines SS_Communication_System {

@@ -4,13 +4,14 @@ package SpaceActionsPackage {
     private import ISQ::*;
     private import CommunicationsSystemPackage::*;
 
+    alias OBS for MissionPackage::OnBoardStatus;
     action def PerformSpaceSegmentMission {}
 
     action def provideScientificMeasurements specializes PerformSpaceSegmentMission {
         in Perform_Scientific_Action_Command : MissionPackage::OnBoardCommand [0..*] {
             :>> Type = "MeasurementCommand";
         }
-        out Measured_Data : MissionPackage::OnBoardStatus [0..*];
+        out Measured_Data : OBS [0..*];
     }
 
     action def applyControlledReverseBiasToPSC specializes provideScientificMeasurements {
@@ -36,7 +37,7 @@ package SpaceActionsPackage {
 
         action Measure_IV_Curves_Of_PSC {
             in Measure_IV_Curves_Of_PSC_Command;
-            out Iv_Curves_Data : MissionPackage::OnBoardStatus;
+            out Iv_Curves_Data : OBS;
         }
     }
 
@@ -49,7 +50,7 @@ package SpaceActionsPackage {
 
         action Maintain_MPP {
             in Maintain_MPP_Command;
-            out Mpp_Data : MissionPackage::OnBoardStatus;
+            out Mpp_Data : OBS;
         }
     }
 
@@ -73,19 +74,19 @@ package SpaceActionsPackage {
 
         action Measure_Radiation {
             in Measure_Radiation_Command : MissionPackage::OnBoardCommand;
-            out Radiation_Data : MissionPackage::OnBoardStatus;
+            out Radiation_Data : OBS;
         }
         action Measure_Temperature {
             in Measure_Temperature_Command : MissionPackage::OnBoardCommand;
-            out Temperature_Data : MissionPackage::OnBoardStatus;
+            out Temperature_Data : OBS;
         }
         action Measure_Spectrum {
             in Measure_Spectrum_Command : MissionPackage::OnBoardCommand;
-            out Spectrum_Data : MissionPackage::OnBoardStatus;
+            out Spectrum_Data : OBS;
         }
         action Measure_Irradiance {
             in Measure_Irradiance_Command : MissionPackage::OnBoardCommand;
-            out Irradiance_Data : MissionPackage::OnBoardStatus;
+            out Irradiance_Data : OBS;
         }
     }
 
@@ -93,7 +94,7 @@ package SpaceActionsPackage {
 
     action def ManageElectricalPower specializes PerformSpaceSegmentMission {
         in Eps_Command : MissionPackage::OnBoardCommand [0..*] { :>> Type = "PowerCommand"; }
-        out Eps_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Eps_Telemetry : OBS [0..*];
     }
 
     action def performMPPT specializes ManageElectricalPower {
@@ -105,7 +106,7 @@ package SpaceActionsPackage {
 
         action Mppt_Controller {
             in Mppt_Command : MissionPackage::OnBoardCommand;
-            out Mppt_Telemetry : MissionPackage::OnBoardStatus;
+            out Mppt_Telemetry : OBS;
         }
     }
 
@@ -118,7 +119,7 @@ package SpaceActionsPackage {
 
         action Battery_Manager {
             in Battery_Command : MissionPackage::OnBoardCommand;
-            out Battery_Telemetry : MissionPackage::OnBoardStatus;
+            out Battery_Telemetry : OBS;
         }
     }
 
@@ -131,7 +132,7 @@ package SpaceActionsPackage {
 
         action Power_Distributor {
             in Distribution_Command : MissionPackage::OnBoardCommand;
-            out Distribution_Telemetry : MissionPackage::OnBoardStatus;
+            out Distribution_Telemetry : OBS;
         }
     }
 
@@ -144,7 +145,7 @@ package SpaceActionsPackage {
 
         action Load_Manager {
             in Load_Mgmt_Command : MissionPackage::OnBoardCommand;
-            out Load_Mgmt_Telemetry : MissionPackage::OnBoardStatus;
+            out Load_Mgmt_Telemetry : OBS;
         }
     }
 
@@ -157,7 +158,7 @@ package SpaceActionsPackage {
 
         action State_Switch {
             in Switch_Command : MissionPackage::OnBoardCommand;
-            out State_Telemetry : MissionPackage::OnBoardStatus;
+            out State_Telemetry : OBS;
         }
     }
 
@@ -170,93 +171,47 @@ package SpaceActionsPackage {
 
         action Health_Reporter {
             in Report_Command : MissionPackage::OnBoardCommand;
-            out Health_Data : MissionPackage::OnBoardStatus;
+            out Health_Data : OBS;
         }
     }
 
     // obdh
-    action def AcquireAndTimestampSubsystemData {
-        in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
 
-        in Eps_Data : MissionPackage::OnBoardStatus [0..*];
-        in Aocs_Data : MissionPackage::OnBoardStatus [0..*];
-        in Tcs_Data : MissionPackage::OnBoardStatus [0..*];
+    action def TimeTagData {
+        in Data : OBS;
+        in Time : ISQ::TimeValue;
+        out Time_Tagged_Data : MissionPackage::TimeTaggedStatus;
+    }
 
-        in Daq_Housekeeping : MissionPackage::OnBoardStatus [0..*];
-        in Daq_Science_Raw : MissionPackage::OnBoardStatus [0..*];
+    action def PackData {
+        in Time_Tagged_Data : MissionPackage::TimeTaggedStatus [0..*];
+        out Data_Package : OBS [1];
+    }
 
-        in Pl_Radiation : MissionPackage::OnBoardStatus [0..*];
-        in Pl_Irradiance : MissionPackage::OnBoardStatus [0..*];
-        in Pl_Spectrum : MissionPackage::OnBoardStatus [0..*];
-        in Pl_Temperature : MissionPackage::OnBoardStatus [0..*];
-
+    action def PrepareData {
+        out Time_Tagged_Packed_Data : OBS [0..*];
+        in Data_In : OBS [0..*];
         in Current_Time : ISQ::TimeValue [1];
+        attribute Subsystem_Count : Integer;
 
-        out Time_Tagged_HK : MissionPackage::TimeTaggedStatus [0..*];
-        out Time_Tagged_Science : MissionPackage::TimeTaggedStatus [0..*];
-
-        action Tag_HK {
-            in time : ISQ::TimeValue [1];
-
-            in eps : MissionPackage::OnBoardStatus [0..*];
-            in aocs : MissionPackage::OnBoardStatus [0..*];
-            in tcs : MissionPackage::OnBoardStatus [0..*];
-            in daqHK : MissionPackage::OnBoardStatus [0..*];
-
-            out tagged : MissionPackage::TimeTaggedStatus [0..*];
+        first start;
+        then action For_Loop
+        for i : Integer in 1..Subsystem_Count {
+            action Time_Tag_Data : TimeTagData;
+            then action Pack_Data : PackData;
+            succession flow from Time_Tag_Data.Time_Tagged_Data to Pack_Data.Time_Tagged_Data;
         }
-
-        action Tag_Science {
-            in time : ISQ::TimeValue [1];
-
-            in daqSci : MissionPackage::OnBoardStatus [0..*];
-            in rad : MissionPackage::OnBoardStatus [0..*];
-            in irr : MissionPackage::OnBoardStatus [0..*];
-            in spec : MissionPackage::OnBoardStatus [0..*];
-            in temp : MissionPackage::OnBoardStatus [0..*];
-
-            out tagged : MissionPackage::TimeTaggedStatus [0..*];
-        }
-
-        action Publish {
-            in hkTagged : MissionPackage::TimeTaggedStatus [0..*];
-            in sciTagged : MissionPackage::TimeTaggedStatus [0..*];
-
-            out outTelemetry : MissionPackage::OnBoardStatus [0..*];
-        }
-
-        bind Tag_HK.time = Current_Time;
-        bind Tag_Science.time = Current_Time;
-
-        bind Tag_HK.eps = Eps_Data;
-        bind Tag_HK.aocs = Aocs_Data;
-        bind Tag_HK.tcs = Tcs_Data;
-        bind Tag_HK.daqHK = Daq_Housekeeping;
-
-        bind Tag_Science.daqSci = Daq_Science_Raw;
-        bind Tag_Science.rad = Pl_Radiation;
-        bind Tag_Science.irr = Pl_Irradiance;
-        bind Tag_Science.spec = Pl_Spectrum;
-        bind Tag_Science.temp = Pl_Temperature;
-
-        bind Time_Tagged_HK = Tag_HK.tagged;
-        bind Time_Tagged_Science = Tag_Science.tagged;
-        bind Publish.hkTagged = Time_Tagged_HK;
-        bind Publish.sciTagged = Time_Tagged_Science;
-
-        bind Obdh_Telemetry = Publish.outTelemetry;
     }
 
     action def ManagePersistentStorageAndBuffers {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Hk_Records : MissionPackage::OnBoardStatus [0..*];
-        in Science_Records : MissionPackage::OnBoardStatus [0..*];
-        in Event_Records : MissionPackage::OnBoardStatus [0..*];
+        in Hk_Records : OBS [0..*];
+        in Science_Records : OBS [0..*];
+        in Event_Records : OBS [0..*];
 
-        out Stored_Ok : MissionPackage::OnBoardStatus [0..*];
+        out Stored_Ok : OBS [0..*];
 
         flow from Hk_Records to Stored_Ok;
         flow from Science_Records to Stored_Ok;
@@ -266,12 +221,12 @@ package SpaceActionsPackage {
 
     action def SelectAndPrioritizeDownlinkData {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Stored_Data_Index : MissionPackage::OnBoardStatus [0..*];
-        in Link_Window_Info : MissionPackage::OnBoardStatus [0..*];
+        in Stored_Data_Index : OBS [0..*];
+        in Link_Window_Info : OBS [0..*];
 
-        out Downlink_Queue : MissionPackage::OnBoardStatus [0..*];
+        out Downlink_Queue : OBS [0..*];
 
         flow from Stored_Data_Index to Downlink_Queue;
         flow from Downlink_Queue to Obdh_Telemetry;
@@ -279,10 +234,10 @@ package SpaceActionsPackage {
 
     action def ForwardDownlinkFramesToComms {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Downlink_Queue : MissionPackage::OnBoardStatus [0..*];
-        out Comm_Frames : MissionPackage::OnBoardStatus [0..*];
+        in Downlink_Queue : OBS [0..*];
+        out Comm_Frames : OBS [0..*];
 
         flow from Downlink_Queue to Comm_Frames;
         flow from Comm_Frames to Obdh_Telemetry;
@@ -290,15 +245,15 @@ package SpaceActionsPackage {
 
     action def DecodeValidateAndDispatchCommands {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
         out Eps_Cmd : MissionPackage::OnBoardCommand [0..*];
         out Aocs_Cmd : MissionPackage::OnBoardCommand [0..*];
         out Tcs_Cmd : MissionPackage::OnBoardCommand [0..*];
         out Daq_Cmd : MissionPackage::OnBoardCommand [0..*];
 
-        out Cmd_Accepted : MissionPackage::OnBoardStatus [0..*];
-        out Cmd_Rejected : MissionPackage::OnBoardStatus [0..*];
+        out Cmd_Accepted : OBS [0..*];
+        out Cmd_Rejected : OBS [0..*];
 
         flow from Cmd_Accepted to Obdh_Telemetry;
         flow from Cmd_Rejected to Obdh_Telemetry;
@@ -306,20 +261,20 @@ package SpaceActionsPackage {
 
     action def ExecuteTimeTaggedCommands {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
         in Scheduled_Cmds : MissionPackage::OnBoardCommand [0..*];
-        out Executed : MissionPackage::OnBoardStatus [0..*];
+        out Executed : OBS [0..*];
 
         flow from Executed to Obdh_Telemetry;
     }
 
     action def PerformOBDHHealthMonitoringAndFDIR {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Hk_Inputs : MissionPackage::OnBoardStatus [0..*];
-        out Fdir_Events : MissionPackage::OnBoardStatus [0..*];
+        in Hk_Inputs : OBS [0..*];
+        out Fdir_Events : OBS [0..*];
         out Safe_Mode_Req : MissionPackage::OnBoardCommand [0..*];
 
         flow from Hk_Inputs to Fdir_Events;
@@ -328,11 +283,11 @@ package SpaceActionsPackage {
 
     action def ManageSpacecraftModesAndAutonomy {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Power_State : MissionPackage::OnBoardStatus [0..*];
-        in Thermal_State : MissionPackage::OnBoardStatus [0..*];
-        in Fdir_Events : MissionPackage::OnBoardStatus [0..*];
+        in Power_State : OBS [0..*];
+        in Thermal_State : OBS [0..*];
+        in Fdir_Events : OBS [0..*];
 
         out Mode_Change : MissionPackage::OnBoardCommand [0..*];
 
@@ -341,12 +296,12 @@ package SpaceActionsPackage {
 
     action def ManageWarmRedundantAuthorityAndTakeover {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Primary_Heartbeat : MissionPackage::OnBoardStatus [0..*];
-        in Sync_Updates : MissionPackage::OnBoardStatus [0..*];
+        in Primary_Heartbeat : OBS [0..*];
+        in Sync_Updates : OBS [0..*];
 
-        out Takeover_Declared : MissionPackage::OnBoardStatus [0..*];
+        out Takeover_Declared : OBS [0..*];
         out Enter_Safe_Mode : MissionPackage::OnBoardCommand [0..*];
 
         flow from Takeover_Declared to Obdh_Telemetry;
@@ -354,10 +309,10 @@ package SpaceActionsPackage {
 
     action def SynchronizeRedundantOBCState {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Current_State : MissionPackage::OnBoardStatus [0..*];
-        out Sync_Packet : MissionPackage::OnBoardStatus [0..*];
+        in Current_State : OBS [0..*];
+        out Sync_Packet : OBS [0..*];
 
         flow from Current_State to Sync_Packet;
         flow from Sync_Packet to Obdh_Telemetry;
@@ -365,13 +320,13 @@ package SpaceActionsPackage {
 
     action def PerformDualBankSoftwareUpdateAndRollback {
         in Obdh_Command : MissionPackage::OnBoardCommand [0..*];
-        out Obdh_Telemetry : MissionPackage::OnBoardStatus [0..*];
+        out Obdh_Telemetry : OBS [0..*];
 
-        in Image_Packets : MissionPackage::OnBoardStatus [0..*];
+        in Image_Packets : OBS [0..*];
 
-        out Image_Verified : MissionPackage::OnBoardStatus [0..*];
-        out Bank_Switched : MissionPackage::OnBoardStatus [0..*];
-        out Rollback_Done : MissionPackage::OnBoardStatus [0..*];
+        out Image_Verified : OBS [0..*];
+        out Bank_Switched : OBS [0..*];
+        out Rollback_Done : OBS [0..*];
 
         flow from Image_Verified to Obdh_Telemetry;
         flow from Bank_Switched to Obdh_Telemetry;
@@ -427,16 +382,16 @@ package SpaceActionsPackage {
         in Heating_Power_Input : ISQ::PowerValue;
 
         // if Command.Type == "Start_Command" {
-        //     loop {
-                perform action Read_Temperature : ReadTemperature {
-                    bind Temp = Measured_Temperature_Input;
-                }
-                then perform action Control_Temperature : ControlTemperature {
-                    bind Control_Temperature.Minimal_Temperature = Minimal_Temperature_Input;
-                    bind Control_Temperature.Heating_Power = Heating_Power_Input;
-                    bind Control_Temperature.Temp_Reading = Read_Temperature.Temp;
-                }
-        //     } until Command.Type == "Stop_Command";
+        // loop {
+        perform action Read_Temperature : ReadTemperature {
+            bind Temp = Measured_Temperature_Input;
+        }
+        then perform action Control_Temperature : ControlTemperature {
+            bind Control_Temperature.Minimal_Temperature = Minimal_Temperature_Input;
+            bind Control_Temperature.Heating_Power = Heating_Power_Input;
+            bind Control_Temperature.Temp_Reading = Read_Temperature.Temp;
+        }
+        // } until Command.Type == "Stop_Command";
         // }
     }
 
@@ -487,7 +442,7 @@ package SpaceActionsPackage {
     }
 
     action def TransmitStatusDownlink {
-        in item Telemetry_Input : MissionPackage::OnBoardStatus;
+        in item Telemetry_Input : OBS;
         out item Transmitted_Radio_Signal : MissionPackage::TelemetryData;
     }
 
@@ -518,7 +473,7 @@ package SpaceActionsPackage {
             :>> Type = "PowerCommand";
         }
         out Safe_Mode_Cmd : MissionPackage::OnBoardCommand [0..*] { :>> Type = "ModeCommand"; }
-        out Safe_Mode_Status : MissionPackage::OnBoardStatus [0..*];
+        out Safe_Mode_Status : OBS [0..*];
 
         action Shed_Payload_Loads : manageLoadSheddingAndReactivation;
         bind Shed_Payload_Loads.Load_Mgmt_Command = Payload_Power_Off_Cmd;
