@@ -115,11 +115,11 @@ package UseCaseDefinitionsPackage {
         }
 
         // 1. Data Collection Phase
-        action Acquire_And_Tag_Subsystem_Telemetry : AcquireAndTimestampSubsystemData {
+        action Acquire_And_Tag_Subsystem_Telemetry : PrepareData {
             doc /* Gathers raw health and science data from all satellite subsystems 
                    and applies high-precision timestamps. */
-            in item Current_Time_Reference : ISQ::TimeValue;
             out item Time_Tagged_Telemetry_Records : TimeTaggedStatus;
+            in item Current_Time_Reference : ISQ::TimeValue;
         }
 
         // 2. Security Phase

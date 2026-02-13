@@ -79,7 +79,7 @@ package OnBoardDataHandlingSystemPackage {
         part Primary_OBC : OnBoardComputerUnit;
         part Secondary_OBC : OnBoardComputerUnit;
 
-        perform action Acquire_And_Time_Tag : AcquireAndTimestampSubsystemData;
+        perform action Prepare_Data : PrepareData;
         perform action Manage_Persistent_Store : ManagePersistentStorageAndBuffers;
         perform action Prioritize_For_Downlink : SelectAndPrioritizeDownlinkData;
         perform action Route_Downlink_To_Comms : ForwardDownlinkFramesToComms;
@@ -95,7 +95,7 @@ package OnBoardDataHandlingSystemPackage {
 
         perform action Update_Flight_Software : PerformDualBankSoftwareUpdateAndRollback;
 
-        bind Acquire_And_Time_Tag.Obdh_Command = Telecommand_In;
+        bind Prepare_Data.Data_In = Data_Bus.Cmd;
         bind Manage_Persistent_Store.Obdh_Command = Telecommand_In;
         bind Prioritize_For_Downlink.Obdh_Command = Telecommand_In;
         bind Route_Downlink_To_Comms.Obdh_Command = Telecommand_In;
@@ -107,7 +107,7 @@ package OnBoardDataHandlingSystemPackage {
         bind Sync_Authority_State.Obdh_Command = Telecommand_In;
         bind Update_Flight_Software.Obdh_Command = Telecommand_In;
 
-        bind Telemetry_Out = Acquire_And_Time_Tag.Obdh_Telemetry;
+        bind Prepare_Data.Time_Tagged_Packed_Data = Telemetry_Out;
         bind Telemetry_Out = Manage_Persistent_Store.Obdh_Telemetry;
         bind Telemetry_Out = Prioritize_For_Downlink.Obdh_Telemetry;
         bind Telemetry_Out = Route_Downlink_To_Comms.Obdh_Telemetry;
