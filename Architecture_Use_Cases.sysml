@@ -210,17 +210,17 @@ package UseCaseDefinitionsPackage {
         // --- Actors ---
         actor Scientists : PerovskiteResearchInstitutes {
             in item Investigation_Opportunities : ProcessedScienceData {
-                attribute redefines Processing_Level = "Level 2: Processed Dataset";
+                attribute redefines processing_Level = "Level 2: Processed Dataset";
                 }
         }
         actor Manufacturers : PerovskiteSolarCellManufacturers {
             in item TRL_Advancement_Evidence : ProcessedScienceData {
-                attribute redefines Processing_Level = "Level 3: Comparative Analysis Dataset";}
+                attribute redefines processing_Level = "Level 3: Comparative Analysis Dataset";}
 }
             
         actor Academic_Community : AcademicInstitutions {
             in item Peer_Reviewed_Publication : ProcessedScienceData {
-                attribute redefines Processing_Level = "Level 4: Published Research Findings";}
+                attribute redefines processing_Level = "Level 4: Published Research Findings";}
         }
  
         actor HSB_Hochschule_Bremen : HSBHochschuleBremen {

@@ -9,18 +9,18 @@ package SpaceActionsPackage {
 
     action def provideScientificMeasurements specializes PerformSpaceSegmentMission {
         in Perform_Scientific_Action_Command : MissionPackage::OnBoardCommand [0..*] {
-            :>> Type = "MeasurementCommand";
+            :>> type = "MeasurementCommand";
         }
         out Measured_Data : OBS [0..*];
     }
 
     action def applyControlledReverseBiasToPSC specializes provideScientificMeasurements {
-        in Apply_Reverse_Bias_Voltage_Command redefines Perform_Scientific_Action_Command;
-        out Voltage_Application_Status redefines Measured_Data;
+        in apply_Reverse_Bias_Voltage_Command redefines Perform_Scientific_Action_Command;
+        out voltage_Application_Status redefines Measured_Data;
 
         bind Apply_Reverse_Bias_Voltage.Apply_Reverse_Bias_Voltage_Command =
-            Apply_Reverse_Bias_Voltage_Command;
-        flow from Apply_Reverse_Bias_Voltage.Reverse_Bias_Voltage to Voltage_Application_Status;
+            apply_Reverse_Bias_Voltage_Command;
+        flow from Apply_Reverse_Bias_Voltage.Reverse_Bias_Voltage to voltage_Application_Status;
 
         action Apply_Reverse_Bias_Voltage {
             in Apply_Reverse_Bias_Voltage_Command;
@@ -29,11 +29,11 @@ package SpaceActionsPackage {
     }
 
     action def MeasureIVCurvesOfPSC specializes provideScientificMeasurements {
-        in Measure_IV_Curves_Of_PSC_Command redefines Perform_Scientific_Action_Command;
-        out Measured_IV_Curves_Status redefines Measured_Data;
+        in measure_IV_Curves_Of_PSC_Command redefines Perform_Scientific_Action_Command;
+        out measured_IV_Curves_Status redefines Measured_Data;
 
-        bind Measure_IV_Curves_Of_PSC.Iv_Curves_Data = Measure_IV_Curves_Of_PSC_Command;
-        flow from Measure_IV_Curves_Of_PSC.Iv_Curves_Data to Measured_IV_Curves_Status;
+        bind Measure_IV_Curves_Of_PSC.Iv_Curves_Data = measure_IV_Curves_Of_PSC_Command;
+        flow from Measure_IV_Curves_Of_PSC.Iv_Curves_Data to measured_IV_Curves_Status;
 
         action Measure_IV_Curves_Of_PSC {
             in Measure_IV_Curves_Of_PSC_Command;
@@ -42,11 +42,11 @@ package SpaceActionsPackage {
     }
 
     action def maintainMaximumPowerPoint specializes provideScientificMeasurements {
-        in Maintain_MPP_Command redefines Perform_Scientific_Action_Command;
-        out Mpp_Status redefines Measured_Data;
+        in maintain_MPP_Command redefines Perform_Scientific_Action_Command;
+        out mpp_Status redefines Measured_Data;
 
-        bind Maintain_MPP.Maintain_MPP_Command = Maintain_MPP_Command;
-        flow from Maintain_MPP.Mpp_Data to Mpp_Status;
+        bind Maintain_MPP.Maintain_MPP_Command = maintain_MPP_Command;
+        flow from Maintain_MPP.Mpp_Data to mpp_Status;
 
         action Maintain_MPP {
             in Maintain_MPP_Command;
@@ -55,22 +55,22 @@ package SpaceActionsPackage {
     }
 
     action def collectExperimentalData specializes provideScientificMeasurements {
-        in Collect_Experimental_Data_Command redefines Perform_Scientific_Action_Command;
+        in collect_Experimental_Data_Command redefines Perform_Scientific_Action_Command;
 
-        out Measured_Radiation_Status redefines Measured_Data;
-        out Measured_Temperature_Status redefines Measured_Data;
-        out Measured_Spectrum_Status redefines Measured_Data;
-        out Measured_Irradiance_Status redefines Measured_Data;
+        out measured_Radiation_Status redefines Measured_Data;
+        out measured_Temperature_Status redefines Measured_Data;
+        out measured_Spectrum_Status redefines Measured_Data;
+        out measured_Irradiance_Status redefines Measured_Data;
 
-        bind Measure_Radiation.Measure_Radiation_Command = Collect_Experimental_Data_Command;
-        bind Measure_Temperature.Measure_Temperature_Command = Collect_Experimental_Data_Command;
-        bind Measure_Spectrum.Measure_Spectrum_Command = Collect_Experimental_Data_Command;
-        bind Measure_Irradiance.Measure_Irradiance_Command = Collect_Experimental_Data_Command;
+        bind Measure_Radiation.Measure_Radiation_Command = collect_Experimental_Data_Command;
+        bind Measure_Temperature.Measure_Temperature_Command = collect_Experimental_Data_Command;
+        bind Measure_Spectrum.Measure_Spectrum_Command = collect_Experimental_Data_Command;
+        bind Measure_Irradiance.Measure_Irradiance_Command = collect_Experimental_Data_Command;
 
-        flow from Measure_Radiation.Radiation_Data to Measured_Radiation_Status;
-        flow from Measure_Temperature.Temperature_Data to Measured_Temperature_Status;
-        flow from Measure_Spectrum.Spectrum_Data to Measured_Spectrum_Status;
-        flow from Measure_Irradiance.Irradiance_Data to Measured_Irradiance_Status;
+        flow from Measure_Radiation.Radiation_Data to measured_Radiation_Status;
+        flow from Measure_Temperature.Temperature_Data to measured_Temperature_Status;
+        flow from Measure_Spectrum.Spectrum_Data to measured_Spectrum_Status;
+        flow from Measure_Irradiance.Irradiance_Data to measured_Irradiance_Status;
 
         action Measure_Radiation {
             in Measure_Radiation_Command : MissionPackage::OnBoardCommand;
@@ -93,15 +93,15 @@ package SpaceActionsPackage {
     // -----EPS
 
     action def ManageElectricalPower specializes PerformSpaceSegmentMission {
-        in Eps_Command : MissionPackage::OnBoardCommand [0..*] { :>> Type = "PowerCommand"; }
+        in Eps_Command : MissionPackage::OnBoardCommand [0..*] { :>> type = "PowerCommand"; }
         out Eps_Telemetry : OBS [0..*];
     }
 
     action def performMPPT specializes ManageElectricalPower {
-        in Mppt_Command redefines Eps_Command;
+        in mppt_Command redefines Eps_Command;
         out Mppt_Status redefines Eps_Telemetry;
 
-        bind Mppt_Controller.Mppt_Command = Mppt_Command;
+        bind Mppt_Controller.Mppt_Command = mppt_Command;
         flow from Mppt_Controller.Mppt_Telemetry to Mppt_Status;
 
         action Mppt_Controller {
@@ -111,11 +111,11 @@ package SpaceActionsPackage {
     }
 
     action def manageBatteryEnergy specializes ManageElectricalPower {
-        in Battery_Command redefines Eps_Command;
-        out Battery_Status redefines Eps_Telemetry;
+        in battery_Command redefines Eps_Command;
+        out battery_Status redefines Eps_Telemetry;
 
-        bind Battery_Manager.Battery_Command = Battery_Command;
-        flow from Battery_Manager.Battery_Telemetry to Battery_Status;
+        bind Battery_Manager.Battery_Command = battery_Command;
+        flow from Battery_Manager.Battery_Telemetry to battery_Status;
 
         action Battery_Manager {
             in Battery_Command : MissionPackage::OnBoardCommand;
@@ -124,11 +124,11 @@ package SpaceActionsPackage {
     }
 
     action def distributePowerToLoads specializes ManageElectricalPower {
-        in Distribution_Command redefines Eps_Command;
-        out Distribution_Status redefines Eps_Telemetry;
+        in distribution_Command redefines Eps_Command;
+        out distribution_Status redefines Eps_Telemetry;
 
-        bind Power_Distributor.Distribution_Command = Distribution_Command;
-        flow from Power_Distributor.Distribution_Telemetry to Distribution_Status;
+        bind Power_Distributor.Distribution_Command = distribution_Command;
+        flow from Power_Distributor.Distribution_Telemetry to distribution_Status;
 
         action Power_Distributor {
             in Distribution_Command : MissionPackage::OnBoardCommand;
@@ -137,11 +137,11 @@ package SpaceActionsPackage {
     }
 
     action def manageLoadSheddingAndReactivation specializes ManageElectricalPower {
-        in Load_Mgmt_Command redefines Eps_Command;
-        out Load_Mgmt_Status redefines Eps_Telemetry;
+        in load_Mgmt_Command redefines Eps_Command;
+        out load_Mgmt_Status redefines Eps_Telemetry;
 
-        bind Load_Manager.Load_Mgmt_Command = Load_Mgmt_Command;
-        flow from Load_Manager.Load_Mgmt_Telemetry to Load_Mgmt_Status;
+        bind Load_Manager.Load_Mgmt_Command = load_Mgmt_Command;
+        flow from Load_Manager.Load_Mgmt_Telemetry to load_Mgmt_Status;
 
         action Load_Manager {
             in Load_Mgmt_Command : MissionPackage::OnBoardCommand;
@@ -150,11 +150,11 @@ package SpaceActionsPackage {
     }
 
     action def switchEPSState specializes ManageElectricalPower {
-        in Switch_Command redefines Eps_Command;
-        out Switch_Status redefines Eps_Telemetry;
+        in switch_Command redefines Eps_Command;
+        out switch_Status redefines Eps_Telemetry;
 
-        bind State_Switch.Switch_Command = Switch_Command;
-        flow from State_Switch.State_Telemetry to Switch_Status;
+        bind State_Switch.Switch_Command = switch_Command;
+        flow from State_Switch.State_Telemetry to switch_Status;
 
         action State_Switch {
             in Switch_Command : MissionPackage::OnBoardCommand;
@@ -163,11 +163,11 @@ package SpaceActionsPackage {
     }
 
     action def reportEPSHealth specializes ManageElectricalPower {
-        in Report_Command redefines Eps_Command;
-        out Health_Telemetry redefines Eps_Telemetry;
+        in report_Command redefines Eps_Command;
+        out health_Telemetry redefines Eps_Telemetry;
 
-        bind Health_Reporter.Report_Command = Report_Command;
-        flow from Health_Reporter.Health_Data to Health_Telemetry;
+        bind Health_Reporter.Report_Command = report_Command;
+        flow from Health_Reporter.Health_Data to health_Telemetry;
 
         action Health_Reporter {
             in Report_Command : MissionPackage::OnBoardCommand;
@@ -384,25 +384,25 @@ package SpaceActionsPackage {
         // if Command.Type == "Start_Command" {
         // loop {
         perform action Read_Temperature : ReadTemperature {
-            bind Temp = Measured_Temperature_Input;
+            bind temp = Measured_Temperature_Input;
         }
         then perform action Control_Temperature : ControlTemperature {
             bind Control_Temperature.Minimal_Temperature = Minimal_Temperature_Input;
             bind Control_Temperature.Heating_Power = Heating_Power_Input;
-            bind Control_Temperature.Temp_Reading = Read_Temperature.Temp;
+            bind Control_Temperature.Temp_Reading = Read_Temperature.temp;
         }
         // } until Command.Type == "Stop_Command";
         // }
     }
 
     action def ReadTemperature {
-        out Temp : ISQ::TemperatureValue;
+        out temp : ISQ::TemperatureValue;
     }
 
     // aocs
 
     action def ReadSunAngle {
-        out Beta_Angle : ISQ::AngularMeasureValue;
+        out beta_Angle : ISQ::AngularMeasureValue;
     }
 
     action def UseMagnetorquer {
@@ -412,17 +412,17 @@ package SpaceActionsPackage {
     }
 
     action def CorrectAttitude {
-        in Force_Value : ISQ::ForceValue;
-        in Sun_Sensor_Reading : ISQ::AngularMeasureValue;
+        in force_Value : ISQ::ForceValue;
+        in sun_Sensor_Reading : ISQ::AngularMeasureValue;
         in Threshold : ISQ::AngularMeasureValue; // 0 to pi
-        out Force : ISQ::ForceValue;
+        out force : ISQ::ForceValue;
 
         then action Use_Magnetorquer : UseMagnetorquer {
             bind UseMagnetorquer::Threshold = CorrectAttitude::Threshold;
-            bind UseMagnetorquer::Beta_Angle = Sun_Sensor_Reading;
-            bind UseMagnetorquer::Force = CorrectAttitude::Force;
+            bind UseMagnetorquer::Beta_Angle = sun_Sensor_Reading;
+            bind UseMagnetorquer::Force = CorrectAttitude::force;
             if Beta_Angle > Threshold {
-                assign Force := Force_Value;
+                assign Force := force_Value;
             } else {
                 assign Force := 0 [SI::N];
             }
@@ -468,16 +468,16 @@ package SpaceActionsPackage {
     // ----------------safe mode coomands
 
     action def Enter_Safe_Mode_Action specializes PerformSpaceSegmentMission {
-        in Trigger_Command : MissionPackage::OnBoardCommand [0..*] { :>> Type = "ErrorCommand"; }
+        in Trigger_Command : MissionPackage::OnBoardCommand [0..*] { :>> type = "ErrorCommand"; }
         out Payload_Power_Off_Cmd : MissionPackage::OnBoardCommand [0..*] {
-            :>> Type = "PowerCommand";
+            :>> type = "PowerCommand";
         }
-        out Safe_Mode_Cmd : MissionPackage::OnBoardCommand [0..*] { :>> Type = "ModeCommand"; }
+        out Safe_Mode_Cmd : MissionPackage::OnBoardCommand [0..*] { :>> type = "ModeCommand"; }
         out Safe_Mode_Status : OBS [0..*];
 
         action Shed_Payload_Loads : manageLoadSheddingAndReactivation;
-        bind Shed_Payload_Loads.Load_Mgmt_Command = Payload_Power_Off_Cmd;
-        flow from Shed_Payload_Loads.Load_Mgmt_Status to Safe_Mode_Status;
+        bind Shed_Payload_Loads.load_Mgmt_Command = Payload_Power_Off_Cmd;
+        flow from Shed_Payload_Loads.load_Mgmt_Status to Safe_Mode_Status;
     }
 }
 

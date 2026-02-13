@@ -4,54 +4,53 @@ package ElectricalPowerSystemPackage {
     private import OnBoardDataHandlingSystemPackage::*;
     private import ISQ::*;
     private import EnvironmentPackage::*;
-
-    alias Wattage for ISQ::PowerValue;
+    private import UnitTypesPackage::*;
 
     part def GeneralElectricalComponent {
-        attribute Name : String;
-        attribute Mass : ISQ::MassValue;
-        attribute PowerConsumption : Wattage;
+        attribute name : String;
+        attribute mass : ISQ::MassValue;
+        attribute power_Consumption : Wattage;
     }
 
     part def Resistor specializes GeneralElectricalComponent {
-        attribute Resistance : ISQ::ResistanceValue;
+        attribute resistance : RV;
     }
 
     port def TemperaturePort specializes DataBus{
-        out Temp : ISQ::TemperatureValue [1..*];
+        out temp : ISQ::TemperatureValue [1..*];
     }
 
     port def MPPTControl :> DataBus {
-        in Power : Wattage;
-        in Voltage : ISQ::SourceVoltageValue;
-        in Current : ISQ::ElectricCurrentUnit;
+        in power : Wattage;
+        in voltage : ISQ::SourceVoltageValue;
+        in current : ISQ::ElectricCurrentUnit;
     }
 
     part def TemperatureSensor specializes GeneralElectricalComponent {
-        attribute Power : Wattage;
-        attribute Temperature_Measurement : ISQ::TemperatureValue;
+        attribute power : Wattage;
+        attribute temperature_Measurement : ISQ::TemperatureValue;
 
-        port Temperature_Port : TemperaturePort;
-        bind Temperature_Port.Temp = Temperature_Measurement;
+        port temperature_Port : TemperaturePort;
+        bind temperature_Port.temp = temperature_Measurement;
 
-        perform action Read_Temperature : ReadTemperature {
-            bind Temp = Temperature_Measurement;
+        perform action read_Temperature : ReadTemperature {
+            bind temp = temperature_Measurement;
         }
     }
 
     part def SolarArray specializes GeneralElectricalComponent {
-        attribute Power_Generation : Wattage;
-        port Electrode_Connection : ~MPPTControl;
-        port Solar_Input : ~MissionPackage::StellarEnvironment;
+        attribute power_Generation : Wattage;
+        port electrode_Connection : ~MPPTControl;
+        port solar_Input : ~MissionPackage::StellarEnvironment;
     }
 
     part def DeployableSolarArray specializes SolarArray {
-        attribute Deployment_Mechanism : String;
+        attribute deployment_Mechanism : String;
     }
 
     part def MPPTUnit specializes GeneralElectricalComponent{
-        port MPPT_Control : MPPTControl;
-        out port Power_Supply_Bus : PowerBus;
+        port mppt_Control : MPPTControl;
+        out port power_Supply_Bus : PowerBus;
     }
 
     part def KillSwitchUnit specializes GeneralElectricalComponent;
@@ -59,82 +58,82 @@ package ElectricalPowerSystemPackage {
     part def Connector specializes GeneralElectricalComponent;
 
     part def Battery :> GeneralElectricalComponent{
-        attribute Battery_Size : ISQ::EnergyValue;
-        port Battery_Power_Bus : PowerBus;
-        port Heater_Power_Bus : PowerBus;
+        attribute battery_Size : ISQ::EnergyValue;
+        port battery_Power_Bus : PowerBus;
+        port heater_Power_Bus : PowerBus;
     }
 
     part def BatteryPack specializes GeneralElectricalComponent {
-        attribute Capacity : ISQ::EnergyValue;
-        attribute Max_Power_Generation : Wattage;
+        attribute capacity : ISQ::EnergyValue;
+        attribute max_Power_Generation : Wattage;
 
-        part Battery_Pack_Connector : Connector;
-        part Battery_Unit[1..*] : Battery;
-        part Main_Heater : Heater;
-        part Temp_Sensor : TemperatureSensor;
-        port Battery_Power_Bus : PowerBus;
+        part battery_Pack_Connector : Connector;
+        part battery_Unit[1..*] : Battery;
+        part main_Heater : Heater;
+        part temp_Sensor : TemperatureSensor;
+        port battery_Power_Bus : PowerBus;
     }
 
     part def PowerSupplyUnit specializes GeneralElectricalComponent{
-        out port Power_Bus_5V : PowerBus;
-        out port Power_Bus_3V3 : PowerBus;
-        port Battery_Power_Bus : PowerBus; 
-        in port Power_Supply_Bus : ~PowerBus;
-        port Data_Bus : DataBus;
+        out port power_Bus_5V : PowerBus;
+        out port power_Bus_3V3 : PowerBus;
+        port battery_Power_Bus : PowerBus; 
+        in port power_Supply_Bus : ~PowerBus;
+        port data_Bus : DataBus;
     }
 
     part def Heater specializes GeneralElectricalComponent {
-        attribute Power : Wattage;
-        attribute Minimal_Temperature : ISQ::TemperatureValue;
+        attribute power : Wattage;
+        attribute minimal_Temperature : ISQ::TemperatureValue;
     }
 
     part def RegulatedPowerBus {
-        attribute Name : String;
-        port Voltage_Out : ISQ::SourceVoltageValue;
+        attribute name : String;
+        port voltage_Out : ISQ::SourceVoltageValue;
     }
 
     port def PowerBus {
-        out Voltage : ISQ::SourceVoltageValue;
+        out voltage : ISQ::SourceVoltageValue;
     }
 
     // Electrical Power System
     part def ElectricalPowerSystem {
-        port Data_Bus : ~DataBus;
-        port EPS_Solar_Input : ~StellarEnvironment;
+        port data_Bus : ~DataBus;
+        port eps_Solar_Input : ~StellarEnvironment;
 
-        port Eps_Command_In  : MissionPackage::OnBoardCommand;
-        port Eps_Telemetry_Out : MissionPackage::OnBoardStatus;
+        port eps_Command_In  : MissionPackage::OnBoardCommand;
+        port eps_Telemetry_Out : MissionPackage::OnBoardStatus;
 
-        port Power_Bus_5V : PowerBus;
-        port Power_Bus_3V3 : PowerBus;
+        port power_Bus_5V : PowerBus;
+        port power_Bus_3V3 : PowerBus;
 
-        part Battery_Pack_EPS[1..*] : BatteryPack;
-        part MPPT_Unit[0..*] : MPPTUnit;
+        part battery_Pack_EPS[1..*] : BatteryPack;
+        part mppt_Unit[0..*] : MPPTUnit;
 
-        part Power_Supply_Unit[1..*] : PowerSupplyUnit;
+        part power_Supply_Unit[1..*] : PowerSupplyUnit;
 
-        part Deployable_Solar_Arrays[0..*] : DeployableSolarArray;
-        part Mounted_Solar_Arrays[0..*] : SolarArray;
+        part deployable_Solar_Arrays[0..*] : DeployableSolarArray;
+        part mounted_Solar_Arrays[0..*] : SolarArray;
 
-        perform action Mppt : performMPPT;
-        perform action Battery_Energy : manageBatteryEnergy;
-        perform action Distribute : distributePowerToLoads;
-        perform action Load_Mgmt : manageLoadSheddingAndReactivation;
-        perform action Switch_State : switchEPSState;
-        perform action Report_Health : reportEPSHealth;
+        perform action mppt : performMPPT;
+        perform action battery_Energy : manageBatteryEnergy;
+        perform action distribute : distributePowerToLoads;
+        perform action load_Mgmt : manageLoadSheddingAndReactivation;
+        perform action switch_State : switchEPSState;
+        perform action report_Health : reportEPSHealth;
 
-        bind Mppt.Mppt_Command = Eps_Command_In;
-        bind Battery_Energy.Battery_Command = Eps_Command_In;
-        bind Distribute.Distribution_Command = Eps_Command_In;
-        bind Load_Mgmt.Load_Mgmt_Command = Eps_Command_In;
-        bind Switch_State.Switch_Command = Eps_Command_In;
-        bind Report_Health.Report_Command = Eps_Command_In;
+        bind mppt.mppt_Command = eps_Command_In;
+        bind battery_Energy.battery_Command = eps_Command_In;
+        bind distribute.distribution_Command = eps_Command_In;
+        bind load_Mgmt.load_Mgmt_Command = eps_Command_In;
+        bind switch_State.switch_Command = eps_Command_In;
+        bind report_Health.report_Command = eps_Command_In;
 
-        bind Eps_Telemetry_Out = Mppt.Mppt_Status;
-        bind Eps_Telemetry_Out = Battery_Energy.Battery_Status;
-        bind Eps_Telemetry_Out = Distribute.Distribution_Status;
-        bind Eps_Telemetry_Out = Load_Mgmt.Load_Mgmt_Status;
-        bind Eps_Telemetry_Out = Switch_State.Switch_Status;
-        bind Eps_Telemetry_Out = Report_Health.Health_Telemetry;
+        bind eps_Telemetry_Out = mppt.Mppt_Status;
+        bind eps_Telemetry_Out = battery_Energy.battery_Status;
+        bind eps_Telemetry_Out = distribute.distribution_Status;
+        bind eps_Telemetry_Out = load_Mgmt.load_Mgmt_Status;
+        bind eps_Telemetry_Out = switch_State.switch_Status;
+        bind eps_Telemetry_Out = report_Health.health_Telemetry;
     }
 }

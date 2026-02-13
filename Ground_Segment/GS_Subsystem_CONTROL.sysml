@@ -40,10 +40,10 @@ package MissionControlCentrePackage {
     }
 
     part def MissionControlCentre {
-        port Ground_Station_TC_Port : TcPort;
-        port Ground_Station_TM_Port : TmPort;
-        port Ground_Station_Pass_Plan_Port : PassPlanPort;
-        port Ground_Station_Tracking_Port : TrackingPort;
+        port ground_Station_TC_Port : TcPort;
+        port ground_Station_TM_Port : TmPort;
+        port ground_Station_Pass_Plan_Port : PassPlanPort;
+        port ground_Station_Tracking_Port : TrackingPort;
 
         part Auth_Service_Part : AuthenticationService;
         part Operations_Console_Part : OperationsConsole;
@@ -54,8 +54,8 @@ package MissionControlCentrePackage {
         perform action Plan_Passes_Action : GeneratePassPlan;
         perform action Monitor_TM_Action : MonitorTelemetryRealtime;
 
-        bind Generate_TC_Action.Raw_Unsecured_Telecommand = Ground_Station_TC_Port.TcOut;
-        bind Plan_Passes_Action.Plan_of_Satellite_Path = Ground_Station_Pass_Plan_Port.PlanOut;
-        bind Monitor_TM_Action.Telemetry_For_Monitoring = Ground_Station_TM_Port.TmIn;
+        bind Generate_TC_Action.Raw_Unsecured_Telecommand = ground_Station_TC_Port.TcOut;
+        bind Plan_Passes_Action.Plan_of_Satellite_Path = ground_Station_Pass_Plan_Port.PlanOut;
+        bind Monitor_TM_Action.Telemetry_For_Monitoring = ground_Station_TM_Port.TmIn;
     }
 }

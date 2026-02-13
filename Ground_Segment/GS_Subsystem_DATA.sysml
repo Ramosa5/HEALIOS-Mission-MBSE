@@ -23,9 +23,9 @@ package DataCentrePackage {
     }
 
     part def DataCentre {
-        port Ground_Station_TM_Port : TmPort;
-        port Ground_Station_Records_Port : ArchivePort;
-        port Mission_Control_Centre_TM_Products_Port : TmProductPort;
+        port ground_Station_TM_Port : TmPort;
+        port ground_Station_Records_Port : ArchivePort;
+        port mission_Control_Centre_TM_Products_Port : TmProductPort;
 
         part Structured_Archive_Part : StructuredArchive;
         part Data_Validator_Part : DataValidator;
@@ -33,8 +33,8 @@ package DataCentrePackage {
         perform action Validate_Action : ValidateTelemetry;
         perform action Store_Action : StoreRecord;
 
-        bind Validate_Action.Telemetry_For_Validate = Ground_Station_TM_Port.TmIn;
-        bind Store_Action.Record_of_Satellite_Data = Ground_Station_Records_Port.RecordIn;
-        bind Mission_Control_Centre_TM_Products_Port.TmOut = Ground_Station_TM_Port.TmIn;
+        bind Validate_Action.Telemetry_For_Validate = ground_Station_TM_Port.TmIn;
+        bind Store_Action.Record_of_Satellite_Data = ground_Station_Records_Port.RecordIn;
+        bind mission_Control_Centre_TM_Products_Port.TmOut = ground_Station_TM_Port.TmIn;
     }
 }

@@ -45,11 +45,11 @@ package GroundStationPackage {
     }
 
     part def GroundStation {
-        port Mission_Control_Centre_TC_Port : ~TcPort;
-        port Mission_Control_Centre_TM_Port : ~TmPort;
+        port mission_Control_Centre_TC_Port : ~TcPort;
+        port mission_Control_Centre_TM_Port : ~TmPort;
         port Data_Centre_TM_Port : ~TmPort;
-        port Mission_Control_Centre_Pass_Plan_Port : ~PassPlanPort;
-        port Mission_Control_Centre_Tracking_Port : ~TrackingPort;
+        port mission_Control_Centre_Pass_Plan_Port : ~PassPlanPort;
+        port mission_Control_Centre_Tracking_Port : ~TrackingPort;
         port Data_Centre_Archive_Port : ~ArchivePort;
 
         part Antenna_Part : Antenna;
@@ -63,15 +63,15 @@ package GroundStationPackage {
         perform action Verify_Decrypt_Action : VerifyAndDecryptDownlink;
         perform action Auth_Encrypt_Action : AuthenticateAndEncryptUplink;
 
-        bind Auth_Encrypt_Action.Telecommand_To_Encrypt = Mission_Control_Centre_TC_Port.TcIn;
+        bind Auth_Encrypt_Action.Telecommand_To_Encrypt = mission_Control_Centre_TC_Port.TcIn;
         bind Uplink_Action.Modulated_Uplink_Signal = Auth_Encrypt_Action.Secured_Encrypted_Telecommand;
 
         bind Verify_Decrypt_Action.Telemetry_To_Decrypt = Downlink_Action.Captured_Encrypted_Telemetry;
-        bind Mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Telemetry_To_Decrypt;
+        bind mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Telemetry_To_Decrypt;
         bind Data_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
 
-        bind Tracking_Action.Satellite_plan = Mission_Control_Centre_Pass_Plan_Port.PlanIn;
-        bind Mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.Tracking_Data;
+        bind Tracking_Action.Satellite_plan = mission_Control_Centre_Pass_Plan_Port.PlanIn;
+        bind mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.Tracking_Data;
 
         bind Archive_Action.Telemetry_To_Archive = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
         bind Data_Centre_Archive_Port.RecordOut = Archive_Action.Record_of_Telemetry;

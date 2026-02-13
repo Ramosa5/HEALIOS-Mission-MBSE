@@ -628,7 +628,7 @@ package MissionPhases {
                     out item Integration_Report : Report;
 
                     part CubeSat : MissionPackage::SpaceSegment {
-                        port Deployment_Interface redefines Deployment_Interface;
+                        port Deployment_Interface redefines deployment_Interface;
                     }
                     part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
                         port Deployment_Slot redefines Deployment_Slot;
@@ -701,7 +701,7 @@ package MissionPhases {
                     doc /* Injection into orbit */
 
                     part CubeSat : MissionPackage::SpaceSegment {
-                        port Deployment_Interface redefines Deployment_Interface;
+                        port Deployment_Interface redefines deployment_Interface;
                     }
                     part CubeSat_Dispenser : LaunchEnvironment::CubeSatDispenser {
                         port Deployment_Slot redefines Deployment_Slot;
@@ -772,9 +772,9 @@ package MissionPhases {
                 out item Nominal_Operations_Dataset : TelemetryData;
 
                 part <SS> Space_Segment : SpaceSegment {
-                    in port Satellite_Solar_Environment redefines Satellite_Solar_Environment;
-                    in port Telecommand_Port redefines Telecommand_Port;
-                    out port Telemetry_Port redefines Telemetry_Port;
+                    in port Satellite_Solar_Environment redefines satellite_Solar_Environment;
+                    in port Telecommand_Port redefines telecommand_Port;
+                    out port Telemetry_Port redefines telemetry_Port;
                 }
 
                 part Sun : Star {
@@ -782,8 +782,8 @@ package MissionPhases {
                 }
                 
                 part <GS> Ground_Segment : GroundSegment {
-                    out port Telecommand_Port redefines Telecommand_Port;
-                    in port Telemetry_Port redefines Telemetry_Port;
+                    out port Telecommand_Port redefines telecommand_Port;
+                    in port Telemetry_Port redefines telemetry_Port;
                 }
 
                 connect Sun.Solar_Environment to Space_Segment.Satellite_Solar_Environment;
@@ -863,7 +863,7 @@ package MissionPhases {
                 }
 
                 part Data_Centre_Archive: DataCentrePackage::DataCentre {
-                    port Ground_Station_Records_Port redefines Ground_Station_Records_Port;
+                    port Ground_Station_Records_Port redefines ground_Station_Records_Port;
                 }
 
                 action Data_Archiving {
