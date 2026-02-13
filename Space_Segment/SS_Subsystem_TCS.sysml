@@ -7,8 +7,7 @@ package ThermalControlSystemPackage {
     private import OnBoardDataHandlingSystemPackage::*;
 
     part def ThermalControlSystem {
-        port Data_Bus : ~DataBus;
-        [0..*];
+        port Data_Bus : ~DataBus [0..*];
 
         // attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 

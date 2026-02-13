@@ -90,7 +90,7 @@ package StakeholderConcernsPackage {
 
     concern def EducationalValueConcern {
 
-        subject HEALIOS_Mission : MissionSegments; 
+        subject HEALIOS_Mission : MissionSegments; // ASK ABOUT THIS
         
         require constraint {
             doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team to fulfill academic qualification requirements. */
