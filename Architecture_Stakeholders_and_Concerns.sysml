@@ -1,4 +1,7 @@
 package StakeholdersDefinitionPackage {
+    private import MissionPackage::*;
+    private import HealiosMissionInstancePackage::*;
+    private import ISQ::*;
 
     part def ESAProgramme {
         doc /* The ESA set of ESA programmes. */

@@ -15,7 +15,7 @@ package UseCaseDefinitionsPackage {
                This process ensures that only authorized personnel (HEALIOS Team) can influence the 
                satellite's state through a secured communication link. */
 
-        subject Satellite : SpaceSegment {
+        subject Satellite : SpaceSegment { // ASK ABOUT THIS
             in item Received_Telecommand : GroundCommand;
         }
 
@@ -76,7 +76,6 @@ package UseCaseDefinitionsPackage {
 
         flow Execute_Physical_Radio_Uplink.Modulated_Uplink_Signal to Satellite.Received_Telecommand;
 
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TBC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         objective SendCommandObjective {
             frame concern CommandSecurityConcern;
             frame concern LinkCompatibilityConcern;

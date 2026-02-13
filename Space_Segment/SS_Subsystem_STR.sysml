@@ -5,7 +5,9 @@ package StructureSystemPackage {
     private import LaunchEnvironment::*;
     
   
-    item def Separation;
+    item def Separation {
+        attribute separationTime : SI::TimeValue;
+    }
 
     state def SwitchBehavior {
 
