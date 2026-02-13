@@ -18,8 +18,6 @@ package GroundStationPackage {
             attribute band : String;
             attribute gain : Real;
 
-            // Uplink (TC) i downlink (TM) na poziomie "przechodzących danych"
-            // (upraszczamy RF do tych typów)
             port Uplink_In  : MissionPackage::GroundCommand;
             port Downlink_Out : MissionPackage::TelemetryData;
         }
@@ -31,11 +29,9 @@ package GroundStationPackage {
         attribute uplinkAuthEnabled : Boolean;
         attribute uplinkEncryptEnabled : Boolean;
 
-        // TC: MCC -> Crypto -> Antenna
         port TC_In  : MissionPackage::GroundCommand;
         port TC_Out : MissionPackage::GroundCommand;
 
-        // TM: Antenna -> Crypto -> MCC/DC
         port TM_In  : MissionPackage::TelemetryData;
         port TM_Out : MissionPackage::TelemetryData;
     }

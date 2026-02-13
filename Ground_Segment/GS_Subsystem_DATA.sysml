@@ -19,7 +19,7 @@ package DataCentrePackage {
         attribute name : String;
 
         in port TM_In : TmPort;
-        out port TM_Validated_Out : TmProductPort; // albo TmPort, zależnie od Twojej semantyki
+        out port TM_Validated_Out : TmProductPort;
     }
 
     part def DataCentre {

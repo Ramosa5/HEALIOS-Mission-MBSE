@@ -5,20 +5,17 @@ package StructureSystemPackage {
     private import LaunchEnvironment::*;
     
   
-   item def Separation;
+    item def Separation;
 
-    // --- 2. Define the Behavior ---
     state def SwitchBehavior {
 
         attribute Switch_Status : String;
-        // entry point is the standard way to start a state machine
         entry; then Stowed;
         
         state Stowed {
             entry assign Switch_Status := "Stowed";
         }
 
-        // Transition from Stowed to Deployed accepting the Separation signal
         transition
             first Stowed
             accept Separation
@@ -28,10 +25,6 @@ package StructureSystemPackage {
             entry assign Switch_Status := "Deployed";
         }
     }
-
-
-
-    // --- Component Definitions ---
 
     port def StructuralMountInterface;   
 
@@ -45,11 +38,8 @@ package StructureSystemPackage {
         attribute Material : String;
         attribute Dimensions : String;
 
-        // Internal mounting
         port Mounting_Points : StructuralMountInterface [0..*];
-        // Internal structural connections
         port Structural_Port : StructuralMountInterface [0..*];
-        // External mounting
         port Rail_Port : ~DispenserContactInterface [0..*];
     }
 
@@ -57,9 +47,7 @@ package StructureSystemPackage {
         attribute Material : String;
         attribute Dimensions : String;
 
-        // Internal mounting
         port Mounting_Points : StructuralMountInterface [0..*];
-        // Internal structural connections
         port Structural_Port : StructuralMountInterface [0..*];
     }
 
@@ -68,9 +56,7 @@ package StructureSystemPackage {
         attribute Power_Consumption : ISQ::PowerValue;
         attribute Status : String;
 
-        // Mounting interface for deployment switches
         port Mounting_Port : StructuralMountInterface [0..*];
-        // Optional interface for deployment mechanism actuation
         port Plunger_Port : DispenserContactInterface [0..*];
 
         exhibit state Switch_State : SwitchBehavior {
@@ -78,30 +64,23 @@ package StructureSystemPackage {
         }
     }
 
-    // --- The Main System Definition ---
-
     part def StructureSystem {
         
         attribute Total_Mass : ISQ::MassValue;
         attribute Material : String;
 
-        // Primary structure
         part Primary_Structure : Chassis {
             part Internal_Mounting : MountingElement;
         }
 
-        // Secondary structure (PCB stack)
         part Secondary_Structure : PCBStack {
             part Internal_Mounting : MountingElement;
         }
 
-        // Deployment switches
         part Deployment_Switches : DeploymentMechanism [2];
 
-        // Internal connections
         connect Secondary_Structure.Structural_Port to Primary_Structure.Structural_Port;
 
-        // Switches mounted to structure
         connect Deployment_Switches.Mounting_Port to Primary_Structure.Mounting_Points;
 
         // External connection to launcher dispenser
