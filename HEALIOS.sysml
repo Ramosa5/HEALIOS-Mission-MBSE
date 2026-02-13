@@ -227,7 +227,7 @@ package HealiosMissionInstancePackage {
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Primary_OBC.Power_Bus_3V3;
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Secondary_OBC.Power_Bus_3V3;
 
-                perform action Prepare_Data : PrepareData {
+                perform action Prepare_Data redefines Prepare_Data {
                     attribute Subsystem_Count :>> Subsystem_Count;
                     out Time_Tagged_Packed_Data redefines Time_Tagged_Packed_Data;
                     in Data_In[Subsystem_Count] :>> Data_In;
