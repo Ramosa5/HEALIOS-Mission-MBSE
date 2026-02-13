@@ -132,7 +132,7 @@ package MissionPackage {
         public part <gs> ground_Segment : GroundSegment;
 
         attribute mission_Name : String;
-        attribute mission_Duration : Year;
+        attribute mission_Duration : Quantities::TensorQuantityValue;
         attribute orbit_Type : String;
 
         connection uplink connect ground_Segment.telecommand_Port to space_Segment.telecommand_Port;

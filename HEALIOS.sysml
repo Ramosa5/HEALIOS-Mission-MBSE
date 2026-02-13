@@ -9,8 +9,6 @@ package HealiosMissionInstancePackage {
     private import GroundStationPackage::*;
     private import MissionControlCentrePackage::*;
 
-    // attribute yr : Year;
-
     public part Healios_Mission : OperationalStructure {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
