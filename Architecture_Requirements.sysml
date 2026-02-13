@@ -277,7 +277,7 @@ package SpaceSegmentRequirement {
     private import MissionPackage::*;
     private import MissionRequirementsPackage::*;
 
-    requirement def <R_SS_001> Payload_Accommodation specializes R_M_001 {
+    requirement def <R_SS_001> Payload_Accommodation specializes R_M_001 { // ASK ABOUT THIS: If A is satisfied, B is automatically satisfied.
         doc /* The Space Segment shall accommodate and support the operation of the perovskite solar cells payload. */
         subject SpaceSegment_Req : MissionPackage::SpaceSegment;
     }
