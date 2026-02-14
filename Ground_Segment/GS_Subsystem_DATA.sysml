@@ -4,22 +4,22 @@ package DataCentrePackage {
     private import GroundStationPackage::*;
     private import GroundActionsPackage::*;
 
-    port def TmPort { in item TmIn : MissionPackage::TelemetryData; }
-    port def ArchivePort { in item RecordIn : ArchiveRecord; }
-    port def TmProductPort { out item TmOut : MissionPackage::TelemetryData; }
+    port def TmPort { in item telemetry_In : MissionPackage::TelemetryData; }
+    port def ArchivePort { in item record_In : ArchiveRecord; }
+    port def TmProductPort { out item telemetry_Out : MissionPackage::TelemetryData; }
 
     part def StructuredArchive {
         attribute name : String;
         attribute retention : ISQ::DurationValue;
 
-        in port Record_In : ArchivePort;
+        in port record_In : ArchivePort;
     }
 
     part def DataValidator {
         attribute name : String;
 
-        in port TM_In : TmPort;
-        out port TM_Validated_Out : TmProductPort;
+        in port telemetry_In : TmPort;
+        out port telemetry_Validated_Out : TmProductPort;
     }
 
     part def DataCentre {
@@ -27,14 +27,14 @@ package DataCentrePackage {
         port ground_Station_Records_Port : ArchivePort;
         port mission_Control_Centre_TM_Products_Port : TmProductPort;
 
-        part Structured_Archive_Part : StructuredArchive;
-        part Data_Validator_Part : DataValidator;
+        part structured_Archive_Part : StructuredArchive;
+        part data_Validator_Part : DataValidator;
 
-        perform action Validate_Action : ValidateTelemetry;
-        perform action Store_Action : StoreRecord;
+        perform action validate_Action : ValidateTelemetry;
+        perform action store_Action : StoreRecord;
 
-        bind Validate_Action.Telemetry_For_Validate = ground_Station_TM_Port.TmIn;
-        bind Store_Action.Record_of_Satellite_Data = ground_Station_Records_Port.RecordIn;
-        bind mission_Control_Centre_TM_Products_Port.TmOut = ground_Station_TM_Port.TmIn;
+        bind validate_Action.Telemetry_For_Validate = ground_Station_TM_Port.telemetry_In;
+        bind store_Action.Record_of_Satellite_Data = ground_Station_Records_Port.record_In;
+        bind mission_Control_Centre_TM_Products_Port.telemetry_Out = ground_Station_TM_Port.telemetry_In;
     }
 }

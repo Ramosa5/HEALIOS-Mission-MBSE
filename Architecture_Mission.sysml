@@ -120,8 +120,8 @@ package MissionPackage {
         connect ground_Station.mission_Control_Centre_Tracking_Port
             to mission_Control_Centre.ground_Station_Tracking_Port;
 
-        connect ground_Station.Data_Centre_TM_Port to data_Centre.ground_Station_TM_Port;
-        connect ground_Station.Data_Centre_Archive_Port to data_Centre.ground_Station_Records_Port;
+        connect ground_Station.data_Centre_TM_Port to data_Centre.ground_Station_TM_Port;
+        connect ground_Station.data_Centre_Archive_Port to data_Centre.ground_Station_Records_Port;
 
         connect data_Centre.mission_Control_Centre_TM_Products_Port
             to mission_Control_Centre.ground_Station_TM_Port;
