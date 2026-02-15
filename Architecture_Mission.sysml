@@ -18,138 +18,125 @@ package MissionPackage {
     private import MissionControlCentrePackage::*;
 
     port def TelecommandPort {
-        out item TC : GroundCommand;
+        out item tc : GroundCommand;
     }
 
     port def TelemetryPort {
-        out item TM : TelemetryData;
+        out item tm : TelemetryData;
     }
 
     port def TmTcPort {
-        out item Telecommand : GroundCommand;
-        in item Telemetry : TelemetryData;
+        out item telecommand : GroundCommand;
+        in item telemetry : TelemetryData;
     }
 
     item def OnBoardCommand {
-        attribute Type : String;
+        attribute type : String;
     }
 
     item def OnBoardStatus {
-        attribute Type : String;
+        attribute type : String;
     }
 
     item def GroundCommand {
-        attribute Type : String;
+        attribute type : String;
     }
 
     item def OnBoardData {
-        attribute Type : String;
+        attribute type : String;
     }
     item def ScienceData specializes OnBoardData {
-        attribute Data_Product_Type : String; // e.g., "Radiation_Spectrum", "Irradiance_Profile", ...
+        attribute data_Product_Type : String; // e.g., "Radiation_Spectrum", "Irradiance_Profile", ...
     }
 
     item def HousekeepingData specializes OnBoardData {
-        attribute Subsystem : String; // e.g., "EPS", "AOCS", "Thermal", ...
-        attribute Parameter : String; // e.g., "Battery_Voltage", "Magnetometer_X", "Temperature_Sensor_1", ...
+        attribute subsystem : String; // e.g., "EPS", "AOCS", "Thermal", ...
+        attribute parameter : String; // e.g., "Battery_Voltage", "Magnetometer_X", "Temperature_Sensor_1", ...
     }
 
     item def TelemetryData {
-        attribute Type : String;
+        attribute type : String;
 
-        item Science_Data : ScienceData;
-        item Housekeeping_Data : HousekeepingData;
+        item science_Data : ScienceData;
+        item housekeeping_Data : HousekeepingData;
     }
 
     item def ProcessedScienceData specializes ScienceData {
-        attribute Processing_Level : String;
+        attribute processing_Level : String;
     }
 
     item def Dataset {
-        item Data_Products : ScienceData [0..*];
-        item Housekeeping_Records : HousekeepingData [0..*];
-        item Mission_Documentation : MissionDocumentation [0..*];
+        item data_Products : ScienceData [0..*];
+        item housekeeping_Records : HousekeepingData [0..*];
+        item mission_Documentation : MissionDocumentation [0..*];
     }
 
     item def TimeTaggedStatus specializes OnBoardStatus {
-        attribute Time_Tag : ISQ::TimeValue;
-        attribute Source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
-        attribute Channel : String; // optional: "I2C0", "ADC1", ...
+        attribute time_Tag : ISQ::TimeValue;
+        attribute source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
+        attribute channel : String; // optional: "I2C0", "ADC1", ...
     }
-
-
     
     public part def SpaceSegment {
-        attribute Total_Mass : ISQ::MassValue;
-        attribute CubeSat_Form_Factor : String;
-        attribute Center_Of_Mass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
+        attribute total_Mass : ISQ::MassValue;
+        attribute cubeSat_Form_Factor : String;
+        attribute center_Of_Mass : String; // e.g., "X=0.1m, Y=0.2m, Z=0.3m"
 
-        port Telecommand_Port : ~TelecommandPort;
-        port Telemetry_Port : TelemetryPort;
+        port telecommand_Port : ~TelecommandPort;
+        port telemetry_Port : TelemetryPort;
 
-        port Deployment_Interface : ~LaunchEnvironment::DispenserContactInterface;
+        port deployment_Interface : ~LaunchEnvironment::DispenserContactInterface;
 
-        part <TCS> SS_Thermal_Control_System : ThermalControlSystem;
-        part <COMMS> SS_Communication_System : CommunicationsSystem;
-        part <EPS> SS_Electrical_Power_System : ElectricalPowerSystemPackage::ElectricalPowerSystem;
-        part <OBDH> SS_On_Board_Data_Handling : OnBoardDataHandlingSystem;
-        part <STR> SS_Structure_And_Mechanisms : StructureSystem;
-        part <AOCS> SS_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
-        part <PL> SS_Satellite_Payload : Payload;
+        part <tcs> ss_Thermal_Control_System : ThermalControlSystem;
+        part <comms> ss_Communication_System : CommunicationsSystem;
+        part <eps> ss_Electrical_Power_System : ElectricalPowerSystemPackage::ElectricalPowerSystem;
+        part <obdh> ss_On_Board_Data_Handling : OnBoardDataHandlingSystem;
+        part <str> ss_Structure_And_Mechanisms : StructureSystem;
+        part <aocs> ss_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
+        part <pl> ss_Satellite_Payload : Payload;
 
-        in port Satellite_Solar_Environment : ~StellarEnvironment;
+        in port satellite_Solar_Environment : ~StellarEnvironment;
 
-        connect SS_Electrical_Power_System.Power_Bus_5V
-            to SS_Attitude_And_Orbit_Control_System.Magnetorquer_Board.Power_Bus_5V;
-        connect SS_Electrical_Power_System.Power_Bus_5V to SS_Communication_System.Power_Bus_5V;
-        connect SS_Electrical_Power_System.Power_Bus_3V3
-            to SS_Attitude_And_Orbit_Control_System.Sun_Sensor.Power_Bus_3V3;
-
-        connect Telecommand_Port to SS_On_Board_Data_Handling.Telecommand_In;
-        connect Telemetry_Port to SS_On_Board_Data_Handling.Telemetry_Out;
-
-        connect SS_Communication_System.Decrypte_Autheticate_Action.Telecommand_Out
-            to SS_On_Board_Data_Handling.Telecommand_In;
-
-        state Satellite_Mode{
-            in abstract port Switch_Command : DataBus;
+        state satellite_Mode {
+            in abstract port switch_Command : DataBus;
         }
     }
+
     public part def GroundSegment {
-        part <GST> Ground_Station : GroundStation;
-        part <MCC> Mission_Control_Centre : MissionControlCentre;
-        part <DT> Data_Centre : DataCentre;
+        part <gst> ground_Station : GroundStation;
+        part <mcc> mission_Control_Centre : MissionControlCentre;
+        part <dt> data_Centre : DataCentre;
         
-        port Telecommand_Port : TelecommandPort;
-        port Telemetry_Port : ~TelemetryPort;
+        port telecommand_Port : TelecommandPort;
+        port telemetry_Port : ~TelemetryPort;
 
-        connect Mission_Control_Centre.Ground_Station_TC_Port
-            to Ground_Station.Mission_Control_Centre_TC_Port;
-        connect Mission_Control_Centre.Ground_Station_Pass_Plan_Port
-            to Ground_Station.Mission_Control_Centre_Pass_Plan_Port;
+        connect mission_Control_Centre.ground_Station_TC_Port
+            to ground_Station.mission_Control_Centre_TC_Port;
+        connect mission_Control_Centre.ground_Station_Pass_Plan_Port
+            to ground_Station.mission_Control_Centre_Pass_Plan_Port;
 
-        connect Ground_Station.Mission_Control_Centre_TM_Port
-            to Mission_Control_Centre.Ground_Station_TM_Port;
-        connect Ground_Station.Mission_Control_Centre_Tracking_Port
-            to Mission_Control_Centre.Ground_Station_Tracking_Port;
+        connect ground_Station.mission_Control_Centre_TM_Port
+            to mission_Control_Centre.ground_Station_TM_Port;
+        connect ground_Station.mission_Control_Centre_Tracking_Port
+            to mission_Control_Centre.ground_Station_Tracking_Port;
 
-        connect Ground_Station.Data_Centre_TM_Port to Data_Centre.Ground_Station_TM_Port;
-        connect Ground_Station.Data_Centre_Archive_Port to Data_Centre.Ground_Station_Records_Port;
+        connect ground_Station.data_Centre_TM_Port to data_Centre.ground_Station_TM_Port;
+        connect ground_Station.data_Centre_Archive_Port to data_Centre.ground_Station_Records_Port;
 
-        connect Data_Centre.Mission_Control_Centre_TM_Products_Port
-            to Mission_Control_Centre.Ground_Station_TM_Port;
+        connect data_Centre.mission_Control_Centre_TM_Products_Port
+            to mission_Control_Centre.ground_Station_TM_Port;
     }
 
-    public part def MissionSegments {
-        public part <SS> Space_Segment : SpaceSegment;
-        public part <GS> Ground_Segment : GroundSegment;
+    public part def OperationalStructure {
+        public part <ss> space_Segment : SpaceSegment;
+        public part <gs> ground_Segment : GroundSegment;
 
-        attribute Mission_Name : String;
-        attribute Mission_Duration : ScalarQuantityValue;
-        attribute Orbit_Type : String;
+        attribute mission_Name : String;
+        attribute mission_Duration : Quantities::TensorQuantityValue;
+        attribute orbit_Type : String;
 
-        connection Uplink connect Ground_Segment.Telecommand_Port to Space_Segment.Telecommand_Port;
-        connection Downlink connect Space_Segment.Telemetry_Port to Ground_Segment.Telemetry_Port;
+        connection uplink connect ground_Segment.telecommand_Port to space_Segment.telecommand_Port;
+        connection downlink connect space_Segment.telemetry_Port to ground_Segment.telemetry_Port;
 
     }
 }

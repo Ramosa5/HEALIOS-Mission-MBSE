@@ -5,120 +5,121 @@ package PayloadPackage {
     private import ISQ::*;
     private import EnvironmentPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
+    private import UnitTypesPackage::*;
 
     part def PerovskiteCellConnectorAndProtection {
-        attribute Name : String;
-        attribute Mass : ISQ::MassValue;
+        attribute name : String;
+        attribute mass : MV;
     }
 
     part def IVSweepLoad_MOSFET specializes GeneralElectricalComponent;
     part def IVSweepLoad_OpAmp specializes GeneralElectricalComponent;
     part def CurrentAndVoltageSensingBlock specializes GeneralElectricalComponent{
-        port Voltage_Current_Sense_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port voltage_Current_Sense_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def IVSweepLoad_DAC specializes GeneralElectricalComponent;
     part def IrradianceSensorBlock specializes GeneralElectricalComponent {
-        port Irradiance_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port irradiance_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def RadiationDoseSensor specializes GeneralElectricalComponent {
-        port Radiation_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port radiation_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def SpectrometerPackage specializes GeneralElectricalComponent{
-        port Spectrometer_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
+        port spectrometer_Sensor_Measurement : ~OnBoardDataHandlingSystemPackage::DataBus;
     }
     part def PowerFilteringUnit specializes GeneralElectricalComponent;
     part def DigitalAnalogConverter specializes GeneralElectricalComponent;
 
     part def PerovskiteSolarArray specializes SolarArray {
-        attribute Manufacturer : String;
+        attribute manufacturer : String;
     }
 
     part def PowerFilteringBlock {
-        port Power_Bus_3V3 : ElectricalPowerSystemPackage::PowerBus;
-        port Power_Bus_5V : ElectricalPowerSystemPackage::PowerBus;
-        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_5V : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
 
-        part Power_Filter : PowerFilteringUnit;
+        part power_Filter : PowerFilteringUnit;
     }
 
     part def SolarCellsBlock {
-        part Perovskite_Solar_Array_Coupon : PerovskiteSolarArray [1..*];
-        part Reference_Silicon_Solar_Array_Coupon : SolarArray [1..*];
-        part Psc_Connector_And_Protection : PerovskiteCellConnectorAndProtection;
-        port Solar_Input : ~StellarEnvironment;
-        port Mppt_Controller : MPPTControl;
+        part perovskite_Solar_Array_Coupon : PerovskiteSolarArray [1..*];
+        part reference_Silicon_Solar_Array_Coupon : SolarArray [1..*];
+        part psc_Connector_And_Protection : PerovskiteCellConnectorAndProtection;
+        port solar_Input : ~StellarEnvironment;
+        port mppt_Controller : MPPTControl;
     }
 
     part def MPPTBlock {
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
-        port Mppt_Controller : MPPTControl;
-        part Mppt_Unit : MPPTUnit [1..*];
-        part Power_Dump_Resistor : Resistor [1..*];
+        port power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port mppt_Controller : MPPTControl;
+        part mppt_Unit : MPPTUnit [1..*];
+        part power_Dump_Resistor : Resistor [1..*];
     }
 
     part def IVSweepAndReverseBiasBlock {
-        port Power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_Filtered_5V : ElectricalPowerSystemPackage::PowerBus;
 
-        part Iv_Sweep_Load_Shunt_Resistor : Resistor [1];
-        part Iv_Sweep_Load_MOSFET : IVSweepLoad_MOSFET [1];
-        part Iv_Sweep_Load_OpAmp : IVSweepLoad_OpAmp [1];
-        part Iv_Sweep_Load_DAC : IVSweepLoad_DAC [1];
-        part Current_And_Voltage_Sensing_Block : CurrentAndVoltageSensingBlock [1];
+        part iv_Sweep_Load_Shunt_Resistor : Resistor [1];
+        part iv_Sweep_Load_MOSFET : IVSweepLoad_MOSFET [1];
+        part iv_Sweep_Load_OpAmp : IVSweepLoad_OpAmp [1];
+        part iv_Sweep_Load_DAC : IVSweepLoad_DAC [1];
+        part current_And_Voltage_Sensing_Block : CurrentAndVoltageSensingBlock [1];
     }
 
     part def EnvironmentSensorsBlock {
-        port Power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
+        port power_Bus_Filtered_3V3 : ElectricalPowerSystemPackage::PowerBus;
     
-        port Temp_Out : MissionPackage::OnBoardStatus;
-        port Irr_Out : MissionPackage::OnBoardStatus;
-        port Rad_Out : MissionPackage::OnBoardStatus;
-        port Spec_Out : MissionPackage::OnBoardStatus;
-        port Solar_Input : ~StellarEnvironment;
+        port temp_Out : MissionPackage::OnBoardStatus;
+        port irr_Out : MissionPackage::OnBoardStatus;
+        port rad_Out : MissionPackage::OnBoardStatus;
+        port spec_Out : MissionPackage::OnBoardStatus;
+        port solar_Input : ~StellarEnvironment;
 
-        part Temperature_Sensor_At_Environment : TemperatureSensor;
-        part Irradiance_Sensor_Block : IrradianceSensorBlock;
-        part Radiation_Dose_Sensor : RadiationDoseSensor;
-        part Spectrometer : SpectrometerPackage;
+        part temperature_Sensor_At_Environment : TemperatureSensor;
+        part irradiance_Sensor_Block : IrradianceSensorBlock;
+        part radiation_Dose_Sensor : RadiationDoseSensor;
+        part spectrometer : SpectrometerPackage;
 
-        action Read_PL_Temperature : ReadTemperature;
+        action read_PL_Temperature : ReadTemperature;
     }
 
     part def Payload {
-        port Power_Bus_3V3 : ~PowerBus;
-        port Power_Bus_5V : ~PowerBus;
-        port Data_Bus : ~DataBus;
-        port Solar_Input : ~StellarEnvironment;
+        port power_Bus_3V3 : ~PowerBus;
+        port power_Bus_5V : ~PowerBus;
+        port data_Bus : ~DataBus;
+        port solar_Input : ~StellarEnvironment;
 
-        part Power_Filtering_Block : PowerFilteringBlock;
-        part Solar_Cells_Block : SolarCellsBlock;
-        part Mppt_Block : MPPTBlock;
-        part Iv_Sweep_And_Reverse_Bias_Block : IVSweepAndReverseBiasBlock;
-        part Env_Sensors_Block : EnvironmentSensorsBlock;
+        part power_Filtering_Block : PowerFilteringBlock;
+        part solar_Cells_Block : SolarCellsBlock;
+        part mppt_Block : MPPTBlock;
+        part iv_Sweep_And_Reverse_Bias_Block : IVSweepAndReverseBiasBlock;
+        part env_Sensors_Block : EnvironmentSensorsBlock;
 
-        bind Env_Sensors_Block.Power_Bus_Filtered_3V3 =
-            Power_Filtering_Block.Power_Bus_Filtered_3V3;
-        bind Iv_Sweep_And_Reverse_Bias_Block.Power_Bus_Filtered_5V =
-            Power_Filtering_Block.Power_Bus_Filtered_5V;
-        bind Mppt_Block.Power_Bus_Filtered_3V3 = Power_Filtering_Block.Power_Bus_Filtered_3V3;
+        bind env_Sensors_Block.power_Bus_Filtered_3V3 =
+            power_Filtering_Block.power_Bus_Filtered_3V3;
+        bind iv_Sweep_And_Reverse_Bias_Block.power_Bus_Filtered_5V =
+            power_Filtering_Block.power_Bus_Filtered_5V;
+        bind mppt_Block.power_Bus_Filtered_3V3 = power_Filtering_Block.power_Bus_Filtered_3V3;
 
-        perform action Apply_Reverse_Bias : applyControlledReverseBiasToPSC;
-        perform action Measure_Iv_Curves : MeasureIVCurvesOfPSC;
-        perform action Maintain_Mpp : maintainMaximumPowerPoint;
-        perform action Collect_Data : collectExperimentalData;
+        perform action apply_Reverse_Bias : applyControlledReverseBiasToPSC;
+        perform action measure_Iv_Curves : MeasureIVCurvesOfPSC;
+        perform action maintain_Mpp : maintainMaximumPowerPoint;
+        perform action collect_Data : collectExperimentalData;
 
-        bind Apply_Reverse_Bias.Apply_Reverse_Bias_Voltage_Command = Data_Bus.Cmd;
-        bind Measure_Iv_Curves.Measure_IV_Curves_Of_PSC_Command = Data_Bus.Cmd;
-        bind Maintain_Mpp.Maintain_MPP_Command = Data_Bus.Cmd;
-        bind Collect_Data.Collect_Experimental_Data_Command = Data_Bus.Cmd;
+        bind apply_Reverse_Bias.apply_Reverse_Bias_Voltage_Command = data_Bus.Cmd;
+        bind measure_Iv_Curves.measure_IV_Curves_Of_PSC_Command = data_Bus.Cmd;
+        bind maintain_Mpp.maintain_MPP_Command = data_Bus.Cmd;
+        bind collect_Data.collect_Experimental_Data_Command = data_Bus.Cmd;
 
-        bind Data_Bus.Data = Apply_Reverse_Bias.Voltage_Application_Status;
-        bind Data_Bus.Data = Measure_Iv_Curves.Measured_IV_Curves_Status;
-        bind Data_Bus.Data = Maintain_Mpp.Mpp_Status;
+        bind data_Bus.Data = apply_Reverse_Bias.voltage_Application_Status;
+        bind data_Bus.Data = measure_Iv_Curves.measured_IV_Curves_Status;
+        bind data_Bus.Data = maintain_Mpp.mpp_Status;
 
-        bind Data_Bus.Data = Collect_Data.Measured_Radiation_Status;
-        bind Data_Bus.Data = Collect_Data.Measured_Temperature_Status;
-        bind Data_Bus.Data = Collect_Data.Measured_Spectrum_Status;
-        bind Data_Bus.Data = Collect_Data.Measured_Irradiance_Status;
+        bind data_Bus.Data = collect_Data.measured_Radiation_Status;
+        bind data_Bus.Data = collect_Data.measured_Temperature_Status;
+        bind data_Bus.Data = collect_Data.measured_Spectrum_Status;
+        bind data_Bus.Data = collect_Data.measured_Irradiance_Status;
     }
 }

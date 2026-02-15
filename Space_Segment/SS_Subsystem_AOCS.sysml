@@ -5,34 +5,50 @@ package AttitudeAndOrbitControlSystemPackage {
     private import EnvironmentPackage::*;
     private import ElectricalPowerSystemPackage::*;
     private import OnBoardDataHandlingSystemPackage::*;
-
+    private import UnitTypesPackage::*;
 
     part def SunSensor :> GeneralElectricalComponent {
-        port Power_Bus_3V3 : PowerBus;
-        out Beta_Angle : Boolean;
+        port power_Bus_3V3 : PowerBus;
+        out beta_Angle : Boolean;
     }
 
     part def Magnetorquer :> GeneralElectricalComponent {
-        attribute Axis : String;
-        attribute Force : ISQ::ForceValue;
+        attribute axis : String;
+        attribute force : FV;
     }
 
     part def MagnetorquerBoard {
-        port Power_Bus_5V : ~PowerBus;
-        port Magnetorquer_Board_Control : ~DataBus;
+        port power_Bus_5V : ~PowerBus;
+        port magnetorquer_Board_Control_Input : ~DataBus;
 
-        part Mounted_Magnetorquer : Magnetorquer [0..*];
+        part mounted_Magnetorquer : Magnetorquer [0..*];
     }
 
     part def AttitudeAndOrbitControlSystem {
-        port Power_Bus_3V3 : ~PowerBus;
-        port Power_Bus_5V : ~PowerBus;
-        port Data_Bus : ~DataBus;
-        part Sun_Sensor : SunSensor [0..*];
-        part Magnetorquer_Board : MagnetorquerBoard [0..*];
-        attribute Force_Output : ISQ::ForceValue;
+        port power_Bus_3V3 : ~PowerBus;
+        port power_Bus_5V : ~PowerBus;
+        port data_Bus : ~DataBus;
+        part sun_Sensor : SunSensor [0..*];
+        part magnetorquer_Board : MagnetorquerBoard [0..*];
+        attribute force_Output : FV;
 
-        attribute Stop_Signal : Boolean;
-        action Activate_AOCS;
+        attribute stop_Signal : Boolean;
+        
+        perform action use_AOCS : UseAOCS {
+            in command : MissionPackage::OnBoardCommand;
+            if command.type == "TurnOn" {
+                loop {
+                    perform action read_Sun_Angle : ReadSunAngle {
+                        bind beta_Angle = sun_Sensor.beta_Angle;
+                    }
+                    then perform action correct_Attitude : CorrectAttitude {
+                        bind force = force_Output;
+                        bind sun_Sensor_Reading = read_Sun_Angle.beta_Angle;
+                        bind force_Value = magnetorquer_Board.mounted_Magnetorquer.force;
+                    }
+                    then assign stop_Signal := command.type == "TurnOff";
+                } until stop_Signal;
+            }
+        }
     }
 }

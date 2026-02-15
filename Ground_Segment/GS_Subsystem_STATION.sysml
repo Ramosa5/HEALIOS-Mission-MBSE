@@ -7,19 +7,19 @@ package GroundStationPackage {
     item def TrackingData { attribute type : String; }
     item def ArchiveRecord { attribute type : String; }
 
-    port def TcPort { in item TcIn : MissionPackage::GroundCommand; }
-    port def TmPort { out item TmOut : MissionPackage::TelemetryData; }
-    port def PassPlanPort { in item PlanIn : PassPlan; }
-    port def TrackingPort { out item TrackingOut : TrackingData; }
-    port def ArchivePort { out item RecordOut : ArchiveRecord; }
+    port def TcPort { in item telecommandIn : MissionPackage::GroundCommand; }
+    port def TmPort { out item telemetryOut : MissionPackage::TelemetryData; }
+    port def PassPlanPort { in item planIn : PassPlan; }
+    port def TrackingPort { out item trackingOut : TrackingData; }
+    port def ArchivePort { out item recordOut : ArchiveRecord; }
 
     part def Antenna {
             attribute name : String;
             attribute band : String;
             attribute gain : Real;
 
-            port Uplink_In  : MissionPackage::GroundCommand;
-            port Downlink_Out : MissionPackage::TelemetryData;
+            port uplink_In  : MissionPackage::GroundCommand;
+            port downlink_Out : MissionPackage::TelemetryData;
         }
 
     part def CryptoUnit {
@@ -29,51 +29,51 @@ package GroundStationPackage {
         attribute uplinkAuthEnabled : Boolean;
         attribute uplinkEncryptEnabled : Boolean;
 
-        port TC_In  : MissionPackage::GroundCommand;
-        port TC_Out : MissionPackage::GroundCommand;
+        port telecommand_In  : MissionPackage::GroundCommand;
+        port telecommand_Out : MissionPackage::GroundCommand;
 
-        port TM_In  : MissionPackage::TelemetryData;
-        port TM_Out : MissionPackage::TelemetryData;
+        port telemetry_In  : MissionPackage::TelemetryData;
+        port telemetry_Out : MissionPackage::TelemetryData;
     }
 
     part def PassPredictor {
         attribute name : String;
         attribute usesTLE : Boolean;
 
-        port PassPlan_Out : PassPlan;
-        port Tracking_Out : TrackingData;
+        port pass_Plan_Out : PassPlan;
+        port tracking_Out : TrackingData;
     }
 
     part def GroundStation {
-        port Mission_Control_Centre_TC_Port : ~TcPort;
-        port Mission_Control_Centre_TM_Port : ~TmPort;
-        port Data_Centre_TM_Port : ~TmPort;
-        port Mission_Control_Centre_Pass_Plan_Port : ~PassPlanPort;
-        port Mission_Control_Centre_Tracking_Port : ~TrackingPort;
-        port Data_Centre_Archive_Port : ~ArchivePort;
+        port mission_Control_Centre_TC_Port : ~TcPort;
+        port mission_Control_Centre_TM_Port : ~TmPort;
+        port data_Centre_TM_Port : ~TmPort;
+        port mission_Control_Centre_Pass_Plan_Port : ~PassPlanPort;
+        port mission_Control_Centre_Tracking_Port : ~TrackingPort;
+        port data_Centre_Archive_Port : ~ArchivePort;
 
-        part Antenna_Part : Antenna;
-        part Pass_Predictor_Part : PassPredictor;
-        part Crypto_Unit_Part : CryptoUnit;
+        part antenna_Part : Antenna;
+        part pass_Predictor_Part : PassPredictor;
+        part crypto_Unit_Part : CryptoUnit;
 
-        perform action Uplink_Action : ExecuteUplink;
-        perform action Downlink_Action : ReceiveDownlink;
-        perform action Tracking_Action : ComputeTracking;
-        perform action Archive_Action : StreamToArchive;
-        perform action Verify_Decrypt_Action : VerifyAndDecryptDownlink;
-        perform action Auth_Encrypt_Action : AuthenticateAndEncryptUplink;
+        perform action uplink_Action : ExecuteUplink;
+        perform action downlink_Action : ReceiveDownlink;
+        perform action tracking_Action : ComputeTracking;
+        perform action archive_Action : StreamToArchive;
+        perform action verify_Decrypt_Action : VerifyAndDecryptDownlink;
+        perform action auth_Encrypt_Action : AuthenticateAndEncryptUplink;
 
-        bind Auth_Encrypt_Action.Telecommand_To_Encrypt = Mission_Control_Centre_TC_Port.TcIn;
-        bind Uplink_Action.Modulated_Uplink_Signal = Auth_Encrypt_Action.Secured_Encrypted_Telecommand;
+        bind auth_Encrypt_Action.Telecommand_To_Encrypt = mission_Control_Centre_TC_Port.telecommandIn;
+        bind uplink_Action.Modulated_Uplink_Signal = auth_Encrypt_Action.Secured_Encrypted_Telecommand;
 
-        bind Verify_Decrypt_Action.Telemetry_To_Decrypt = Downlink_Action.Captured_Encrypted_Telemetry;
-        bind Mission_Control_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Telemetry_To_Decrypt;
-        bind Data_Centre_TM_Port.TmOut = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
+        bind verify_Decrypt_Action.Telemetry_To_Decrypt = downlink_Action.Captured_Encrypted_Telemetry;
+        bind mission_Control_Centre_TM_Port.telemetryOut = verify_Decrypt_Action.Telemetry_To_Decrypt;
+        bind data_Centre_TM_Port.telemetryOut = verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
 
-        bind Tracking_Action.Satellite_plan = Mission_Control_Centre_Pass_Plan_Port.PlanIn;
-        bind Mission_Control_Centre_Tracking_Port.TrackingOut = Tracking_Action.Tracking_Data;
+        bind tracking_Action.Satellite_plan = mission_Control_Centre_Pass_Plan_Port.planIn;
+        bind mission_Control_Centre_Tracking_Port.trackingOut = tracking_Action.Tracking_Data;
 
-        bind Archive_Action.Telemetry_To_Archive = Verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
-        bind Data_Centre_Archive_Port.RecordOut = Archive_Action.Record_of_Telemetry;
+        bind archive_Action.Telemetry_To_Archive = verify_Decrypt_Action.Verified_Ground_Telemetry_Data;
+        bind data_Centre_Archive_Port.recordOut = archive_Action.Record_of_Telemetry;
     }
 }

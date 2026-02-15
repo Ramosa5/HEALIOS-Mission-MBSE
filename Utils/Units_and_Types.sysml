@@ -8,18 +8,22 @@ package UnitTypesPackage {
     // ---- TIME ----
 
     // SI second usage
+    alias FV for ISQ::ForceValue;
+    alias MV for ISQ::MassValue;
+    alias Wattage for ISQ::PowerValue;
+    alias RV for ISQ::ResistanceValue;
 
     attribute yearConv : ConversionByConvention {
         :>> referenceUnit = SI::second;
         :>> conversionFactor = 31557600; // Julian year
     }
 
-    attribute def year :> ISQ::TimeUnit {
+    attribute def Year :> ISQ::TimeUnit {
         symbol = "yr";
         :>> unitConversion = yearConv;
     }
 
-    attribute yr : year;
+    attribute yr : Year;
 
     // ---- INFORMATION ----
     attribute def byte :> SimpleUnit {
@@ -33,12 +37,12 @@ package UnitTypesPackage {
         :>> prefix = SIPrefixes::mega;
     }
 
-    attribute def megabyte :> MeasurementUnit {
+    attribute def Megabyte :> MeasurementUnit {
         symbol = "MB";
         :>> unitConversion = mbConv;
     }
     
-    attribute MB : megabyte;
+    attribute MB : Megabyte;
 
 }
 
