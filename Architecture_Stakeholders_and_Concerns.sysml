@@ -18,7 +18,7 @@ package StakeholdersDefinitionPackage {
     }
 
     part def EuropeanSpaceAgency {
-        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting univeristy engaement in space exploration and satellite technology development. */
+        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting university engagement in space exploration and satellite technology development. */
         part ESA_Programmes : ESAProgramme[*];
         part ESA_Facilities : ESAFacility[*];
 
@@ -93,7 +93,7 @@ package StakeholderConcernsPackage {
 
     concern def EducationalValueConcern {
 
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission; // ASK ABOUT THIS
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
     
         require constraint {
             doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team to fulfill academic qualification requirements. */
