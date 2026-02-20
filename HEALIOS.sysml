@@ -381,8 +381,8 @@ package HealiosMissionInstancePackage {
 
                 perform action use_AOCS redefines use_AOCS {
                     in Command redefines command;
-                    in Beta_Angle_Threshold redefines Beta_Angle_Threshold;
-                    out Force_Output redefines Force_Output;
+                    in Beta_Angle_Threshold redefines beta_Angle_Threshold;
+                    out Force_Output redefines force_Output;
 
                     // if Command.Type == "Start_Command" {
                     // loop {
