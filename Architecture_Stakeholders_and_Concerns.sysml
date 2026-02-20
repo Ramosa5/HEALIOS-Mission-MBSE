@@ -1,3 +1,6 @@
+// INITIALIZE STAKEHOLDERS IN THE CONCERNS PACKAGE!
+// CONCERNS SHOULD HAVE THE LOGICAL STATEMENTS IN THE REQUIRE CONSTRAINTS!
+
 package StakeholdersDefinitionPackage {
     private import MissionPackage::*;
     private import HealiosMissionInstancePackage::*;
@@ -17,13 +20,13 @@ package StakeholdersDefinitionPackage {
         doc /* The ESA facility that provides support for CubeSat missions, including testing and integration services. Interested in ensuring the technical success and testing campaign of the HEALIOS mission. */
     }
 
-    part def EuropeanSpaceAgency {
-        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting university engagement in space exploration and satellite technology development. */
+    part def <ESA> EuropeanSpaceAgency {
+        doc /* The intergovernmental organisation that develops satellite-based technologies. It provides the framework and support for the mission. Interested in supporting the university engagement in space exploration and satellite technology development. */
         part ESA_Programmes : ESAProgramme[*];
         part ESA_Facilities : ESAFacility[*];
 
-        part Fly_Your_Satellite_programme : ESAFlyYourSatelliteProgramme;
-        part CubeSat_Support_Facility : ESACubeSatSupportFacility;
+        part Fly_Your_Satellite_programme : ESAFlyYourSatelliteProgramme subsets ESA_Programmes;
+        part CubeSat_Support_Facility : ESACubeSatSupportFacility subsets ESA_Facilities;
     }
 
     part def AcademicInstitutions {
@@ -85,10 +88,11 @@ package StakeholdersDefinitionPackage {
     }
 }
 
-package StakeholderConcernsPackage {
+package ConcernsDefinitionPackage {
 
     private import ScalarValues::*;
     private import StakeholdersDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
     private import MissionPackage::*;
 
     concern def EducationalValueConcern {
@@ -100,21 +104,21 @@ package StakeholderConcernsPackage {
         }
 
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-        stakeholder GUT : GdanskUniversityOfTechnology;
-        stakeholder HSB : HSBHochschuleBremen;
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder GUT references Gdansk_University_Of_Technology;
+        stakeholder HSB references HSB_Hochschule_Bremen;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
     }
 
     concern def InstitutionalVisibilityConcern {
         subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
-            doc /* The mission shall demonstrate the research capabilities of the participating universities and ESA programs to the broader aerospace community. */
+            doc /* The mission shall demonstrate research capabilities of the participating universities and ESA programs to the broader aerospace community. */
         }
 
-        stakeholder GUT : GdanskUniversityOfTechnology;
-        stakeholder HSB : HSBHochschuleBremen;
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder GUT references Gdansk_University_Of_Technology;
+        stakeholder HSB references HSB_Hochschule_Bremen;
     }
 
     concern def PerovskiteTRLAdvancementConcern {
@@ -270,7 +274,7 @@ package StakeholderConcernsPackage {
             doc /* The mission shall adhere to the programmatic schedules, review milestones, and documentation standards mandated by the ESA Fly Your Satellite! programme. */
         }
 
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 
@@ -285,3 +289,17 @@ package StakeholderConcernsPackage {
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
     }
 }
+
+package StakeholderConcernsPackage {
+    private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import MissionPackage::*;
+
+    part European_Space_Agency : ESA;
+    part Gdansk_University_Of_Technology : GUT;
+    part HSB_Hochschule_Bremen : HSB;
+    part CubeSat_Community : CubeSatCommunity;
+    part Satellite_COTS_Providers : SatelliteCOTSManufacturers;
+
+    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
+    }

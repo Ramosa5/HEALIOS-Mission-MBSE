@@ -7,6 +7,9 @@
 package MissionRequirementsPackage{
     private import MissionPackage::*;
     private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import SpaceSegmentRequirementPackage::*;
+    private import GroundSegmentRequirementsPackage::*;
     private import StakeholderConcernsPackage::*;
 
 
@@ -52,7 +55,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
 
         frame concern PerovskiteTRLAdvancementConcern;
         frame concern ProgrammaticComplianceConcern;
@@ -60,14 +63,17 @@ package MissionRequirementsPackage{
     }
 
     requirement def <R_M_003> Platform_Conformity {
-        doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), that enables experiment performance. */
+        doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), which enables experiment performance. */
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
-        stakeholder CubeSat_Community : CubeSatCommunity;
-        stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
+        stakeholder FYS references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder CubeSat_Community references  StakeholderConcernsPackage::CubeSat_Community;
+        stakeholder Satellite_COTS_Providers references StakeholderConcernsPackage::Satellite_COTS_Providers;
 
-        frame concern CubeSatStandardComplianceConcern;
+        frame concern CubeSat_Standard_Compliance_Concern references StakeholderConcernsPackage::CubeSat_Standard_Compliance_Concern;
+
+        requirement Form_Factor_Compliance : R_SS_017;
+        requirement Mass_Compliance : R_SS_018;
     }
 
     requirement def <R_M_004> Autonomous_Management {
@@ -96,7 +102,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
 
         frame concern ProgrammaticComplianceConcern;
     }
@@ -107,7 +113,7 @@ package MissionRequirementsPackage{
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         stakeholder Perovskite_Research_Institutes : PerovskiteResearchInstitutes;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
 
         frame concern ComponentReliabilityConcern;
@@ -119,7 +125,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
 
         frame concern SpaceDebrisMitigationConcern;
     }
@@ -129,7 +135,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
         
         //frame concern InstitutionalVisibilityConcern;
@@ -142,7 +148,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
@@ -156,7 +162,7 @@ package MissionRequirementsPackage{
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
@@ -170,7 +176,7 @@ package MissionRequirementsPackage{
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
 
         frame concern InstitutionalVisibilityConcern;
         frame concern ProgrammaticComplianceConcern;
@@ -181,7 +187,7 @@ package MissionRequirementsPackage{
         doc /* The mission shall demonstrate a clear educational return. */
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
@@ -208,7 +214,7 @@ package MissionRequirementsPackage{
         
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology;
         stakeholder HSB_Hochschule_Bremen : HSBHochschuleBremen;
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
@@ -257,7 +263,7 @@ package MissionRequirementsPackage{
         doc /* The mission shall implement a Fault Detection, Isolation, and Recovery (FDIR) strategy to enhance system reliability. */
         subject Healios_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme ;
 
         frame concern ComponentReliabilityConcern;
     }
@@ -273,9 +279,12 @@ package MissionRequirementsPackage{
     }
 }
 
-package SpaceSegmentRequirement {
+package SpaceSegmentRequirementPackage {
     private import MissionPackage::*;
     private import MissionRequirementsPackage::*;
+    private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
 
     requirement def <R_SS_001> Payload_Accommodation specializes R_M_001 { // ASK ABOUT THIS: If A is satisfied, B is automatically satisfied.
         doc /* The Space Segment shall accommodate and support the operation of the perovskite solar cells payload. */
@@ -350,7 +359,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_012> FYS_Config_Compatibility specializes R_M_006 {
         doc /* The Space Segment shall maintain configuration compatibility with the Fly Your Satellite! testing flow, including environmental and functional test setups. */
         subject Space_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme;
     }
 
     requirement def <R_SS_013> Telemetry_Protocol specializes R_M_014 {
@@ -391,7 +400,7 @@ package SpaceSegmentRequirement {
     requirement def <R_SS_016> PFM_Campaign specializes R_M_006, R_M_012, R_M_015 {
         doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign. */
         subject Space_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme ;
 
         requirement def <R_SS_016_a> PFM_Exclusions {
             doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
@@ -429,16 +438,31 @@ package SpaceSegmentRequirement {
         }
     }
 
-    requirement def <R_SS_017> Launch_Mass specializes R_M_003 {
+    requirement def <R_SS_017> Launch_Mass {
         doc /* The Space Segment should have a total launch mass not exceeding 2 kg within 0.001 kg tolerance. */
 
         subject Space_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment;
 
         attribute Mass_Limit  : ISQ::MassValue = 2.0 [SI::kg];
         attribute Mass_Tolerance : ISQ::MassValue = 0.001 [SI::kg];
+        attribute Actual_Mass : ISQ::MassValue = Space_Segment.Total_Mass;
 
         require constraint {
-            Space_Segment.Total_Mass <= Mass_Limit + Mass_Tolerance
+            (Actual_Mass > 0.0 [SI::kg]) and
+            (Actual_Mass <= Mass_Limit + Mass_Tolerance)
+        }
+    }
+
+    requirement def <R_SS_018> Form_Factor_Requirement {
+    doc /* The Space Segment shall conform to the 1U CubeSat form factor as defined by the CubeSat Design Specification. */
+
+        subject Space_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment;
+
+        attribute required_size : String = "1U";
+        attribute actual_size : String = Space_Segment.cubeSat_Form_Factor;
+
+        require constraint {
+            actual_size == required_size
         }
     }
 }
@@ -446,6 +470,9 @@ package SpaceSegmentRequirement {
 package GroundSegmentRequirementsPackage {
     private import MissionPackage::*;
     private import MissionRequirementsPackage::*;
+    private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
 
     requirement def <R_GS_001> Reuse_Institutional_Infrastructure specializes R_M_014 {
         doc /* The Ground Segment architecture shall prioritise the reuse of existing institutional ground station infrastructure (or relevant technology) where compliant with mission needs. */
@@ -520,7 +547,7 @@ package GroundSegmentRequirementsPackage {
         subject Ground_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Ground_Segment;
 
         stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-        stakeholder ESA_Fly_Your_Satellite_Programme : ESAFlyYourSatelliteProgramme ;
+        stakeholder FYS references European_Space_Agency.Fly_Your_Satellite_programme ;
 
     }
 
