@@ -302,4 +302,9 @@ package StakeholderConcernsPackage {
     part Satellite_COTS_Providers : SatelliteCOTSManufacturers;
 
     part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
+    part Command_Security_Concern : CommandSecurityConcern;
+    part Link_Compatibility_Concern : LinkCompatibilityConcern;
+    part Frequency_Allocation_Concern : FrequencyAllocationConcern;
+    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
+    part Educational_Value_Concern : EducationalValueConcern;
     }
