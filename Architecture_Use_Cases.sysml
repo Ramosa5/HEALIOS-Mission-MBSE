@@ -1,7 +1,7 @@
 package UseCaseDefinitionsPackage {
     
     private import StakeholdersDefinitionPackage::*;
-    private import StakeholderConcernsPackage::*;
+    private import ConcernsDefinitionPackage::*;
     private import MissionPackage::*;
     private import GroundActionsPackage::*;
     private import SpaceActionsPackage::*;
