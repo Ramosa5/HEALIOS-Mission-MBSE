@@ -1,5 +1,4 @@
-// INITIALIZE STAKEHOLDERS IN THE CONCERNS PACKAGE!
-// CONCERNS SHOULD HAVE THE LOGICAL STATEMENTS IN THE REQUIRE CONSTRAINTS!
+// Traceability: The frame keyword formally traces the engineering metrics in the high-level mission requirements back to the stakeholder's text-based concern.
 
 package StakeholdersDefinitionPackage {
     private import MissionPackage::*;
@@ -100,7 +99,7 @@ package ConcernsDefinitionPackage {
         subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
     
         require constraint {
-            doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team to fulfill academic qualification requirements. */
+            doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team. */
         }
 
         stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
@@ -113,7 +112,7 @@ package ConcernsDefinitionPackage {
         subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
-            doc /* The mission shall demonstrate research capabilities of the participating universities and ESA programs to the broader aerospace community. */
+            doc /* The mission shall demonstrate research capabilities of the participating universities and ESA programmes to the broader aerospace community. */
         }
 
         stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
@@ -125,7 +124,7 @@ package ConcernsDefinitionPackage {
         subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
-            doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit (LEO) environment to increase their Technology Readiness Level (TRL). */
+            doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit environment to increase their Technology Readiness Level. */
         }
 
         stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
@@ -139,6 +138,7 @@ package ConcernsDefinitionPackage {
             doc /* The mission shall investigate the self-healing behavior of Perovskite Solar Cells induced by reverse-bias voltage during eclipse phases, and quantify their degradation in the space environment (Voc, Isc, MPP). */
         }
 
+        stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
         stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
         stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
@@ -152,6 +152,7 @@ package ConcernsDefinitionPackage {
 
         stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
         stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def DataAcquisitionConcern {
@@ -186,6 +187,7 @@ package ConcernsDefinitionPackage {
 
         stakeholder Launch_Providers : LaunchServiceProvider;
         stakeholder CSF references StakeholderConcernsPackage::European_Space_Agency.CubeSat_Support_Facility;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def CubeSatStandardComplianceConcern {
@@ -198,6 +200,7 @@ package ConcernsDefinitionPackage {
         stakeholder CubeSat_Community references StakeholderConcernsPackage::CubeSat_Community;
         stakeholder Launch_Providers references StakeholderConcernsPackage::Launch_Providers;
         stakeholder CSF references StakeholderConcernsPackage::European_Space_Agency.CubeSat_Support_Facility;
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
     }
 
     concern def SpaceDebrisMitigationConcern {
@@ -265,6 +268,7 @@ package ConcernsDefinitionPackage {
 
         stakeholder IARU references StakeholderConcernsPackage::IARU;
         stakeholder CubeSat_Community references StakeholderConcernsPackage::CubeSat_Community;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def ProgrammaticComplianceConcern {
@@ -276,6 +280,19 @@ package ConcernsDefinitionPackage {
 
         stakeholder FYS references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
         stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+    }
+
+    concern def TeamCompositionConcern {
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+
+        require constraint {
+            doc /* The mission team shall consist of a core group of at least 8 eligible students (minimum 4 at Master/PhD level) and a minimum of 2 supervisors covering the roles of endorsing professor, team leader, and system engineer. The team must continuously comply with ESA Fly Your Satellite! citizenship, age (18-32), and academic enrollment criteria throughout the project lifecycle. */
+        }
+
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+        stakeholder Gdansk_University_Of_Technology references StakeholderConcernsPackage::Gdansk_University_Of_Technology;
+        stakeholder HSB_Hochschule_Bremen references StakeholderConcernsPackage::HSB_Hochschule_Bremen;
     }
 
     concern def RegistrationComplianceConcern {
@@ -325,6 +342,7 @@ package StakeholderConcernsPackage {
     part Command_Security_Concern : CommandSecurityConcern;
     part Amateur_Radio_Access_Concern : AmateurRadioAccessConcern;
     part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
+    part Team_Composition_Concern : TeamCompositionConcern;
     part Registration_Compliance_Concern : RegistrationComplianceConcern;
     
     }

@@ -459,7 +459,7 @@ package SpaceSegmentRequirementPackage {
         subject Space_Segment references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment;
 
         attribute required_size : String = "1U";
-        attribute actual_size : String = Space_Segment.cubeSat_Form_Factor;
+        attribute actual_size : String = Space_Segment.CubeSat_Form_Factor;
 
         require constraint {
             actual_size == required_size
