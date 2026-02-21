@@ -9,6 +9,8 @@ package HealiosMissionInstancePackage {
     private import GroundStationPackage::*;
     private import MissionControlCentrePackage::*;
 
+    private attribute <yr> yr : Year; // to ensure the unit is rendered in diagrams
+
     public part Healios_Mission : OperationalStructure {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
@@ -17,7 +19,7 @@ package HealiosMissionInstancePackage {
          */
 
         attribute missionName redefines mission_Name = "HEALIOS";
-        attribute missionDuration redefines mission_Duration = 1 [UnitTypesPackage::yr];
+        attribute missionDuration redefines mission_Duration = 1 [yr];
         attribute orbitType redefines orbit_Type = "LEO (~550 km, ~55 deg inclination)";
 
         connect HEALIOS_Space_Segment.Telecommand_Port
@@ -385,8 +387,8 @@ package HealiosMissionInstancePackage {
 
                     // if Command.Type == "Start_Command" {
                     // loop {
-                    action Read_Sun_Angle redefines Read_Sun_Angle;
-                    then action Correct_Attitude redefines Correct_Attitude;
+                    action Read_Sun_Angle : ReadSunAngle;
+                    then action Correct_Attitude : CorrectAttitude;
                     // } until Command.Type == "Stop_Command";
                     // }
 
