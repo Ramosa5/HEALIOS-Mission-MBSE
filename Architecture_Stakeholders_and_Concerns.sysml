@@ -309,10 +309,22 @@ package StakeholderConcernsPackage {
     part Launch_Providers : LaunchServiceProvider;
     part Satellite_COTS_Manufacturers : SatelliteCOTSManufacturers;
 
-    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
-    part Command_Security_Concern : CommandSecurityConcern;
-    part Link_Compatibility_Concern : LinkCompatibilityConcern;
-    part Frequency_Allocation_Concern : FrequencyAllocationConcern;
-    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
     part Educational_Value_Concern : EducationalValueConcern;
+    part Institutional_Visibility_Concern : InstitutionalVisibilityConcern;
+    part Perovskite_TRL_Advancement_Concern : PerovskiteTRLAdvancementConcern;
+    part Perovskite_Investigation_Concern : PerovskiteInvestigationConcern;
+    part Comparative_Study_Concern : ComparativeStudyConcern;
+    part Data_Acquisition_Concern : DataAcquisitionConcern;
+    part Data_Availability_Concern : DataAvailabilityConcern;
+    part Safety_Concern : SafetyConcern;
+    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
+    part Space_Debris_Mitigation_Concern : SpaceDebrisMitigationConcern;
+    part Component_Reliability_Concern : ComponentReliabilityConcern;
+    part Frequency_Allocation_Concern : FrequencyAllocationConcern;
+    part Link_Compatibility_Concern : LinkCompatibilityConcern;
+    part Command_Security_Concern : CommandSecurityConcern;
+    part Amateur_Radio_Access_Concern : AmateurRadioAccessConcern;
+    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
+    part Registration_Compliance_Concern : RegistrationComplianceConcern;
+    
     }

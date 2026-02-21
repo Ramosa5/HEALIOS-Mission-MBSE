@@ -9,7 +9,13 @@ package HealiosMissionInstancePackage {
     private import GroundStationPackage::*;
     private import MissionControlCentrePackage::*;
 
-    private attribute <yr> yr : Year; // to ensure the unit is rendered in diagrams
+    // to ensure the unit is rendered in diagrams despite using SI:: units in the instance model.
+    private attribute <kg> kg = SI::kg;
+    private attribute <W> W = SI::W;
+    private attribute <N> N = SI::N;
+    private attribute <K> K = SI::K;
+    private attribute <h> h = SI::h;
+    private attribute <yr> yr : Year;
 
     public part Healios_Mission : OperationalStructure {
         doc
@@ -38,8 +44,7 @@ package HealiosMissionInstancePackage {
         // Space segment
         // =========================
         part HEALIOS_Space_Segment redefines space_Segment {
-            attribute cubeSat_Form_Factor redefines cubeSat_Form_Factor = "1U";
-            attribute total_Mass redefines total_Mass = 2.0 [SI::kg];
+            
             state HEALIOS_Mode redefines satellite_Mode {
                 in abstract port Switch_Command :>> switch_Command;
                 entry;
@@ -94,8 +99,8 @@ package HealiosMissionInstancePackage {
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
             }
-
-            attribute Total_Mass redefines total_Mass = 2.0 [SI::kg];
+            
+            attribute Total_Mass redefines total_Mass = 2.0 [kg];
             attribute CubeSat_Form_Factor redefines cubeSat_Form_Factor = "1U";
             attribute Center_Of_Mass redefines center_Of_Mass =
                 "TBD (set after CAD mass properties)";
@@ -138,11 +143,11 @@ package HealiosMissionInstancePackage {
                     port Data_Bus redefines Data_Bus;
 
                     attribute Name redefines name = "Li-ion Battery Pack";
-                    attribute Mass redefines mass = 0.30 [SI::kg];
-                    attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
+                    attribute Mass redefines mass = 0.30 [kg];
+                    attribute PowerConsumption redefines power_Consumption = 0.0 [W];
 
-                    attribute Capacity redefines capacity = 30.0 [SI::W * h];
-                    attribute Max_Power_Generation redefines max_Power_Generation = 10.0 [SI::W];
+                    attribute Capacity redefines capacity = 30.0 [W * h];
+                    attribute Max_Power_Generation redefines max_Power_Generation = 10.0 [W];
                     part Battery_Unit redefines battery_Unit [4] {
                         port Battery_Power_Bus redefines battery_Power_Bus;
                         port Heater_Power_Bus redefines heater_Power_Bus;
@@ -150,19 +155,17 @@ package HealiosMissionInstancePackage {
                     part Main_Heater redefines main_Heater {
                         port Heater_Power_Bus;
                         attribute Name redefines name = "Battery Heater";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute Power_Consumption redefines power_Consumption = 2.0 [SI::W];
-                        attribute Power redefines power = 2.0 [SI::W];
-                        attribute Minimal_Temperature redefines minimal_Temperature = 273.15 [
-                            SI::K
-                        ];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute Power_Consumption redefines power_Consumption = 2.0 [W];
+                        attribute Power redefines power = 2.0 [W];
+                        attribute Minimal_Temperature redefines minimal_Temperature = 273.15 [K];
                     }
 
                     part Temp_Sensor redefines temp_Sensor {
                         attribute Name redefines name = "Battery Temp Sensor";
-                        attribute Mass redefines mass = 0.005 [SI::kg];
-                        attribute Power_Consumption redefines power_Consumption = 0.05 [SI::W];
-                        attribute Power redefines power = 0.05 [SI::W];
+                        attribute Mass redefines mass = 0.005 [kg];
+                        attribute Power_Consumption redefines power_Consumption = 0.05 [W];
+                        attribute Power redefines power = 0.05 [W];
                         out port Temperature_Measurement :>> temperature_Measurement;
                     }
                     bind Battery_Unit.Heater_Power_Bus = Main_Heater.Heater_Power_Bus;
@@ -258,7 +261,7 @@ package HealiosMissionInstancePackage {
                     port Transceiver_Status_Port redefines transceiver_Status_Port;
                     port Transceiver_Command_Port redefines transceiver_Command_Port;
                     attribute Name redefines name = "UHF Transceiver";
-                    attribute MaxTxPower redefines maxTxPower = 1.0 [SI::W];
+                    attribute MaxTxPower redefines maxTxPower = 1.0 [W];
                     attribute DopplerToleranceHz redefines dopplerToleranceHz = 20000.0;
                     attribute ReconfigurableInOrbit redefines reconfigurableInOrbit = true;
                 }
@@ -316,7 +319,7 @@ package HealiosMissionInstancePackage {
             // STRUCTURE
             // =========================
             part SS_Structure_And_Mechanisms redefines ss_Structure_And_Mechanisms {
-                attribute Total_Mass redefines Total_Mass = 0.40 [SI::kg];
+                attribute Total_Mass redefines Total_Mass = 0.40 [kg];
                 attribute Material redefines Material = "Aluminium (TBD alloy)";
 
                 part Primary_Structure redefines Primary_Structure {
@@ -344,8 +347,8 @@ package HealiosMissionInstancePackage {
 
                 part Sun_Sensor redefines sun_Sensor [1] {
                     attribute Name redefines name = "Sun Sensor";
-                    attribute Mass redefines mass = 0.01 [SI::kg];
-                    attribute PowerConsumption redefines power_Consumption = 0.05 [SI::W];
+                    attribute Mass redefines mass = 0.01 [kg];
+                    attribute PowerConsumption redefines power_Consumption = 0.05 [W];
                     port Power_Bus_3V3 redefines power_Bus_3V3;
                 }
 
@@ -356,23 +359,23 @@ package HealiosMissionInstancePackage {
                     part Mounted_Magnetorquer_X redefines mounted_Magnetorquer [1] {
                         attribute Name redefines name = "MTQ_X";
                         attribute Axis redefines axis = "X";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                     part Mounted_Magnetorquer_Y redefines mounted_Magnetorquer [2] {
                         attribute Name redefines name = "MTQ_Y";
                         attribute Axis redefines axis = "Y";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                     part Mounted_Magnetorquer_Z redefines mounted_Magnetorquer [3] {
                         attribute Name redefines name = "MTQ_Z";
                         attribute Axis redefines axis = "Z";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                 }
 
@@ -545,14 +548,14 @@ package HealiosMissionInstancePackage {
 
                     part Psc_Connector_And_Protection redefines psc_Connector_And_Protection {
                         attribute Name redefines name = "Perovskite Coupon Protection";
-                        attribute Mass redefines mass = 0.05 [SI::kg];
+                        attribute Mass redefines mass = 0.05 [kg];
                     }
 
                     part Perovskite_Solar_Array_Coupon redefines perovskite_Solar_Array_Coupon [1] {
                         attribute Name redefines name = "PSC Coupon #1";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
-                        attribute Power_Generation redefines power_Generation = 1.0 [SI::W];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.0 [W];
+                        attribute Power_Generation redefines power_Generation = 1.0 [W];
                         attribute Manufacturer redefines manufacturer = "TBD";
                         in port Solar_Input redefines solar_Input;
                         port Electrode_Connection redefines electrode_Connection;
@@ -561,9 +564,9 @@ package HealiosMissionInstancePackage {
                     part Reference_Silicon_Solar_Array_Coupon
                         redefines reference_Silicon_Solar_Array_Coupon [1] {
                         attribute Name redefines name = "Si Reference Coupon #1";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
-                        attribute Power_Generation redefines power_Generation = 1.0 [SI::W];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.0 [W];
+                        attribute Power_Generation redefines power_Generation = 1.0 [W];
                         in port Solar_Input redefines solar_Input;
                         port Electrode_Connection redefines electrode_Connection;
                     }
