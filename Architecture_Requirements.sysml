@@ -1,6 +1,7 @@
 // TO DO:
     // Check Space Segment and Ground Segment requirements for compliance.
-    // Check that all requirements are correctly linked to the higher-level.
+    // Check that all Space Segment and Ground Segment requirements are correctly linked to the higher-level.
+    // Check that all requirements are correctly linked to the relevant stakeholders and concerns.
 // At the end:
     // Do satifaction and verification implementation.
 
