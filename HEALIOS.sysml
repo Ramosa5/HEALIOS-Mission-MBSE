@@ -38,6 +38,8 @@ package HealiosMissionInstancePackage {
         // Space segment
         // =========================
         part HEALIOS_Space_Segment redefines space_Segment {
+            attribute cubeSat_Form_Factor redefines cubeSat_Form_Factor = "1U";
+            attribute total_Mass redefines total_Mass = 2.0 [SI::kg];
             state HEALIOS_Mode redefines satellite_Mode {
                 in abstract port Switch_Command :>> switch_Command;
                 entry;
