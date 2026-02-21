@@ -17,7 +17,7 @@ package HealiosMissionInstancePackage {
          */
 
         attribute missionName redefines mission_Name = "HEALIOS";
-        attribute missionDuration redefines mission_Duration = 1 [yr];
+        attribute missionDuration redefines mission_Duration = 1 [UnitTypesPackage::yr];
         attribute orbitType redefines orbit_Type = "LEO (~550 km, ~55 deg inclination)";
 
         connect HEALIOS_Space_Segment.Telecommand_Port
@@ -100,7 +100,6 @@ package HealiosMissionInstancePackage {
 
             port Telecommand_Port redefines telecommand_Port;
             port Telemetry_Port redefines telemetry_Port;
-
             // =========================
             // EPS
             // =========================
