@@ -8,7 +8,7 @@ package ElectricalPowerSystemPackage {
 
     abstract item def ElectricalPower;
 
-    port def TemperaturePort specializes DataBus{
+    port def TemperaturePort specializes DataBus {
         out temp : ISQ::TemperatureValue [1..*];
     }
 
@@ -23,27 +23,50 @@ package ElectricalPowerSystemPackage {
         out item power : ElectricalPower;
     }
 
-    interface def PowerBusInterface {
-        end port power_Source_Bus : PowerBus;
-        end port power_Sink_Bus   : ~PowerBus;
+    interface def PowerBusInterface5V {
+        end port power_Source_Bus : PowerBus {
+            :>> voltage = 5 [V];
+        }
+
+        end port power_Sink_Bus   : ~PowerBus {
+            :>> voltage = 5 [V];
+        }
 
         flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
     }
 
-    connection def PowerBusConnection {
+    interface def PowerBusInterface3V3 {
+        end port power_Source_Bus : PowerBus {
+            :>> voltage = 3.3 [V];
+        }
+        end port power_Sink_Bus   : ~PowerBus {
+            :>> voltage = 3.3 [V];
+        }
+
+        flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
+    } 
+
+    connection def PowerBusConnection5V {
         end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
         end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
 
-        interface : PowerBusInterface
+        interface : PowerBusInterface5V
+            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
+    }
+
+    connection def PowerBusConnection3V3 {
+        end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
+        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+
+        interface : PowerBusInterface3V3
             connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
     }
 
     part def PowerSourceSubsystem :> SS {
         ref part providing_Power_To [1..*] : PowerSinkSubsystem;
-        part power_Connector : GeneralElectricalComponent;
         port power_Bus : PowerBus;
-
     }
+    
     part def PowerSinkSubsystem :> SS {
         ref part provided_Power_By [1] : PowerSourceSubsystem;
         port power_Bus : ~PowerBus;
@@ -125,7 +148,7 @@ package ElectricalPowerSystemPackage {
         port voltage_Out : ISQ::SourceVoltageValue;
     }
 
-    part def ElectricalPowerSystem {
+    part def ElectricalPowerSystem  :> PowerSourceSubsystem {
         port data_Bus : ~DataBus;
         port eps_Solar_Input : ~StellarEnvironment;
 

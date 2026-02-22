@@ -24,7 +24,7 @@ package AttitudeAndOrbitControlSystemPackage {
         part mounted_Magnetorquer : Magnetorquer [0..*];
     }
 
-    part def AttitudeAndOrbitControlSystem {
+    part def AttitudeAndOrbitControlSystem :> PowerSinkSubsystem {
         port power_Bus_3V3 : ~PowerBus;
         port power_Bus_5V : ~PowerBus;
         port data_Bus : ~DataBus;

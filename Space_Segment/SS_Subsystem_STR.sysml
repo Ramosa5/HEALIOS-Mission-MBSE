@@ -3,7 +3,7 @@ package StructureSystemPackage {
     private import ISQ::*;
     private import SI::*;
     private import LaunchEnvironment::*;
-    
+    private import MissionPackage::*;
   
     item def Separation {
         attribute separationTime : SI::TimeValue;
@@ -11,79 +11,79 @@ package StructureSystemPackage {
 
     state def SwitchBehavior {
 
-        attribute Switch_Status : String;
-        entry; then Stowed;
+        attribute switch_Status : String;
+        entry; then stowed;
         
-        state Stowed {
-            entry assign Switch_Status := "Stowed";
+        state stowed {
+            entry assign switch_Status := "Stowed";
         }
 
         transition
-            first Stowed
+            first stowed
             accept Separation
-            then Deployed;
+            then deployed;
 
-        state Deployed {
-            entry assign Switch_Status := "Deployed";
+        state deployed {
+            entry assign switch_Status := "Deployed";
         }
     }
 
     port def StructuralMountInterface;   
 
     part def MountingElement {
-        attribute Type : String;
-        attribute Material : String;
-        attribute Quantity : Integer;
+        attribute type : String;
+        attribute material : String;
+        attribute quantity : Integer;
     }
 
     part def Chassis {
-        attribute Material : String;
-        attribute Dimensions : String;
+        attribute material : String;
+        attribute dimensions : String;
 
-        port Mounting_Points : StructuralMountInterface [0..*];
-        port Structural_Port : StructuralMountInterface [0..*];
-        port Rail_Port : ~DispenserContactInterface [0..*];
+        port mounting_Points : StructuralMountInterface [0..*];
+        port structural_Port : StructuralMountInterface [0..*];
+        port rail_Port : ~DispenserContactInterface [0..*];
     }
 
     part def PCBStack {
-        attribute Material : String;
-        attribute Dimensions : String;
+        attribute material : String;
+        attribute dimensions : String;
 
-        port Mounting_Points : StructuralMountInterface [0..*];
-        port Structural_Port : StructuralMountInterface [0..*];
+        port mounting_Points : StructuralMountInterface [0..*];
+        port structural_Port : StructuralMountInterface [0..*];
     }
 
     part def DeploymentMechanism {
-        attribute Name : String;
-        attribute Power_Consumption : ISQ::PowerValue;
-        attribute Status : String;
+        attribute name : String;
+        attribute power_Consumption : ISQ::PowerValue;
+        attribute status : String;
 
-        port Mounting_Port : StructuralMountInterface [0..*];
-        port Plunger_Port : DispenserContactInterface [0..*];
+        port mounting_Port : StructuralMountInterface [0..*];
+        port plunger_Port : DispenserContactInterface [0..*];
 
-        exhibit state Switch_State : SwitchBehavior {
-            bind Switch_Status = DeploymentMechanism::Status;
+        exhibit state switch_State : SwitchBehavior {
+            bind switch_Status = DeploymentMechanism::status;
         }
     }
 
-    part def StructureSystem {
+    part def StructureSystem :> SS {
         
-        attribute Total_Mass : ISQ::MassValue;
-        attribute Material : String;
+        attribute total_Mass : ISQ::MassValue;
+        attribute material : String;
 
-        part Primary_Structure : Chassis {
-            part Internal_Mounting : MountingElement;
+        part primary_Structure : Chassis {
+            part internal_Mounting : MountingElement;
         }
 
-        part Secondary_Structure : PCBStack {
-            part Internal_Mounting : MountingElement;
+        part secondary_Structure : PCBStack {
+            part internal_Mounting : MountingElement;
         }
 
-        part Deployment_Switches : DeploymentMechanism [2];
+        part deployment_Switches : DeploymentMechanism [2];
 
-        connect Secondary_Structure.Structural_Port to Primary_Structure.Structural_Port;
+        connect secondary_Structure.structural_Port to primary_Structure.structural_Port;
 
-        connect Deployment_Switches.Mounting_Port to Primary_Structure.Mounting_Points;
+        connect deployment_Switches.mounting_Port to primary_Structure.mounting_Points;
 
         // External connection to launcher dispenser
         // connect Primary_Structure.Rail_Port to Dispenser_Port;

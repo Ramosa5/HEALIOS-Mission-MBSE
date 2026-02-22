@@ -85,7 +85,7 @@ package PayloadPackage {
         action read_PL_Temperature : ReadTemperature;
     }
 
-    part def Payload {
+    part def Payload :> PowerSinkSubsystem {
         port power_Bus_3V3 : ~PowerBus;
         port power_Bus_5V : ~PowerBus;
         port data_Bus : ~DataBus;
@@ -108,18 +108,18 @@ package PayloadPackage {
         perform action maintain_Mpp : maintainMaximumPowerPoint;
         perform action collect_Data : collectExperimentalData;
 
-        bind apply_Reverse_Bias.apply_Reverse_Bias_Voltage_Command = data_Bus.Cmd;
-        bind measure_Iv_Curves.measure_IV_Curves_Of_PSC_Command = data_Bus.Cmd;
-        bind maintain_Mpp.maintain_MPP_Command = data_Bus.Cmd;
-        bind collect_Data.collect_Experimental_Data_Command = data_Bus.Cmd;
+        bind apply_Reverse_Bias.apply_Reverse_Bias_Voltage_Command = data_Bus.cmd;
+        bind measure_Iv_Curves.measure_IV_Curves_Of_PSC_Command = data_Bus.cmd;
+        bind maintain_Mpp.maintain_MPP_Command = data_Bus.cmd;
+        bind collect_Data.collect_Experimental_Data_Command = data_Bus.cmd;
 
-        bind data_Bus.Data = apply_Reverse_Bias.voltage_Application_Status;
-        bind data_Bus.Data = measure_Iv_Curves.measured_IV_Curves_Status;
-        bind data_Bus.Data = maintain_Mpp.mpp_Status;
+        bind data_Bus.data = apply_Reverse_Bias.voltage_Application_Status;
+        bind data_Bus.data = measure_Iv_Curves.measured_IV_Curves_Status;
+        bind data_Bus.data = maintain_Mpp.mpp_Status;
 
-        bind data_Bus.Data = collect_Data.measured_Radiation_Status;
-        bind data_Bus.Data = collect_Data.measured_Temperature_Status;
-        bind data_Bus.Data = collect_Data.measured_Spectrum_Status;
-        bind data_Bus.Data = collect_Data.measured_Irradiance_Status;
+        bind data_Bus.data = collect_Data.measured_Radiation_Status;
+        bind data_Bus.data = collect_Data.measured_Temperature_Status;
+        bind data_Bus.data = collect_Data.measured_Spectrum_Status;
+        bind data_Bus.data = collect_Data.measured_Irradiance_Status;
     }
 }

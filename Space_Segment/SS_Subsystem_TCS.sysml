@@ -6,12 +6,12 @@ package ThermalControlSystemPackage {
     private import SI::*;
     private import OnBoardDataHandlingSystemPackage::*;
 
-    part def ThermalControlSystem {
-        port Data_Bus : ~DataBus [0..*];
+    part def ThermalControlSystem :> PowerSinkSubsystem {
+        port data_Bus : ~DataBus [0..*];
 
         // attribute TCSlastCommand : OnBoardCommand; // TBA: OBDH NEED TO HAVE ACESS TO IT VIA PORT OBDHcommandIN
 
-        attribute Stop_Signal : Boolean := false;
+        attribute stop_Signal : Boolean := false;
 
         ref part EPS_Heater : Heater [0..*];
         ref part PL_Temperature_Sensor : TemperatureSensor [0..*] {
