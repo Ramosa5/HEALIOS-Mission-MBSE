@@ -1,3 +1,5 @@
+// Traceability: The frame keyword formally traces the engineering metrics in the high-level mission requirements back to the stakeholder's text-based concern.
+
 package StakeholdersDefinitionPackage {
     private import MissionPackage::*;
     private import HealiosMissionInstancePackage::*;
@@ -17,13 +19,13 @@ package StakeholdersDefinitionPackage {
         doc /* The ESA facility that provides support for CubeSat missions, including testing and integration services. Interested in ensuring the technical success and testing campaign of the HEALIOS mission. */
     }
 
-    part def EuropeanSpaceAgency {
-        doc /* The intergovernmental organization that develops satellite-based technologies; which provides the framework and support for the mission. Interested in supporting univeristy engaement in space exploration and satellite technology development. */
+    part def <ESA> EuropeanSpaceAgency {
+        doc /* The intergovernmental organisation that develops satellite-based technologies. It provides the framework and support for the mission. Interested in supporting the university engagement in space exploration and satellite technology development. */
         part ESA_Programmes : ESAProgramme[*];
         part ESA_Facilities : ESAFacility[*];
 
-        part Fly_Your_Satellite_programme : ESAFlyYourSatelliteProgramme;
-        part CubeSat_Support_Facility : ESACubeSatSupportFacility;
+        part Fly_Your_Satellite_programme : ESAFlyYourSatelliteProgramme subsets ESA_Programmes;
+        part CubeSat_Support_Facility : ESACubeSatSupportFacility subsets ESA_Facilities;
     }
 
     part def AcademicInstitutions {
@@ -85,95 +87,98 @@ package StakeholdersDefinitionPackage {
     }
 }
 
-package StakeholderConcernsPackage {
+package ConcernsDefinitionPackage {
 
     private import ScalarValues::*;
     private import StakeholdersDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
     private import MissionPackage::*;
 
     concern def EducationalValueConcern {
 
-        subject HEALIOS_Mission : OperationalStructure; 
-        
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+    
         require constraint {
-            doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team to fulfill academic qualification requirements. */
+            doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team. */
         }
 
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-        stakeholder GUT : GdanskUniversityOfTechnology;
-        stakeholder HSB : HSBHochschuleBremen;
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+        stakeholder Gdansk_University_Of_Technology references StakeholderConcernsPackage::Gdansk_University_Of_Technology;
+        stakeholder HSB_Hochschule_Bremen references StakeholderConcernsPackage::HSB_Hochschule_Bremen;
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
     }
 
     concern def InstitutionalVisibilityConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
-            doc /* The mission shall demonstrate the research capabilities of the participating universities and ESA programs to the broader aerospace community. */
+            doc /* The mission shall demonstrate research capabilities of the participating universities and ESA programmes to the broader aerospace community. */
         }
 
-        stakeholder GUT : GdanskUniversityOfTechnology;
-        stakeholder HSB : HSBHochschuleBremen;
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder Gdansk_University_Of_Technology references StakeholderConcernsPackage::Gdansk_University_Of_Technology;
+        stakeholder HSB_Hochschule_Bremen references StakeholderConcernsPackage::HSB_Hochschule_Bremen;
     }
 
     concern def PerovskiteTRLAdvancementConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
-            doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit (LEO) environment to increase their Technology Readiness Level (TRL). */
+            doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit environment to increase their Technology Readiness Level. */
         }
 
-        stakeholder Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
+        stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
+        stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
     }
 
     concern def PerovskiteInvestigationConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
             doc /* The mission shall investigate the self-healing behavior of Perovskite Solar Cells induced by reverse-bias voltage during eclipse phases, and quantify their degradation in the space environment (Voc, Isc, MPP). */
         }
 
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
+        stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def ComparativeStudyConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall compare degradation rates between Perovskite samples and traditional space-graded solar cells (e.g., silicon) under identical space environment exposure to benchmark performance. */
         }
 
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
-        stakeholder Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
+        stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
+        stakeholder Perovskite_Manufacturers references StakeholderConcernsPackage::Perovskite_Manufacturers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def DataAcquisitionConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall ensure validated data from the payload is acquired with sufficient context, resolution and accuracy to analyse solar cell efficiency over time. */
         }
 
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def DataAvailabilityConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall ensure that scientific results and telemetry are processed, archived, and made accessible to the scientific community. */
         }
 
-        stakeholder Perovskite_Researchers : PerovskiteResearchInstitutes;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder Perovskite_Researchers references StakeholderConcernsPackage::Perovskite_Researchers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def SafetyConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         
         require constraint {
@@ -181,107 +186,163 @@ package StakeholderConcernsPackage {
         }
 
         stakeholder Launch_Providers : LaunchServiceProvider;
-        stakeholder CSF : ESACubeSatSupportFacility;
+        stakeholder CSF references StakeholderConcernsPackage::European_Space_Agency.CubeSat_Support_Facility;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def CubeSatStandardComplianceConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
             doc /* The mission architecture shall conform to the CubeSat Design Specification (CDS) to ensure physical and functional compatibility with the deployment system. */
         }
 
-        stakeholder CubeSat_Community : CubeSatCommunity;
-        stakeholder Launch_Providers : LaunchServiceProvider;
-        stakeholder CSF : ESACubeSatSupportFacility;
+        stakeholder CubeSat_Community references StakeholderConcernsPackage::CubeSat_Community;
+        stakeholder Launch_Providers references StakeholderConcernsPackage::Launch_Providers;
+        stakeholder CSF references StakeholderConcernsPackage::European_Space_Agency.CubeSat_Support_Facility;
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
     }
 
     concern def SpaceDebrisMitigationConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall be designed to minimize space debris generation and ensure orbital decay within the regulatory timeframe after the end of operations. */
         }
 
-        stakeholder UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
-        stakeholder ESA : EuropeanSpaceAgency;
+        stakeholder UNOOSA references StakeholderConcernsPackage::UNOOSA;
+        stakeholder ESA references StakeholderConcernsPackage::European_Space_Agency;
     }
 
     concern def ComponentReliabilityConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
             doc /* The mission shall ensure the survival and operational integrity of the system in the Low Earth Orbit (LEO) environment for the intended duration. */
         }
 
-        stakeholder Satellite_COTS_Providers : SatelliteCOTSManufacturers;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-        stakeholder CSF : ESACubeSatSupportFacility;
+        stakeholder Satellite_COTS_Providers references StakeholderConcernsPackage::Satellite_COTS_Manufacturers;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+        stakeholder CSF references StakeholderConcernsPackage::European_Space_Agency.CubeSat_Support_Facility;
     }
 
     concern def FrequencyAllocationConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
         
         require constraint {
             doc /* The mission shall operate within allocated radio frequency bands and comply with international telecommunication regulations to prevent interference. */
         }
 
-        stakeholder ITU : InternationalTelecommunicationUnion;
-        stakeholder IARU : InternationalAmateurRadioUnion;
+        stakeholder ITU references StakeholderConcernsPackage::ITU;
+        stakeholder IARU references StakeholderConcernsPackage::IARU;
     }
 
     concern def LinkCompatibilityConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall establish a compatible and reliable communication link between the space and ground segments to support operations. */
         }
 
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
-        stakeholder IARU : InternationalAmateurRadioUnion;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+        stakeholder IARU references StakeholderConcernsPackage::IARU;
     }
 
     concern def CommandSecurityConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall implement security measures to prevent unauthorized access or control of the space and ground segments. */
         }
 
-        stakeholder ITU : InternationalTelecommunicationUnion;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder ITU references StakeholderConcernsPackage::ITU;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def AmateurRadioAccessConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall engage the global amateur radio community by enabling the open reception and decoding of public beacon telemetry. */
         }
 
-        stakeholder IARU : InternationalAmateurRadioUnion;
-        stakeholder CubeSat_Community : CubeSatCommunity;
+        stakeholder IARU references StakeholderConcernsPackage::IARU;
+        stakeholder CubeSat_Community references StakeholderConcernsPackage::CubeSat_Community;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 
     concern def ProgrammaticComplianceConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall adhere to the programmatic schedules, review milestones, and documentation standards mandated by the ESA Fly Your Satellite! programme. */
         }
 
-        stakeholder FYS : ESAFlyYourSatelliteProgramme;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder FYS references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+    }
+
+    concern def TeamCompositionConcern {
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+
+        require constraint {
+            doc /* The mission team shall consist of a core group of at least 8 eligible students (minimum 4 at Master/PhD level) and a minimum of 2 supervisors covering the roles of endorsing professor, team leader, and system engineer. The team must continuously comply with ESA Fly Your Satellite! citizenship, age (18-32), and academic enrollment criteria throughout the project lifecycle. */
+        }
+
+        stakeholder Fly_Your_Satellite_programme references StakeholderConcernsPackage::European_Space_Agency.Fly_Your_Satellite_programme;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
+        stakeholder Gdansk_University_Of_Technology references StakeholderConcernsPackage::Gdansk_University_Of_Technology;
+        stakeholder HSB_Hochschule_Bremen references StakeholderConcernsPackage::HSB_Hochschule_Bremen;
     }
 
     concern def RegistrationComplianceConcern {
-        subject HEALIOS_Mission : OperationalStructure;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
 
         require constraint {
             doc /* The mission shall comply with all registration requirements for space objects, including UN registration and any applicable national regulations. */
         }
 
-        stakeholder UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
-        stakeholder HEALIOS_Team_Community : HEALIOSTeamCommunity;
+        stakeholder UNOOSA references StakeholderConcernsPackage::UNOOSA;
+        stakeholder HEALIOS_Team_Community references StakeholderConcernsPackage::HEALIOS_Team_Community;
     }
 }
+
+package StakeholderConcernsPackage {
+    private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import MissionPackage::*;
+
+    part European_Space_Agency : ESA;
+    part Gdansk_University_Of_Technology : GUT;
+    part HSB_Hochschule_Bremen : HSB;
+    part CubeSat_Community : CubeSatCommunity;
+    part Satellite_COTS_Providers : SatelliteCOTSManufacturers;
+    part HEALIOS_Team_Community : HEALIOSTeamCommunity;
+    part Perovskite_Manufacturers : PerovskiteSolarCellManufacturers;
+    part Perovskite_Researchers : PerovskiteResearchInstitutes;
+    part UNOOSA : UnitedNationsOfficeForOuterSpaceAffairs;
+    part ITU : InternationalTelecommunicationUnion;
+    part IARU : InternationalAmateurRadioUnion;
+    part Launch_Providers : LaunchServiceProvider;
+    part Satellite_COTS_Manufacturers : SatelliteCOTSManufacturers;
+
+    part Educational_Value_Concern : EducationalValueConcern;
+    part Institutional_Visibility_Concern : InstitutionalVisibilityConcern;
+    part Perovskite_TRL_Advancement_Concern : PerovskiteTRLAdvancementConcern;
+    part Perovskite_Investigation_Concern : PerovskiteInvestigationConcern;
+    part Comparative_Study_Concern : ComparativeStudyConcern;
+    part Data_Acquisition_Concern : DataAcquisitionConcern;
+    part Data_Availability_Concern : DataAvailabilityConcern;
+    part Safety_Concern : SafetyConcern;
+    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
+    part Space_Debris_Mitigation_Concern : SpaceDebrisMitigationConcern;
+    part Component_Reliability_Concern : ComponentReliabilityConcern;
+    part Frequency_Allocation_Concern : FrequencyAllocationConcern;
+    part Link_Compatibility_Concern : LinkCompatibilityConcern;
+    part Command_Security_Concern : CommandSecurityConcern;
+    part Amateur_Radio_Access_Concern : AmateurRadioAccessConcern;
+    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
+    part Team_Composition_Concern : TeamCompositionConcern;
+    part Registration_Compliance_Concern : RegistrationComplianceConcern;
+    
+    }

@@ -113,22 +113,6 @@ package MissionPackage {
         
         port telecommand_Port : TelecommandPort;
         port telemetry_Port : ~TelemetryPort;
-
-        connect mission_Control_Centre.ground_Station_TC_Port
-            to ground_Station.mission_Control_Centre_TC_Port;
-        connect mission_Control_Centre.ground_Station_Pass_Plan_Port
-            to ground_Station.mission_Control_Centre_Pass_Plan_Port;
-
-        connect ground_Station.mission_Control_Centre_TM_Port
-            to mission_Control_Centre.ground_Station_TM_Port;
-        connect ground_Station.mission_Control_Centre_Tracking_Port
-            to mission_Control_Centre.ground_Station_Tracking_Port;
-
-        connect ground_Station.Data_Centre_TM_Port to data_Centre.ground_Station_TM_Port;
-        connect ground_Station.Data_Centre_Archive_Port to data_Centre.ground_Station_Records_Port;
-
-        connect data_Centre.mission_Control_Centre_TM_Products_Port
-            to mission_Control_Centre.ground_Station_TM_Port;
     }
 
     public part def OperationalStructure {

@@ -9,6 +9,14 @@ package HealiosMissionInstancePackage {
     private import GroundStationPackage::*;
     private import MissionControlCentrePackage::*;
 
+    // to ensure the unit is rendered in diagrams despite using SI:: units in the instance model.
+    private attribute <kg> kg = SI::kg;
+    private attribute <W> W = SI::W;
+    private attribute <N> N = SI::N;
+    private attribute <K> K = SI::K;
+    private attribute <h> h = SI::h;
+    private attribute <yr> yr : Year;
+
     public part Healios_Mission : OperationalStructure {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
@@ -36,6 +44,7 @@ package HealiosMissionInstancePackage {
         // Space segment
         // =========================
         part HEALIOS_Space_Segment redefines space_Segment {
+            
             state HEALIOS_Mode redefines satellite_Mode {
                 in abstract port Switch_Command :>> switch_Command;
                 entry;
@@ -90,8 +99,8 @@ package HealiosMissionInstancePackage {
                     do action Enter_Safe_Mode : SpaceActionsPackage::Enter_Safe_Mode_Action
                     then Safe_Mode;
             }
-
-            attribute Total_Mass redefines total_Mass = 2.0 [SI::kg];
+            
+            attribute Total_Mass redefines total_Mass = 2.0 [kg];
             attribute CubeSat_Form_Factor redefines cubeSat_Form_Factor = "1U";
             attribute Center_Of_Mass redefines center_Of_Mass =
                 "TBD (set after CAD mass properties)";
@@ -100,7 +109,6 @@ package HealiosMissionInstancePackage {
 
             port Telecommand_Port redefines telecommand_Port;
             port Telemetry_Port redefines telemetry_Port;
-
             // =========================
             // EPS
             // =========================
@@ -135,11 +143,11 @@ package HealiosMissionInstancePackage {
                     port Data_Bus redefines Data_Bus;
 
                     attribute Name redefines name = "Li-ion Battery Pack";
-                    attribute Mass redefines mass = 0.30 [SI::kg];
-                    attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
+                    attribute Mass redefines mass = 0.30 [kg];
+                    attribute PowerConsumption redefines power_Consumption = 0.0 [W];
 
-                    attribute Capacity redefines capacity = 30.0 [SI::W * h];
-                    attribute Max_Power_Generation redefines max_Power_Generation = 10.0 [SI::W];
+                    attribute Capacity redefines capacity = 30.0 [W * h];
+                    attribute Max_Power_Generation redefines max_Power_Generation = 10.0 [W];
                     part Battery_Unit redefines battery_Unit [4] {
                         port Battery_Power_Bus redefines battery_Power_Bus;
                         port Heater_Power_Bus redefines heater_Power_Bus;
@@ -147,19 +155,17 @@ package HealiosMissionInstancePackage {
                     part Main_Heater redefines main_Heater {
                         port Heater_Power_Bus;
                         attribute Name redefines name = "Battery Heater";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute Power_Consumption redefines power_Consumption = 2.0 [SI::W];
-                        attribute Power redefines power = 2.0 [SI::W];
-                        attribute Minimal_Temperature redefines minimal_Temperature = 273.15 [
-                            SI::K
-                        ];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute Power_Consumption redefines power_Consumption = 2.0 [W];
+                        attribute Power redefines power = 2.0 [W];
+                        attribute Minimal_Temperature redefines minimal_Temperature = 273.15 [K];
                     }
 
                     part Temp_Sensor redefines temp_Sensor {
                         attribute Name redefines name = "Battery Temp Sensor";
-                        attribute Mass redefines mass = 0.005 [SI::kg];
-                        attribute Power_Consumption redefines power_Consumption = 0.05 [SI::W];
-                        attribute Power redefines power = 0.05 [SI::W];
+                        attribute Mass redefines mass = 0.005 [kg];
+                        attribute Power_Consumption redefines power_Consumption = 0.05 [W];
+                        attribute Power redefines power = 0.05 [W];
                         out port Temperature_Measurement :>> temperature_Measurement;
                     }
                     bind Battery_Unit.Heater_Power_Bus = Main_Heater.Heater_Power_Bus;
@@ -234,44 +240,40 @@ package HealiosMissionInstancePackage {
             }
 
             part SS_Communication_System redefines ss_Communication_System {
-                port Power_Bus_5V redefines Power_Bus_5V;
-                port RF_Link_Port redefines RF_Link_Port;
-                port Data_Bus :>> Data_Bus;
+                port Power_Bus_5V redefines power_Bus_5V;
+                port RF_Link_Port redefines rF_Link_Port;
+                port Data_Bus :>> data_Bus;
 
-                attribute Supports_All_Mission_Phases redefines Supports_All_Mission_Phases = true;
-                attribute Has_Redundancy_Or_Fail_Safe redefines Has_Redundancy_Or_Fail_Safe = false;
-                attribute Worst_Case_Link_Margin_dB redefines Worst_Case_Link_Margin_dB = 3.0;
+                attribute Supports_All_Mission_Phases redefines supports_All_Mission_Phases = true;
+                attribute Has_Redundancy_Or_Fail_Safe redefines has_Redundancy_Or_Fail_Safe = false;
+                attribute Worst_Case_Link_Margin_dB redefines worst_Case_Link_Margin_dB = 3.0;
 
-                part Antenna_Part redefines Antenna_Part {
-                    port Antenna_Command_Port redefines Antenna_Command_Port;
-                    port Antenna_Status_Port redefines Antenna_Status_Port;
-                    port Antenna_RF_Link_Port redefines Antenna_RF_Link_Port;
+                part Antenna_Part redefines antenna_Part {
+                    port Antenna_Command_Port redefines antenna_Command_Port;
+                    port Antenna_Status_Port redefines antenna_Status_Port;
+                    port Antenna_RF_Link_Port redefines antenna_RF_Link_Port;
                     attribute Name redefines name = "UHF Antenna";
-                    attribute Band redefines Band = "UHF";
-                    attribute Gain redefines Gain = 2.0;
+                    attribute Band redefines band = "UHF";
+                    attribute Gain redefines gain = 2.0;
                 }
 
-                part Transceiver_Part redefines Transceiver_Part {
-                    port Transceiver_Status_Port redefines Transceiver_Status_Port;
-                    port Transceiver_Command_Port redefines Transceiver_Command_Port;
+                part Transceiver_Part redefines transceiver_Part {
+                    port Transceiver_Status_Port redefines transceiver_Status_Port;
+                    port Transceiver_Command_Port redefines transceiver_Command_Port;
                     attribute Name redefines name = "UHF Transceiver";
-                    attribute MaxTxPower redefines MaxTxPower = 1.0 [SI::W];
-                    attribute DopplerToleranceHz redefines DopplerToleranceHz = 20000.0;
-                    attribute ModulationCoding redefines ModulationCoding = "GMSK (TBD)";
-                    attribute PacketFormat redefines PacketFormat = "AX.25 (TBD)";
-                    attribute FECEnabled redefines FECEnabled = true;
-                    attribute CRCEnabled redefines CRCEnabled = true;
-                    attribute ReconfigurableInOrbit redefines ReconfigurableInOrbit = true;
+                    attribute MaxTxPower redefines maxTxPower = 1.0 [W];
+                    attribute DopplerToleranceHz redefines dopplerToleranceHz = 20000.0;
+                    attribute ReconfigurableInOrbit redefines reconfigurableInOrbit = true;
                 }
 
-                part Crypto_Part redefines Crypto_Part {
-                    port Crypto_Status_Port redefines Crypto_Status_Port;
-                    port Crypto_Command_Port redefines Crypto_Command_Port;
-                    attribute Name redefines Name = "Comms Crypto/Integrity";
-                    attribute UplinkAuthEnabled redefines UplinkAuthEnabled = true;
-                    attribute UplinkDecryptEnabled redefines UplinkDecryptEnabled = true;
-                    attribute DownlinkEncryptEnabled redefines DownlinkEncryptEnabled = true;
-                    attribute DownlinkIntegrityEnabled redefines DownlinkIntegrityEnabled = true;
+                part Crypto_Part redefines crypto_Part {
+                    port Crypto_Status_Port redefines crypto_Status_Port;
+                    port Crypto_Command_Port redefines crypto_Command_Port;
+                    attribute Name redefines name = "Comms Crypto/Integrity";
+                    attribute UplinkAuthEnabled redefines uplink_Auth_Enabled = true;
+                    attribute UplinkDecryptEnabled redefines uplink_Decrypt_Enabled = true;
+                    attribute DownlinkEncryptEnabled redefines downlink_Encrypt_Enabled = true;
+                    attribute DownlinkIntegrityEnabled redefines downlink_Integrity_Enabled = true;
                 }
 
                 connect Crypto_Part.Crypto_Status_Port to Transceiver_Part.Transceiver_Status_Port;
@@ -284,17 +286,17 @@ package HealiosMissionInstancePackage {
                 connect Transceiver_Part.Transceiver_Command_Port
                     to Crypto_Part.Crypto_Command_Port;
 
-                perform action Transmit_HealthData_Action redefines Transmit_HealthData_Action {
+                perform action Transmit_HealthData_Action redefines transmit_HealthData_Action {
                     in item Housekeeping_In : MissionPackage::OnBoardStatus;
                     out item Telemetry_Frame_Out : MissionPackage::TelemetryData;
                 }
 
-                perform action Encrypt_Dowmlink_Action redefines Encrypt_Dowmlink_Action {
+                perform action Encrypt_Dowmlink_Action redefines encrypt_Dowmlink_Action {
                     in item Telemetry_Frame_In : MissionPackage::TelemetryData;
                     out RF_Frame_Out : MissionPackage::TelemetryData;
                 }
 
-                perform action Decrypte_Autheticate_Action redefines Decrypte_Autheticate_Action {
+                perform action Decrypte_Autheticate_Action redefines decrypte_Autheticate_Action {
                     in item RF_Frame_In : MissionPackage::TelemetryData;
                     out item Rf_Frmae_Out : MissionPackage::TelemetryData;
                 }
@@ -317,7 +319,7 @@ package HealiosMissionInstancePackage {
             // STRUCTURE
             // =========================
             part SS_Structure_And_Mechanisms redefines ss_Structure_And_Mechanisms {
-                attribute Total_Mass redefines Total_Mass = 0.40 [SI::kg];
+                attribute Total_Mass redefines Total_Mass = 0.40 [kg];
                 attribute Material redefines Material = "Aluminium (TBD alloy)";
 
                 part Primary_Structure redefines Primary_Structure {
@@ -345,8 +347,8 @@ package HealiosMissionInstancePackage {
 
                 part Sun_Sensor redefines sun_Sensor [1] {
                     attribute Name redefines name = "Sun Sensor";
-                    attribute Mass redefines mass = 0.01 [SI::kg];
-                    attribute PowerConsumption redefines power_Consumption = 0.05 [SI::W];
+                    attribute Mass redefines mass = 0.01 [kg];
+                    attribute PowerConsumption redefines power_Consumption = 0.05 [W];
                     port Power_Bus_3V3 redefines power_Bus_3V3;
                 }
 
@@ -357,23 +359,23 @@ package HealiosMissionInstancePackage {
                     part Mounted_Magnetorquer_X redefines mounted_Magnetorquer [1] {
                         attribute Name redefines name = "MTQ_X";
                         attribute Axis redefines axis = "X";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                     part Mounted_Magnetorquer_Y redefines mounted_Magnetorquer [2] {
                         attribute Name redefines name = "MTQ_Y";
                         attribute Axis redefines axis = "Y";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                     part Mounted_Magnetorquer_Z redefines mounted_Magnetorquer [3] {
                         attribute Name redefines name = "MTQ_Z";
                         attribute Axis redefines axis = "Z";
-                        attribute Force redefines force = 0.02 [SI::N];
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.2 [SI::W];
+                        attribute Force redefines force = 0.02 [N];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.2 [W];
                     }
                 }
 
@@ -385,13 +387,13 @@ package HealiosMissionInstancePackage {
 
                 perform action use_AOCS redefines use_AOCS {
                     in Command redefines command;
-                    in Beta_Angle_Threshold redefines Beta_Angle_Threshold;
-                    out Force_Output redefines Force_Output;
+                    in Beta_Angle_Threshold redefines beta_Angle_Threshold;
+                    out Force_Output redefines force_Output;
 
                     // if Command.Type == "Start_Command" {
                     // loop {
-                    action Read_Sun_Angle redefines Read_Sun_Angle;
-                    then action Correct_Attitude redefines Correct_Attitude;
+                    action Read_Sun_Angle : ReadSunAngle;
+                    then action Correct_Attitude : CorrectAttitude;
                     // } until Command.Type == "Stop_Command";
                     // }
 
@@ -546,14 +548,14 @@ package HealiosMissionInstancePackage {
 
                     part Psc_Connector_And_Protection redefines psc_Connector_And_Protection {
                         attribute Name redefines name = "Perovskite Coupon Protection";
-                        attribute Mass redefines mass = 0.05 [SI::kg];
+                        attribute Mass redefines mass = 0.05 [kg];
                     }
 
                     part Perovskite_Solar_Array_Coupon redefines perovskite_Solar_Array_Coupon [1] {
                         attribute Name redefines name = "PSC Coupon #1";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
-                        attribute Power_Generation redefines power_Generation = 1.0 [SI::W];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.0 [W];
+                        attribute Power_Generation redefines power_Generation = 1.0 [W];
                         attribute Manufacturer redefines manufacturer = "TBD";
                         in port Solar_Input redefines solar_Input;
                         port Electrode_Connection redefines electrode_Connection;
@@ -562,9 +564,9 @@ package HealiosMissionInstancePackage {
                     part Reference_Silicon_Solar_Array_Coupon
                         redefines reference_Silicon_Solar_Array_Coupon [1] {
                         attribute Name redefines name = "Si Reference Coupon #1";
-                        attribute Mass redefines mass = 0.02 [SI::kg];
-                        attribute PowerConsumption redefines power_Consumption = 0.0 [SI::W];
-                        attribute Power_Generation redefines power_Generation = 1.0 [SI::W];
+                        attribute Mass redefines mass = 0.02 [kg];
+                        attribute PowerConsumption redefines power_Consumption = 0.0 [W];
+                        attribute Power_Generation redefines power_Generation = 1.0 [W];
                         in port Solar_Input redefines solar_Input;
                         port Electrode_Connection redefines electrode_Connection;
                     }
@@ -637,70 +639,70 @@ package HealiosMissionInstancePackage {
 
                 port Mission_Control_Centre_TC_Port redefines mission_Control_Centre_TC_Port;
                 port Mission_Control_Centre_TM_Port redefines mission_Control_Centre_TM_Port;
-                port Data_Centre_TM_Port redefines Data_Centre_TM_Port;
+                port Data_Centre_TM_Port redefines data_Centre_TM_Port;
                 port Mission_Control_Centre_Pass_Plan_Port
                     redefines mission_Control_Centre_Pass_Plan_Port;
                 port Mission_Control_Centre_Tracking_Port
                     redefines mission_Control_Centre_Tracking_Port;
-                port Data_Centre_Archive_Port redefines Data_Centre_Archive_Port;
+                port Data_Centre_Archive_Port redefines data_Centre_Archive_Port;
 
-                part Antenna_Part redefines Antenna_Part {
+                part Antenna_Part redefines antenna_Part {
                     attribute name redefines name = "UHF Ground Antenna";
                     attribute band redefines band = "UHF";
                     attribute gain redefines gain = 12.0;
 
-                    in port Uplink_In redefines Uplink_In;
-                    out port Downlink_Out redefines Downlink_Out;
+                    in port Uplink_In redefines uplink_In;
+                    out port Downlink_Out redefines downlink_Out;
                 }
 
-                part Crypto_Unit_Part redefines Crypto_Unit_Part {
+                part Crypto_Unit_Part redefines crypto_Unit_Part {
                     attribute name redefines name = "Ground Crypto/Integrity";
                     attribute downlinkVerifyEnabled redefines downlinkVerifyEnabled = true;
                     attribute downlinkDecryptEnabled redefines downlinkDecryptEnabled = true;
                     attribute uplinkAuthEnabled redefines uplinkAuthEnabled = true;
                     attribute uplinkEncryptEnabled redefines uplinkEncryptEnabled = true;
 
-                    in port TC_In redefines TC_In;
-                    out port TC_Out redefines TC_Out;
+                    in port TC_In redefines telecommand_In;
+                    out port TC_Out redefines telecommand_Out;
 
-                    in port TM_In redefines TM_In;
-                    out port TM_Out redefines TM_Out;
+                    in port TM_In redefines telemetry_In;
+                    out port TM_Out redefines telemetry_Out;
                 }
 
-                part Pass_Predictor_Part redefines Pass_Predictor_Part {
+                part Pass_Predictor_Part redefines pass_Predictor_Part {
                     attribute name redefines name = "Pass Predictor";
                     attribute usesTLE redefines usesTLE = true;
 
-                    port PassPlan_Out redefines PassPlan_Out;
-                    port Tracking_Out redefines Tracking_Out;
+                    port PassPlan_Out redefines pass_Plan_Out;
+                    port Tracking_Out redefines tracking_Out;
                 }
 
-                perform action Auth_Encrypt_Action redefines Auth_Encrypt_Action {
+                perform action Auth_Encrypt_Action redefines auth_Encrypt_Action {
                     in Telecommand_To_Encrypt : MissionPackage::GroundCommand;
                     out Secured_Encrypted_Telecommand : MissionPackage::GroundCommand;
                 }
 
-                perform action Uplink_Action redefines Uplink_Action {
+                perform action Uplink_Action redefines uplink_Action {
                     in item Modulated_Uplink_Signal : MissionPackage::GroundCommand;
                     out item Uplink_Signal_Sent : MissionPackage::GroundCommand;
                 }
 
-                perform action Downlink_Action redefines Downlink_Action {
+                perform action Downlink_Action redefines downlink_Action {
                     out item Captured_Encrypted_Telemetry : MissionPackage::TelemetryData;
                     in item Incoming_Radio_Signal : TelemetryData;
                 }
 
-                perform action Verify_Decrypt_Action redefines Verify_Decrypt_Action {
+                perform action Verify_Decrypt_Action redefines verify_Decrypt_Action {
                     in item Telemetry_To_Decrypt : MissionPackage::TelemetryData;
                     out item Verified_Ground_Telemetry_Data : MissionPackage::TelemetryData;
                 }
 
-                perform action Archive_Action redefines Archive_Action {
+                perform action Archive_Action redefines archive_Action {
                     in item Telemetry_To_Archive : MissionPackage::TelemetryData;
                     out item Record_of_Telemetry : ArchiveRecord;
                 }
 
-                perform action Tracking_Action redefines Tracking_Action {
+                perform action Tracking_Action redefines tracking_Action {
                     in item Satellite_plan : PassPlan;
                     out item Tracking_Data : TrackingData;
                 }
@@ -763,30 +765,30 @@ package HealiosMissionInstancePackage {
                 port Ground_Station_Pass_Plan_Port redefines ground_Station_Pass_Plan_Port;
                 port Ground_Station_Tracking_Port redefines ground_Station_Tracking_Port;
 
-                part Auth_Service_Part redefines Auth_Service_Part {
+                part Auth_Service_Part redefines auth_Service_Part {
                     attribute name redefines name = "Mission Control Centre Authentication Service";
                     attribute method redefines method = "MFA";
 
-                    in port Auth_Request_In redefines Auth_Request_In;
-                    out port Auth_Token_Out redefines Auth_Token_Out;
+                    in port Auth_Request_In redefines auth_Request_In;
+                    out port Auth_Token_Out redefines auth_Token_Out;
                 }
 
-                part Operations_Console_Part redefines Operations_Console_Part {
+                part Operations_Console_Part redefines operations_Console_Part {
                     attribute name redefines name = "Operations Console";
 
-                    out port Operator_Request_Out redefines Operator_Request_Out;
-                    in port Auth_Token_In redefines Auth_Token_In;
+                    out port Operator_Request_Out redefines operator_Request_Out;
+                    in port Auth_Token_In redefines auth_Token_In;
 
-                    out port TC_Out redefines TC_Out;
-                    in port TM_In redefines TM_In;
+                    out port TC_Out redefines telecommand_Out;
+                    in port TM_In redefines telemetry_In;
                 }
 
-                part Pass_Planner_Part redefines Pass_Planner_Part {
+                part Pass_Planner_Part redefines pass_Planner_Part {
                     attribute name redefines name = "Pass Planner";
                     attribute usesTLE redefines usesTLE = true;
 
-                    out port PassPlan_Out redefines PassPlan_Out;
-                    in port Tracking_Satellite redefines Tracking_Satellite;
+                    out port PassPlan_Out redefines pass_Plan_Out;
+                    in port Tracking_Satellite redefines tracking_Satellite;
                 }
 
                 connect Operations_Console_Part.Operator_Request_Out
@@ -802,22 +804,22 @@ package HealiosMissionInstancePackage {
                 connect Pass_Planner_Part.PassPlan_Out
                     to Mission_Control_Centre.Ground_Station_Pass_Plan_Port;
 
-                perform action Authorize_Action redefines Authorize_Action {
+                perform action Authorize_Action redefines authorize_Action {
                     in item Operator_Request : OperatorRequest;
                     out item Auth_Token : AuthToken;
                 }
 
-                perform action Generate_TC_Action redefines Generate_TC_Action {
+                perform action Generate_TC_Action redefines generate_Telecommand_Action {
                     in item Auth_Token : AuthToken;
                     out item Raw_Unsecured_Telecommand : MissionPackage::GroundCommand;
                 }
 
-                perform action Plan_Passes_Action redefines Plan_Passes_Action {
+                perform action Plan_Passes_Action redefines plan_Passes_Action {
                     out item Plan_of_Satellite_Path : PassPlan;
                     in item Track_of_Satellite_Path : TrackingData;
                 }
 
-                perform action Monitor_TM_Action redefines Monitor_TM_Action {
+                perform action Monitor_TM_Action redefines monitor_Telemetry_Action {
                     in item Telemetry_For_Monitoring : MissionPackage::TelemetryData;
                 }
 
@@ -855,18 +857,18 @@ package HealiosMissionInstancePackage {
                 port Mission_Control_Centre_TM_Products_Port
                     redefines mission_Control_Centre_TM_Products_Port;
 
-                part Structured_Archive_Part redefines Structured_Archive_Part {
+                part Structured_Archive_Part redefines structured_Archive_Part {
                     attribute name redefines name = "Structured Archive";
                     attribute retention redefines retention = 1825 [SI::day];
 
-                    in port Record_In redefines Record_In;
+                    in port Record_In redefines record_In;
                 }
 
-                part Data_Validator_Part redefines Data_Validator_Part {
+                part Data_Validator_Part redefines data_Validator_Part {
                     attribute name redefines name = "Telemetry Validator";
 
-                    in port TM_In redefines TM_In;
-                    out port TM_Validated_Out redefines TM_Validated_Out;
+                    in port TM_In redefines telemetry_In;
+                    out port TM_Validated_Out redefines telemetry_Validated_Out;
                 }
 
                 connect Data_Centre.Ground_Station_TM_Port to Data_Validator_Part.TM_In;
@@ -875,17 +877,17 @@ package HealiosMissionInstancePackage {
                     to Data_Centre.Mission_Control_Centre_TM_Products_Port;
 
                 connect Data_Centre.Ground_Station_Records_Port
-                    to Structured_Archive_Part.Record_In.RecordIn;
+                    to Structured_Archive_Part.Record_In.record_In;
 
                 connect Data_Centre.Ground_Station_Records_Port
                     to Structured_Archive_Part.Record_In;
 
-                perform action Validate_Action redefines Validate_Action {
+                perform action Validate_Action redefines validate_Action {
                     in item Telemetry_For_Validate : MissionPackage::TelemetryData;
                     out item Validated_Telemetry : MissionPackage::TelemetryData;
                 }
 
-                perform action Store_Action redefines Store_Action {
+                perform action Store_Action redefines store_Action {
                     in item Record_of_Satellite_Data
                         redefines Record_of_Satellite_Data : ArchiveRecord;
                 }

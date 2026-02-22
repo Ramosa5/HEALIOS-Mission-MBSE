@@ -43,7 +43,6 @@ package UnitTypesPackage {
     }
     
     attribute MB : Megabyte;
-
 }
 
 package Example {

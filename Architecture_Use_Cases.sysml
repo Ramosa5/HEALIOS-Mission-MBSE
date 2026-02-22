@@ -1,13 +1,14 @@
 package UseCaseDefinitionsPackage {
     
     private import StakeholdersDefinitionPackage::*;
-    private import StakeholderConcernsPackage::*;
+    private import ConcernsDefinitionPackage::*;
     private import MissionPackage::*;
     private import GroundActionsPackage::*;
     private import SpaceActionsPackage::*;
     private import MissionControlCentrePackage::*;
     private import DataCentrePackage::*;
     private import GroundStationPackage::*;
+    private import StakeholderConcernsPackage::*;
     private import ISQ::*;
 
     use case def Send_Telecommand {
@@ -15,7 +16,7 @@ package UseCaseDefinitionsPackage {
                This process ensures that only authorized personnel (HEALIOS Team) can influence the 
                satellite's state through a secured communication link. */
 
-        subject Satellite : SpaceSegment { // ASK ABOUT THIS
+        subject Satellite references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment {
             in item Received_Telecommand : GroundCommand;
         }
 
@@ -29,10 +30,7 @@ package UseCaseDefinitionsPackage {
             doc /* The ground station infrastructure responsible for transmitting commands 
                    to the CubeSat via radio uplink. */
         }
-
-        // 0. Initial State: Operator formulates a mission intent to send a command to the CubeSat.
-
-        // 1. Authorization Phase
+        
         action Authorize_Operator_Access : AuthorizeCommanding {
             doc /* Validates the operator's credentials and mission-specific permissions 
                    to initiate a commanding session. */
@@ -40,7 +38,6 @@ package UseCaseDefinitionsPackage {
             out item Valid_Session_Token : AuthToken;
         }
 
-        // 2. Command Formatting Phase
         action Generate_Formatted_Telecommand : GenerateTelecommand {
             doc /* Translates the operator's high-level mission intent into a specific 
                    binary packet format (Telecommand) according to the mission's data dictionary. */
@@ -48,7 +45,6 @@ package UseCaseDefinitionsPackage {
             out item Raw_Unsecured_Telecommand : GroundCommand;
         }
 
-        // 3. Security Phase
         action Protect_Uplink_Integrity : AuthenticateAndEncryptUplink {
             doc /* Applies cryptographic signatures and encryption to the telecommand 
                    to prevent unauthorized interception or replay attacks. */
@@ -56,15 +52,12 @@ package UseCaseDefinitionsPackage {
             out item Secured_Encrypted_Telecommand : GroundCommand;
         }
 
-        // 4. Transmission Phase
         action Execute_Physical_Radio_Uplink : ExecuteUplink {
             doc /* Modulates the secured command into a Radio Frequency (RF) signal and 
                    transmits it via the Ground Station antenna to the CubeSat. */
             in item Secured_Command_Input : GroundCommand;
             out item Modulated_Uplink_Signal : TelemetryData; 
         }
-
-        // 5. Final State: The CubeSat receives the command and processes it according to its onboard software.
 
         flow Operator.Mission_Intent to Authorize_Operator_Access.Access_Request_Input;
 
@@ -77,11 +70,12 @@ package UseCaseDefinitionsPackage {
         flow Execute_Physical_Radio_Uplink.Modulated_Uplink_Signal to Satellite.Received_Telecommand;
 
         objective SendCommandObjective {
-            frame concern CommandSecurityConcern;
-            frame concern LinkCompatibilityConcern;
-            frame concern FrequencyAllocationConcern;
-            frame concern ProgrammaticComplianceConcern;
-            frame concern EducationalValueConcern;
+            doc /* Ensure secure and reliable command transmission to maintain satellite safety and mission success. */
+            frame concern CubeSat_Standard_Compliance_Concern references StakeholderConcernsPackage::CubeSat_Standard_Compliance_Concern;
+            frame concern Command_Security_Concern references StakeholderConcernsPackage::Command_Security_Concern;
+            frame concern Frequency_Allocation_Concern references StakeholderConcernsPackage::Frequency_Allocation_Concern;
+            frame concern Programmatic_Compliance_Concern references StakeholderConcernsPackage::Programmatic_Compliance_Concern;
+            frame concern Educational_Value_Concern references StakeholderConcernsPackage::Educational_Value_Concern;
         }
     }
 
@@ -90,7 +84,7 @@ package UseCaseDefinitionsPackage {
                satellite data. This ensures mission health is monitored and scientific 
                objectives are archived for analysis. */
 
-        subject Satellite : SpaceSegment {
+        subject Satellite references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment {
             out item Time_Reference : ISQ::TimeValue;
             out item Housekeeping_Data : HousekeepingData;
             out item Science_Data : ScienceData;
@@ -202,7 +196,7 @@ package UseCaseDefinitionsPackage {
     use case def Utilize_Mission_Scientific_Data {
         doc /* This use case describes how the processed mission data is accessed and analyzed by stakeholders. It specifically highlights the dual benefit for HSB and GUT: receiving scientific data for research and providing study opportunities for students. */
 
-        subject Data_Centre : DataCentre {
+        subject Data_Centre references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Ground_Segment.Data_Centre {
             out item Mission_Database_Archive : ArchiveRecord;
         }
 

@@ -406,39 +406,39 @@ package SpaceActionsPackage {
     }
 
     action def UseMagnetorquer {
-        in Beta_Angle : ISQ::AngularMeasureValue;
-        in Threshold : ISQ::AngularMeasureValue;
-        out Force : ISQ::ForceValue;
+        in beta_Angle : ISQ::AngularMeasureValue;
+        in threshold : ISQ::AngularMeasureValue;
+        out force : ISQ::ForceValue;
     }
 
     action def CorrectAttitude {
         in force_Value : ISQ::ForceValue;
         in sun_Sensor_Reading : ISQ::AngularMeasureValue;
-        in Threshold : ISQ::AngularMeasureValue; // 0 to pi
+        in threshold : ISQ::AngularMeasureValue; // 0 to pi
         out force : ISQ::ForceValue;
 
         then action Use_Magnetorquer : UseMagnetorquer {
-            bind UseMagnetorquer::Threshold = CorrectAttitude::Threshold;
-            bind UseMagnetorquer::Beta_Angle = sun_Sensor_Reading;
-            bind UseMagnetorquer::Force = CorrectAttitude::force;
-            if Beta_Angle > Threshold {
-                assign Force := force_Value;
+            bind UseMagnetorquer::threshold = CorrectAttitude::threshold;
+            bind UseMagnetorquer::beta_Angle = sun_Sensor_Reading;
+            bind UseMagnetorquer::force = CorrectAttitude::force;
+            if beta_Angle > threshold {
+                assign force := force_Value;
             } else {
-                assign Force := 0 [SI::N];
+                assign force := 0 [SI::N];
             }
         }
     }
 
     action def UseAOCS {
-        in Command : OnBoardCommand;
-        in Beta_Angle_Threshold : ISQ::AngularMeasureValue;
-        out Force_Output : ISQ::ForceValue;
-        // if Command.Type == "Start_Command"{
-        // loop {
-        action Read_Sun_Angle : ReadSunAngle;
-        then action Correct_Attitude : CorrectAttitude;
-        // } until Command.Type == "Stop_Command";
-        // }
+        in command : OnBoardCommand;
+        in beta_Angle_Threshold : ISQ::AngularMeasureValue;
+        out force_Output : ISQ::ForceValue;
+        if command.type == "Start_Command" {
+            loop {
+                action read_Sun_Angle : ReadSunAngle;
+                then action correct_Attitude : CorrectAttitude;
+            } until command.type == "Stop_Command";
+        }
     }
 
     action def TransmitStatusDownlink {
