@@ -76,6 +76,10 @@ package MissionPackage {
         attribute source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
         attribute channel : String; // optional: "I2C0", "ADC1", ...
     }
+
+    part def Subsystem {
+        doc /* High level part for a satellite subsystem */
+    }
     
     public part def SpaceSegment {
         attribute total_Mass : ISQ::MassValue;

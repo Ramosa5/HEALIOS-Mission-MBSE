@@ -5,13 +5,14 @@ package UnitTypesPackage {
     public import ISQ::*;
     public import SI::*;
 
-    // ---- TIME ----
 
-    // SI second usage
     alias FV for ISQ::ForceValue;
     alias MV for ISQ::MassValue;
     alias Wattage for ISQ::PowerValue;
     alias RV for ISQ::ResistanceValue;
+    alias VV for ISQ::SourceVoltageValue;
+    alias EC for ISQ::ElectricCurrentUnit;
+    alias SS for MissionPackage::Subsystem;
 
     attribute yearConv : ConversionByConvention {
         :>> referenceUnit = SI::second;
@@ -25,7 +26,6 @@ package UnitTypesPackage {
 
     attribute yr : Year;
 
-    // ---- INFORMATION ----
     attribute def byte :> SimpleUnit {
         symbol = "B";
     }
