@@ -76,7 +76,12 @@ package MissionPackage {
         attribute source : String; // "EPS", "PL_RAD", "PL_SPEC", ...
         attribute channel : String; // optional: "I2C0", "ADC1", ...
     }
-    
+
+    part def <SS> Subsystem {
+        doc
+        /* High level part for a satellite subsystem */
+    }
+
     public part def SpaceSegment {
         attribute total_Mass : ISQ::MassValue;
         attribute cubeSat_Form_Factor : String;
@@ -87,15 +92,41 @@ package MissionPackage {
 
         port deployment_Interface : ~LaunchEnvironment::DispenserContactInterface;
 
-        part <tcs> ss_Thermal_Control_System : ThermalControlSystem;
-        part <comms> ss_Communication_System : CommunicationsSystem;
-        part <eps> ss_Electrical_Power_System : ElectricalPowerSystemPackage::ElectricalPowerSystem;
-        part <obdh> ss_On_Board_Data_Handling : OnBoardDataHandlingSystem;
-        part <str> ss_Structure_And_Mechanisms : StructureSystem;
-        part <aocs> ss_Attitude_And_Orbit_Control_System : AttitudeAndOrbitControlSystem;
-        part <pl> ss_Satellite_Payload : Payload;
+        part subsystems : Subsystem [2..*];
+        part <tcs> ss_Thermal_Control_System : ThermalControlSystem subsets subsystems;
+        part <comms> ss_Communication_System : CommunicationsSystem subsets subsystems;
+        part <eps> ss_Electrical_Power_System
+            : ElectricalPowerSystemPackage::ElectricalPowerSystem subsets subsystems;
+        part <obdh> ss_On_Board_Data_Handling : OnBoardDataHandlingSystem subsets subsystems;
+        part <str> ss_Structure_And_Mechanisms : StructureSystem subsets subsystems;
+        part <aocs> ss_Attitude_And_Orbit_Control_System
+            : AttitudeAndOrbitControlSystem subsets subsystems;
+        part <pl> ss_Satellite_Payload : Payload subsets subsystems;
 
         in port satellite_Solar_Environment : ~StellarEnvironment;
+
+        connection power_Bus_Connections_5V : PowerBusConnection5V
+            connect [1] ss_Electrical_Power_System to [7] subsystems;
+        connection power_Bus_Connections_3V3 : PowerBusConnection3V3
+            connect [1] ss_Electrical_Power_System to [7] subsystems;
+
+        connection subsets power_Bus_Connections_5V {
+            end [1] part
+                :>> ss_Electrical_Power_System references SpaceSegment::ss_Electrical_Power_System;
+            end [1] part :>> ss_Satellite_Payload references SpaceSegment::ss_Satellite_Payload;
+        }
+        connection subsets power_Bus_Connections_5V {
+            end [1] part
+                :>> ss_Electrical_Power_System references SpaceSegment::ss_Electrical_Power_System;
+            end [1] part
+                :>> ss_On_Board_Data_Handling references SpaceSegment::ss_On_Board_Data_Handling;
+        }
+
+        connection subsets power_Bus_Connections_3V3 {
+            end [1] part
+                :>> ss_Electrical_Power_System references SpaceSegment::ss_Electrical_Power_System;
+            end [1] part :>> ss_Satellite_Payload references SpaceSegment::ss_Satellite_Payload;
+        }
 
         state satellite_Mode {
             in abstract port switch_Command : DataBus;
@@ -106,7 +137,7 @@ package MissionPackage {
         part <gst> ground_Station : GroundStation;
         part <mcc> mission_Control_Centre : MissionControlCentre;
         part <dt> data_Centre : DataCentre;
-        
+
         port telecommand_Port : TelecommandPort;
         port telemetry_Port : ~TelemetryPort;
     }
@@ -121,6 +152,5 @@ package MissionPackage {
 
         connection uplink connect ground_Segment.telecommand_Port to space_Segment.telecommand_Port;
         connection downlink connect space_Segment.telemetry_Port to ground_Segment.telemetry_Port;
-
     }
 }

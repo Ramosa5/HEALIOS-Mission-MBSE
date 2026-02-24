@@ -191,39 +191,39 @@ package HealiosMissionInstancePackage {
             // OBDH
             // =========================
             part SS_On_Board_Data_Handling redefines ss_On_Board_Data_Handling {
-                port Power_Bus_3V3 redefines Power_Bus_3V3;
+                port Power_Bus_3V3 redefines power_Bus_3V3;
 
-                port Data_Bus redefines Data_Bus {
-                    in item Data redefines Data;
-                    out item Cmd redefines Cmd;
+                port Data_Bus redefines data_Bus {
+                    in item Data redefines data;
+                    out item Cmd redefines cmd;
                 }
 
-                part Carrier redefines Carrier {
-                    attribute Name redefines Name = "OBC Carrier Board";
+                part Carrier redefines carrier {
+                    attribute Name redefines name = "OBC Carrier Board";
                 } 
 
-                part Primary_OBC redefines Primary_OBC {
-                    attribute Name redefines Name = "Primary OBC";
-                    attribute Role redefines Role = "Command & Data Handling (Primary)";
+                part Primary_OBC redefines primary_OBC {
+                    attribute Name redefines name = "Primary OBC";
+                    attribute Role redefines role = "Command & Data Handling (Primary)";
                     attribute Redundant redefines Redundant = true;
 
-                    port Data_Bus redefines Data_Bus;
+                    port Data_Bus redefines data_Bus;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
 
-                    part ROM redefines ROM { attribute Total_Memory redefines Total_Memory = 8.0; }
-                    part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
+                    part ROM redefines ROM { attribute Total_Memory redefines total_Memory = 8.0; }
+                    part RAM redefines RAM { attribute Total_Memory redefines total_Memory = 2.0; }
                 }
 
-                part Secondary_OBC redefines Secondary_OBC {
-                    attribute Name redefines Name = "Secondary OBC";
-                    attribute Role redefines Role = "Command & Data Handling (Cold Redundant)";
+                part Secondary_OBC redefines secondary_OBC {
+                    attribute Name redefines name = "Secondary OBC";
+                    attribute Role redefines role = "Command & Data Handling (Cold Redundant)";
                     attribute Redundant redefines Redundant = true;
 
-                    port Data_Bus redefines Data_Bus;
+                    port Data_Bus redefines data_Bus;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
 
-                    part ROM redefines ROM { attribute Total_Memory redefines Total_Memory = 8.0; }
-                    part RAM redefines RAM { attribute Total_Memory redefines Total_Memory = 2.0; }
+                    part ROM redefines ROM { attribute Total_Memory redefines total_Memory = 8.0; }
+                    part RAM redefines RAM { attribute Total_Memory redefines total_Memory = 2.0; }
                 }
 
                 bind Primary_OBC.Data_Bus = SS_On_Board_Data_Handling.Data_Bus;
@@ -231,7 +231,7 @@ package HealiosMissionInstancePackage {
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Primary_OBC.Power_Bus_3V3;
                 bind SS_On_Board_Data_Handling.Power_Bus_3V3 = Secondary_OBC.Power_Bus_3V3;
 
-                perform action Prepare_Data redefines Prepare_Data {
+                perform action Prepare_Data redefines prepare_Data {
                     attribute Subsystem_Count :>> Subsystem_Count;
                     out Time_Tagged_Packed_Data redefines Time_Tagged_Packed_Data;
                     in Data_In[Subsystem_Count] :>> Data_In;
@@ -319,16 +319,16 @@ package HealiosMissionInstancePackage {
             // STRUCTURE
             // =========================
             part SS_Structure_And_Mechanisms redefines ss_Structure_And_Mechanisms {
-                attribute Total_Mass redefines Total_Mass = 0.40 [kg];
-                attribute Material redefines Material = "Aluminium (TBD alloy)";
+                attribute Total_Mass redefines total_Mass = 0.40 [kg];
+                attribute Material redefines material = "Aluminium (TBD alloy)";
 
-                part Primary_Structure redefines Primary_Structure {
-                    port Structural_Port redefines Structural_Port;
+                part Primary_Structure redefines primary_Structure {
+                    port Structural_Port redefines structural_Port;
                 }
-                part Secondary_Structure redefines Secondary_Structure {
-                    port Structural_Port redefines Structural_Port;
+                part Secondary_Structure redefines secondary_Structure {
+                    port Structural_Port redefines structural_Port;
                 }
-                part Deployment_Switches redefines Deployment_Switches;
+                part Deployment_Switches redefines deployment_Switches;
 
                 connect Secondary_Structure.Structural_Port to Primary_Structure.Structural_Port;
             }
@@ -400,8 +400,8 @@ package HealiosMissionInstancePackage {
                     // ask
                 }
 
-                bind use_AOCS.Command = Data_Bus.Cmd;
-                connect Data_Bus.Cmd to use_AOCS.Beta_Angle_Threshold;
+                bind use_AOCS.Command = Data_Bus.cmd;
+                connect Data_Bus.cmd to use_AOCS.Beta_Angle_Threshold;
                 bind use_AOCS.Force_Output = SS_Attitude_And_Orbit_Control_System.Force_Output;
             }
 
@@ -409,9 +409,9 @@ package HealiosMissionInstancePackage {
             // TCS
             // =========================
             part SS_Thermal_Control_System redefines ss_Thermal_Control_System {
-                abstract port Data_Bus redefines Data_Bus;
+                abstract port Data_Bus redefines data_Bus;
 
-                attribute Stop_Signal redefines Stop_Signal;
+                attribute Stop_Signal redefines stop_Signal;
 
                 abstract part EPS_Heater redefines EPS_Heater [1] {
                     attribute Power redefines power = 10 [W];
@@ -439,7 +439,7 @@ package HealiosMissionInstancePackage {
                     Use_TCS.Measured_Temperature_Input;
                 bind EPS_Heater.Power = Use_TCS.Heating_Power_Input;
                 bind EPS_Heater.Minimal_Temperature = Use_TCS.Minimal_Temperature_Input;
-                bind Data_Bus.Cmd = Use_TCS.Command;
+                bind Data_Bus.cmd = Use_TCS.Command;
 
                 perform action Use_TCS : UseTCS {
                     in Command redefines Command;

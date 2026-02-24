@@ -1,17 +1,15 @@
 package UnitTypesPackage {
-
     public import MeasurementReferences::*;
     public import SIPrefixes::*;
     public import ISQ::*;
     public import SI::*;
 
-    // ---- TIME ----
-
-    // SI second usage
     alias FV for ISQ::ForceValue;
     alias MV for ISQ::MassValue;
     alias Wattage for ISQ::PowerValue;
     alias RV for ISQ::ResistanceValue;
+    alias VV for ISQ::SourceVoltageValue;
+    alias EC for ISQ::ElectricCurrentUnit;
 
     attribute yearConv : ConversionByConvention {
         :>> referenceUnit = SI::second;
@@ -25,7 +23,6 @@ package UnitTypesPackage {
 
     attribute yr : Year;
 
-    // ---- INFORMATION ----
     attribute def byte :> SimpleUnit {
         symbol = "B";
     }
@@ -41,12 +38,17 @@ package UnitTypesPackage {
         symbol = "MB";
         :>> unitConversion = mbConv;
     }
-    
+
     attribute MB : Megabyte;
+
+    enum def Redundancy {
+        hot;
+        cold;
+        none;
+    }
 }
 
 package Example {
-
     public import UnitTypesPackage::*;
     public import ScalarValues::*;
 
@@ -57,5 +59,4 @@ package Example {
     part def time_to_launch {
         attribute duration = 2 [UnitTypesPackage::yr];
     }
-    
 }

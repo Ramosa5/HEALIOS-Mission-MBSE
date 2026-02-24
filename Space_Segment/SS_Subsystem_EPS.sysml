@@ -6,6 +6,72 @@ package ElectricalPowerSystemPackage {
     private import EnvironmentPackage::*;
     private import UnitTypesPackage::*;
 
+    abstract item def ElectricalPower;
+
+    port def TemperaturePort specializes DataBus {
+        out temp : ISQ::TemperatureValue [1..*];
+    }
+
+    port def MPPTControl :> DataBus {
+        in power : Wattage;
+        in voltage : VV;
+        in current : EC;
+    }
+
+    port def PowerBus {
+        attribute voltage : VV;
+        out item power : ElectricalPower;
+    }
+
+    interface def PowerBusInterface5V {
+        end port power_Source_Bus : PowerBus {
+            :>> voltage = 5 [V];
+        }
+
+        end port power_Sink_Bus   : ~PowerBus {
+            :>> voltage = 5 [V];
+        }
+
+        flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
+    }
+
+    interface def PowerBusInterface3V3 {
+        end port power_Source_Bus : PowerBus {
+            :>> voltage = 3.3 [V];
+        }
+        end port power_Sink_Bus   : ~PowerBus {
+            :>> voltage = 3.3 [V];
+        }
+
+        flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
+    } 
+
+    connection def PowerBusConnection5V {
+        end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
+        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+
+        interface : PowerBusInterface5V
+            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
+    }
+
+    connection def PowerBusConnection3V3 {
+        end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
+        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+
+        interface : PowerBusInterface3V3
+            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
+    }
+
+    part def PowerSourceSubsystem :> SS {
+        ref part providing_Power_To [1..*] : PowerSinkSubsystem;
+        port power_Bus : PowerBus;
+    }
+    
+    part def PowerSinkSubsystem :> SS {
+        ref part provided_Power_By [1] : PowerSourceSubsystem;
+        port power_Bus : ~PowerBus;
+    }
+
     part def GeneralElectricalComponent {
         attribute name : String;
         attribute mass : ISQ::MassValue;
@@ -14,16 +80,6 @@ package ElectricalPowerSystemPackage {
 
     part def Resistor specializes GeneralElectricalComponent {
         attribute resistance : RV;
-    }
-
-    port def TemperaturePort specializes DataBus{
-        out temp : ISQ::TemperatureValue [1..*];
-    }
-
-    port def MPPTControl :> DataBus {
-        in power : Wattage;
-        in voltage : ISQ::SourceVoltageValue;
-        in current : ISQ::ElectricCurrentUnit;
     }
 
     part def TemperatureSensor specializes GeneralElectricalComponent {
@@ -92,12 +148,7 @@ package ElectricalPowerSystemPackage {
         port voltage_Out : ISQ::SourceVoltageValue;
     }
 
-    port def PowerBus {
-        out voltage : ISQ::SourceVoltageValue;
-    }
-
-    // Electrical Power System
-    part def ElectricalPowerSystem {
+    part def ElectricalPowerSystem  :> PowerSourceSubsystem {
         port data_Bus : ~DataBus;
         port eps_Solar_Input : ~StellarEnvironment;
 

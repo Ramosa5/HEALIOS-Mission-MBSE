@@ -8,43 +8,51 @@ package OnBoardDataHandlingSystemPackage {
 
     port def DataBus {
         attribute name : String;
-        in Data : MissionPackage::OnBoardStatus;
-        out Cmd : MissionPackage::OnBoardCommand;
+        in data : MissionPackage::OnBoardStatus;
+        out cmd : MissionPackage::OnBoardCommand;
     }
 
-    interface def I2CInterface {
-        end Rx : ~DataBus;
-        end Tx : DataBus;
+    interface def DataBusInterface {
+        end rx : ~DataBus;
+        end tx : DataBus;
+    }
+
+    connection def DataBusConnection {
+        end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
+        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+
+        interface : DataBusInterface
+            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
     }
 
     port def AnalogADCInput {
-        in Sample : MissionPackage::OnBoardStatus;
+        in sample : MissionPackage::OnBoardStatus;
     }
 
     port def OutCommandPort {
-        out Cmd : MissionPackage::OnBoardCommand;
+        out cmd : MissionPackage::OnBoardCommand;
     }
 
     part def Memory {
-        attribute Total_Memory : Real;
+        attribute total_Memory : Real;
     }
 
     part def NonVolatileMemory specializes Memory;
     part def VolatileMemory specializes Memory;
 
     part def Magnetometer :> GeneralElectricalComponent {
-        attribute Force : Real;
-        attribute Axes : Integer;
+        attribute force : Real;
+        attribute axes : Integer;
     }
 
     part def Gyroscope :> GeneralElectricalComponent {
-        attribute Axes : Integer;
+        attribute axes : Integer;
     }
 
     part def OnBoardComputerUnit {
-        attribute Name : String;
-        attribute Role : String;
-        attribute Redundant : Boolean;
+        attribute name : String;
+        attribute role : String;
+        attribute redundant : Redundancy;
 
         part ROM : NonVolatileMemory;
         part RAM : VolatileMemory;
@@ -52,71 +60,71 @@ package OnBoardDataHandlingSystemPackage {
         part OBC_Gyroscope : Gyroscope;
         part OBC_Magnetometer : Magnetometer;
 
-        port Analog_ADC_Input[0..*] : AnalogADCInput;
+        port analog_ADC_Input[0..*] : AnalogADCInput;
 
-        port Data_Bus[1] : DataBus;
+        port data_Bus[1] : DataBus;
 
-        perform action Read_OBC_Temperature : ReadTemperature;
+        perform action read_OBC_Temperature : ReadTemperature;
     }
 
     part def OBCarrierBoard {
-        attribute Name : String;
+        attribute name : String;
     }
 
-    part def OnBoardDataHandlingSystem {
-        port Telecommand_In : MissionPackage::GroundCommand;
-        port Telemetry_Out : MissionPackage::OnBoardStatus;
-        port Out_Command_Port[0..*] : OutCommandPort;
-        port Power_Bus_3V3 : ~PowerBus;
-        port Power_Bus_5V : ~PowerBus;
+    part def OnBoardDataHandlingSystem :> PowerSinkSubsystem {
+        port telecommand_In : MissionPackage::GroundCommand;
+        port telemetry_Out : MissionPackage::OnBoardStatus;
+        port out_Command_Port[0..*] : OutCommandPort;
+        port power_Bus_3V3 : ~PowerBus;
+        port power_Bus_5V : ~PowerBus;
 
-        port Data_Bus[1] : DataBus;
+        port data_Bus[1] : DataBus;
 
-        port Analog_ADC_Input[0..*] : AnalogADCInput;
+        port analog_ADC_Input[0..*] : AnalogADCInput;
 
-        part Carrier : OBCarrierBoard;
+        part carrier : OBCarrierBoard;
 
-        part Primary_OBC : OnBoardComputerUnit;
-        part Secondary_OBC : OnBoardComputerUnit;
+        part primary_OBC : OnBoardComputerUnit;
+        part secondary_OBC : OnBoardComputerUnit;
 
-        perform action Prepare_Data : PrepareData;
-        perform action Manage_Persistent_Store : ManagePersistentStorageAndBuffers;
-        perform action Prioritize_For_Downlink : SelectAndPrioritizeDownlinkData;
-        perform action Route_Downlink_To_Comms : ForwardDownlinkFramesToComms;
+        perform action prepare_Data : PrepareData;
+        perform action manage_Persistent_Store : ManagePersistentStorageAndBuffers;
+        perform action prioritize_For_Downlink : SelectAndPrioritizeDownlinkData;
+        perform action route_Downlink_To_Comms : ForwardDownlinkFramesToComms;
 
-        perform action Decode_And_Validate_Cmds : DecodeValidateAndDispatchCommands;
-        perform action Execute_Time_Tagged_Cmds : ExecuteTimeTaggedCommands;
+        perform action decode_And_Validate_Cmds : DecodeValidateAndDispatchCommands;
+        perform action execute_Time_Tagged_Cmds : ExecuteTimeTaggedCommands;
 
-        perform action Monitor_Health_And_FDIR : PerformOBDHHealthMonitoringAndFDIR;
-        perform action Manage_Modes : ManageSpacecraftModesAndAutonomy;
+        perform action monitor_Health_And_FDIR : PerformOBDHHealthMonitoringAndFDIR;
+        perform action manage_Modes : ManageSpacecraftModesAndAutonomy;
 
-        perform action Manage_Redundancy : ManageWarmRedundantAuthorityAndTakeover;
-        perform action Sync_Authority_State : SynchronizeRedundantOBCState;
+        perform action manage_Redundancy : ManageWarmRedundantAuthorityAndTakeover;
+        perform action sync_Authority_State : SynchronizeRedundantOBCState;
 
-        perform action Update_Flight_Software : PerformDualBankSoftwareUpdateAndRollback;
+        perform action update_Flight_Software : PerformDualBankSoftwareUpdateAndRollback;
 
-        bind Prepare_Data.Data_In = Data_Bus.Cmd;
-        bind Manage_Persistent_Store.Obdh_Command = Telecommand_In;
-        bind Prioritize_For_Downlink.Obdh_Command = Telecommand_In;
-        bind Route_Downlink_To_Comms.Obdh_Command = Telecommand_In;
-        bind Decode_And_Validate_Cmds.Obdh_Command = Telecommand_In;
-        bind Execute_Time_Tagged_Cmds.Obdh_Command = Telecommand_In;
-        bind Monitor_Health_And_FDIR.Obdh_Command = Telecommand_In;
-        bind Manage_Modes.Obdh_Command = Telecommand_In;
-        bind Manage_Redundancy.Obdh_Command = Telecommand_In;
-        bind Sync_Authority_State.Obdh_Command = Telecommand_In;
-        bind Update_Flight_Software.Obdh_Command = Telecommand_In;
+        bind prepare_Data.Data_In = data_Bus.cmd;
+        bind manage_Persistent_Store.Obdh_Command = telecommand_In;
+        bind prioritize_For_Downlink.Obdh_Command = telecommand_In;
+        bind route_Downlink_To_Comms.Obdh_Command = telecommand_In;
+        bind decode_And_Validate_Cmds.Obdh_Command = telecommand_In;
+        bind execute_Time_Tagged_Cmds.Obdh_Command = telecommand_In;
+        bind monitor_Health_And_FDIR.Obdh_Command = telecommand_In;
+        bind manage_Modes.Obdh_Command = telecommand_In;
+        bind manage_Redundancy.Obdh_Command = telecommand_In;
+        bind sync_Authority_State.Obdh_Command = telecommand_In;
+        bind update_Flight_Software.Obdh_Command = telecommand_In;
 
-        bind Prepare_Data.Time_Tagged_Packed_Data = Telemetry_Out;
-        bind Telemetry_Out = Manage_Persistent_Store.Obdh_Telemetry;
-        bind Telemetry_Out = Prioritize_For_Downlink.Obdh_Telemetry;
-        bind Telemetry_Out = Route_Downlink_To_Comms.Obdh_Telemetry;
-        bind Telemetry_Out = Decode_And_Validate_Cmds.Obdh_Telemetry;
-        bind Telemetry_Out = Execute_Time_Tagged_Cmds.Obdh_Telemetry;
-        bind Telemetry_Out = Monitor_Health_And_FDIR.Obdh_Telemetry;
-        bind Telemetry_Out = Manage_Modes.Obdh_Telemetry;
-        bind Telemetry_Out = Manage_Redundancy.Obdh_Telemetry;
-        bind Telemetry_Out = Sync_Authority_State.Obdh_Telemetry;
-        bind Telemetry_Out = Update_Flight_Software.Obdh_Telemetry;
+        bind prepare_Data.Time_Tagged_Packed_Data = telemetry_Out;
+        bind telemetry_Out = manage_Persistent_Store.Obdh_Telemetry;
+        bind telemetry_Out = prioritize_For_Downlink.Obdh_Telemetry;
+        bind telemetry_Out = route_Downlink_To_Comms.Obdh_Telemetry;
+        bind telemetry_Out = decode_And_Validate_Cmds.Obdh_Telemetry;
+        bind telemetry_Out = execute_Time_Tagged_Cmds.Obdh_Telemetry;
+        bind telemetry_Out = monitor_Health_And_FDIR.Obdh_Telemetry;
+        bind telemetry_Out = manage_Modes.Obdh_Telemetry;
+        bind telemetry_Out = manage_Redundancy.Obdh_Telemetry;
+        bind telemetry_Out = sync_Authority_State.Obdh_Telemetry;
+        bind telemetry_Out = update_Flight_Software.Obdh_Telemetry;
     }
 }

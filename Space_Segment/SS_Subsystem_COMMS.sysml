@@ -60,7 +60,7 @@ package CommunicationsSystemPackage {
     }
 
     action def DecryptAndAuthenticateUplink {
-        in item rF_Frame_In : MissionPackage::TelemetryData;
+        in item rf_Frame_In : MissionPackage::TelemetryData;
          out item telecommand_Out : MissionPackage::GroundCommand;
     }
     action def EncryptDownlinkTelemetry {
@@ -68,7 +68,7 @@ package CommunicationsSystemPackage {
         out item rF_Frame_Out : MissionPackage::TelemetryData;
     }
 
-    part def CommunicationsSystem {
+    part def CommunicationsSystem  :> PowerSinkSubsystem {
         port power_Bus_5V: PowerBus;
         port rF_Link_Port : RFLinkPort;
         port data_Bus : DataBus;
