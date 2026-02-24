@@ -325,24 +325,59 @@ package StakeholderConcernsPackage {
     part IARU : InternationalAmateurRadioUnion;
     part Launch_Providers : LaunchServiceProvider;
     part Satellite_COTS_Manufacturers : SatelliteCOTSManufacturers;
-
-    part Educational_Value_Concern : EducationalValueConcern;
-    part Institutional_Visibility_Concern : InstitutionalVisibilityConcern;
-    part Perovskite_TRL_Advancement_Concern : PerovskiteTRLAdvancementConcern;
-    part Perovskite_Investigation_Concern : PerovskiteInvestigationConcern;
-    part Comparative_Study_Concern : ComparativeStudyConcern;
-    part Data_Acquisition_Concern : DataAcquisitionConcern;
-    part Data_Availability_Concern : DataAvailabilityConcern;
-    part Safety_Concern : SafetyConcern;
-    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern;
-    part Space_Debris_Mitigation_Concern : SpaceDebrisMitigationConcern;
-    part Component_Reliability_Concern : ComponentReliabilityConcern;
-    part Frequency_Allocation_Concern : FrequencyAllocationConcern;
-    part Link_Compatibility_Concern : LinkCompatibilityConcern;
-    part Command_Security_Concern : CommandSecurityConcern;
-    part Amateur_Radio_Access_Concern : AmateurRadioAccessConcern;
-    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern;
-    part Team_Composition_Concern : TeamCompositionConcern;
-    part Registration_Compliance_Concern : RegistrationComplianceConcern;
     
+    part Educational_Value_Concern : EducationalValueConcern {
+        doc /* Framed by the Mission Requirements: R_M_009, R_M_011, R_M_013 */
     }
+    part Institutional_Visibility_Concern : InstitutionalVisibilityConcern {
+        doc /* Framed by the Mission Requirements: R_M_009, R_M_010, R_M_011, R_M_012, R_M_013 */
+    }
+    part Perovskite_TRL_Advancement_Concern : PerovskiteTRLAdvancementConcern {
+        doc /* Framed by the Mission Requirements: R_M_001, R_M_002, R_M_007 */
+    }
+    part Perovskite_Investigation_Concern : PerovskiteInvestigationConcern {
+        doc /* Framed by the Mission Requirements: R_M_001 */
+    }
+    part Comparative_Study_Concern : ComparativeStudyConcern {
+        doc /* Framed by the Mission Requirements: R_M_001, R_M_005 */
+    }
+    part Data_Acquisition_Concern : DataAcquisitionConcern {
+        doc /* Framed by the Mission Requirements: R_M_001, R_M_004 */
+    }
+    part Data_Availability_Concern : DataAvailabilityConcern {
+        doc /* Framed by the Mission Requirements: R_M_005 */
+    }
+    part Safety_Concern : SafetyConcern {
+        doc /* Framed by the Mission Requirements: R_M_015, R_M_016 */
+    }
+    part CubeSat_Standard_Compliance_Concern : CubeSatStandardComplianceConcern {
+        doc /* Framed by the Mission Requirements: R_M_003 */
+    }
+    part Space_Debris_Mitigation_Concern : SpaceDebrisMitigationConcern {
+        doc /* Framed by the Mission Requirements: R_M_008, R_M_018 */
+    }
+    part Component_Reliability_Concern : ComponentReliabilityConcern {
+        doc /* Framed by the Mission Requirements: R_M_002, R_M_007, R_M_012, R_M_019 */
+    }
+    part Frequency_Allocation_Concern : FrequencyAllocationConcern {
+        doc /* Framed by the Mission Requirements: R_M_017 */
+    }
+    part Link_Compatibility_Concern : LinkCompatibilityConcern {
+        doc /* Framed by the Mission Requirements: R_M_014 */
+    }
+    part Command_Security_Concern : CommandSecurityConcern {
+        doc /* Framed by the Mission Requirements: R_M_020 */
+    }
+    part Amateur_Radio_Access_Concern : AmateurRadioAccessConcern {
+        doc /* Framed by the Mission Requirements: R_M_017 */
+    }
+    part Programmatic_Compliance_Concern : ProgrammaticComplianceConcern {
+        doc /* Framed by the Mission Requirements: R_M_002, R_M_006, R_M_009, R_M_010, R_M_011, R_M_012, R_M_013, R_M_015 */
+    }
+    part Team_Composition_Concern : TeamCompositionConcern {
+        doc /* Framed by the Mission Requirements: R_M_009, R_M_010 */
+    }
+    part Registration_Compliance_Concern : RegistrationComplianceConcern {
+        doc /* Framed by the Mission Requirements: R_M_018 */
+    }
+}
