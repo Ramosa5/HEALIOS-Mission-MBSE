@@ -205,7 +205,7 @@ package HealiosMissionInstancePackage {
                 part Primary_OBC redefines primary_OBC {
                     attribute Name redefines name = "Primary OBC";
                     attribute Role redefines role = "Command & Data Handling (Primary)";
-                    attribute Redundant redefines Redundant = true;
+                    attribute Redundant redefines redundant = true;
 
                     port Data_Bus redefines data_Bus;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
@@ -217,7 +217,7 @@ package HealiosMissionInstancePackage {
                 part Secondary_OBC redefines secondary_OBC {
                     attribute Name redefines name = "Secondary OBC";
                     attribute Role redefines role = "Command & Data Handling (Cold Redundant)";
-                    attribute Redundant redefines Redundant = true;
+                    attribute Redundant redefines redundant = true;
 
                     port Data_Bus redefines data_Bus;
                     port Power_Bus_3V3 redefines Power_Bus_3V3;
