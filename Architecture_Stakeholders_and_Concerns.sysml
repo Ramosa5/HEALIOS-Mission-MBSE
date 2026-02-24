@@ -342,7 +342,7 @@ package StakeholderConcernsPackage {
         doc /* Framed by the Mission Requirements: R_M_001, R_M_005 */
     }
     part Data_Acquisition_Concern : DataAcquisitionConcern {
-        doc /* Framed by the Mission Requirements: R_M_001, R_M_004 */
+        doc /* Framed by the Mission Requirements: R_M_001 */
     }
     part Data_Availability_Concern : DataAvailabilityConcern {
         doc /* Framed by the Mission Requirements: R_M_001, R_M_005, */
@@ -378,6 +378,6 @@ package StakeholderConcernsPackage {
         doc /* Framed by the Mission Requirements: R_M_009, R_M_010 */
     }
     part Registration_Compliance_Concern : RegistrationComplianceConcern {
-        doc /* Framed by the Mission Requirements: R_M_018 */
+        doc /* Framed by the Mission Requirements: R_M_004, R_M_018 */
     }
 }
