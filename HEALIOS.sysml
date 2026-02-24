@@ -17,7 +17,7 @@ package HealiosMissionInstancePackage {
     private attribute <h> h = SI::h;
     private attribute <yr> yr : Year;
 
-    public part Healios_Mission : OperationalStructure {
+    public part HEALIOS_Mission : OperationalStructure {
         doc
         /* HEALIOS mission instance (system-of-systems: Space Segment + Ground Segment).
          * This instance explicitly redefines ports and mirrors connects that already

@@ -96,7 +96,7 @@ package ConcernsDefinitionPackage {
 
     concern def EducationalValueConcern {
 
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
     
         require constraint {
             doc /* The mission shall provide hands-on experience in satellite development, integration, and operations to the student team. */
@@ -109,7 +109,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def InstitutionalVisibilityConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall demonstrate research capabilities of the participating universities and ESA programmes to the broader aerospace community. */
@@ -121,7 +121,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def PerovskiteTRLAdvancementConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         require constraint {
             doc /* The mission shall validate the performance Perovskite solar cells in the Low Earth Orbit environment to increase their Technology Readiness Level. */
@@ -132,7 +132,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def PerovskiteInvestigationConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         require constraint {
             doc /* The mission shall investigate the self-healing behavior of Perovskite Solar Cells induced by reverse-bias voltage during eclipse phases, and quantify their degradation in the space environment (Voc, Isc, MPP). */
@@ -144,7 +144,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def ComparativeStudyConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall compare degradation rates between Perovskite samples and traditional space-graded solar cells (e.g., silicon) under identical space environment exposure to benchmark performance. */
@@ -156,7 +156,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def DataAcquisitionConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall ensure validated data from the payload is acquired with sufficient context, resolution and accuracy to analyse solar cell efficiency over time. */
@@ -167,7 +167,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def DataAvailabilityConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall ensure that scientific results and telemetry are processed, archived, and made accessible to the scientific community. */
@@ -178,7 +178,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def SafetyConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         
         require constraint {
@@ -191,7 +191,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def CubeSatStandardComplianceConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         require constraint {
             doc /* The mission architecture shall conform to the CubeSat Design Specification (CDS) to ensure physical and functional compatibility with the deployment system. */
@@ -204,7 +204,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def SpaceDebrisMitigationConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall be designed to minimize space debris generation and ensure orbital decay within the regulatory timeframe after the end of operations. */
@@ -215,7 +215,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def ComponentReliabilityConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         require constraint {
             doc /* The mission shall ensure the survival and operational integrity of the system in the Low Earth Orbit (LEO) environment for the intended duration. */
@@ -227,7 +227,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def FrequencyAllocationConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
         
         require constraint {
             doc /* The mission shall operate within allocated radio frequency bands and comply with international telecommunication regulations to prevent interference. */
@@ -238,7 +238,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def LinkCompatibilityConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall establish a compatible and reliable communication link between the space and ground segments to support operations. */
@@ -249,7 +249,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def CommandSecurityConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall implement security measures to prevent unauthorized access or control of the space and ground segments. */
@@ -260,7 +260,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def AmateurRadioAccessConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall engage the global amateur radio community by enabling the open reception and decoding of public beacon telemetry. */
@@ -272,7 +272,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def ProgrammaticComplianceConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall adhere to the programmatic schedules, review milestones, and documentation standards mandated by the ESA Fly Your Satellite! programme. */
@@ -283,7 +283,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def TeamCompositionConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission team shall consist of a core group of at least 8 eligible students (minimum 4 at Master/PhD level) and a minimum of 2 supervisors covering the roles of endorsing professor, team leader, and system engineer. The team must continuously comply with ESA Fly Your Satellite! citizenship, age (18-32), and academic enrollment criteria throughout the project lifecycle. */
@@ -296,7 +296,7 @@ package ConcernsDefinitionPackage {
     }
 
     concern def RegistrationComplianceConcern {
-        subject HEALIOS_Mission references HealiosMissionInstancePackage::Healios_Mission;
+        subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
         require constraint {
             doc /* The mission shall comply with all registration requirements for space objects, including UN registration and any applicable national regulations. */
@@ -345,7 +345,7 @@ package StakeholderConcernsPackage {
         doc /* Framed by the Mission Requirements: R_M_001, R_M_004 */
     }
     part Data_Availability_Concern : DataAvailabilityConcern {
-        doc /* Framed by the Mission Requirements: R_M_005 */
+        doc /* Framed by the Mission Requirements: R_M_001, R_M_005, */
     }
     part Safety_Concern : SafetyConcern {
         doc /* Framed by the Mission Requirements: R_M_015, R_M_016 */

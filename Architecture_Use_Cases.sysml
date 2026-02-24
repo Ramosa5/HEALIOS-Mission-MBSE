@@ -16,7 +16,7 @@ package UseCaseDefinitionsPackage {
                This process ensures that only authorized personnel (HEALIOS Team) can influence the 
                satellite's state through a secured communication link. */
 
-        subject Satellite references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment {
+        subject Satellite references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment {
             in item Received_Telecommand : GroundCommand;
         }
 
@@ -84,7 +84,7 @@ package UseCaseDefinitionsPackage {
                satellite data. This ensures mission health is monitored and scientific 
                objectives are archived for analysis. */
 
-        subject Satellite references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Space_Segment {
+        subject Satellite references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment {
             out item Time_Reference : ISQ::TimeValue;
             out item Housekeeping_Data : HousekeepingData;
             out item Science_Data : ScienceData;
@@ -196,7 +196,7 @@ package UseCaseDefinitionsPackage {
     use case def Utilize_Mission_Scientific_Data {
         doc /* This use case describes how the processed mission data is accessed and analyzed by stakeholders. It specifically highlights the dual benefit for HSB and GUT: receiving scientific data for research and providing study opportunities for students. */
 
-        subject Data_Centre references HealiosMissionInstancePackage::Healios_Mission.HEALIOS_Ground_Segment.Data_Centre {
+        subject Data_Centre references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment.Data_Centre {
             out item Mission_Database_Archive : ArchiveRecord;
         }
 
