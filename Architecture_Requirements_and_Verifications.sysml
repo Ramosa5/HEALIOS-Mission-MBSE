@@ -102,7 +102,7 @@ package MissionLevelRequirementsPackage{
         frame concern Space_Debris_Mitigation_Concern references StakeholderConcernsPackage::Space_Debris_Mitigation_Concern;
     }
 
-    requirement def <R_M_008> Core_Team_Composition { // NOT IN SPACE SEGMENT
+    requirement def <R_M_008> Core_Team_Composition { // NOT IN SPACE SEGMEN
         doc /* The core mission team shall consist of at least 4 university students enrolled in a Master's or Bachelor's programme within an ESA Member State. */
         
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -325,7 +325,7 @@ package SpaceSegmentLevelRequirementPackage{
     }
 
     requirement def <R_SS_006> FYS_System_Compliance specializes R_M_006 {
-        doc /* The Space Segment shall conform to all applicable ESA Fly Your Satellite! (FYS) engineering, safety, and testing standards throughout its development and operational lifecycle. */
+        doc /* The Space Segment shall conform to all applicable ESA Fly Your Satellite! (FYS) engineering, safety, and testing standards throughout its lifecycle. */
         
         subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
 
@@ -345,26 +345,21 @@ package SpaceSegmentLevelRequirementPackage{
         subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
     }
 
-
     requirement def <R_SS_008> PFM_Campaign specializes R_M_011 {
         doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign, compatible with the FYS testing flow and standards. */
         subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         
-        requirement def <R_SS_008_a> PFM_Exclusions {
+        requirement <R_SS_008_a> PFM_Exclusions {
             doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
-            subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         }
         requirement <R_SS_008_b> Random_Vibration {
             doc /* The Space Segment shall undergo a random vibration test on all three axes. */
-            subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         }
         requirement <R_SS_008_c> Sinusoidal_Vibration {
             doc /* The Space Segment shall undergo a sinusoidal vibration test. */
-            subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         }
         requirement <R_SS_008_d> Quasi_Static_Load {
             doc /* The Space Segment shall undergo a Quasi-static load test. */
-            subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         }
         requirement <R_SS_008_e> Thermal_Cycling {
             doc /* The Space Segment shall undergo thermal cycling ( TVAC). */
@@ -443,24 +438,21 @@ package SpaceSegmentLevelRequirementPackage{
     }
 }
 
-    
+package GroundSegmentLevelRequirementsPackage {
+    private import MissionLevelRequirementsPackage::*;
+    private import StakeholdersDefinitionPackage::*;
+    private import ConcernsDefinitionPackage::*;
+    private import StakeholderConcernsPackage::*;
+    private import MissionPackage::*;
+    //private import SpaceSegmentLevelRequirementsPackage::*; // only if you would like to link to space segment requirements.
 
+}
 
-package GroundSegmentLevelRequirementsPackage{
+package ProgrammaticLevelRequirementsPackage {
     //private import MissionLevelRequirementsPackage::*;
     //private import StakeholdersDefinitionPackage::*;
     //private import ConcernsDefinitionPackage::*;
     //private import StakeholderConcernsPackage::*;
     //private import MissionPackage::*;
     //private import SpaceSegmentLevelRequirementPackage::*;
-    
-}
-
-package ProgrammaticLevelRequirementsPackage{
-    //private import MissionLevelRequirementsPackage::*;
-    //private import StakeholdersDefinitionPackage::*;
-    //private import ConcernsDefinitionPackage::*;
-    //private import StakeholderConcernsPackage::*;
-    //private import MissionPackage::*;
-    //private import SpaceSegmentLevelRequirementPackage::*;  
 }
