@@ -453,15 +453,12 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_001_a> Bidirectional_Communication {
             doc /* The Ground Segment shall support telecommand uplink and telemetry downlink with the spacecraft. */
         }
-
         requirement <R_GS_001_b> Pass_Prediction_TLE {
             doc /* The Ground Segment shall generate and maintain pass predictions using orbit propagation consistent with TLE-based inputs, and shall update predictions when new TLE data becomes available. */
         }
-
         requirement <R_GS_001_d> Beacon_Acquisition_Support {
             doc /* The Ground Segment shall support initial acquisition using the spacecraft beacon, including decoding, identification, and logging of beacon receptions. */
         }
-
         requirement <R_GS_001_e> Session_Execution_Procedures {
             doc /* The Ground Segment shall define and follow procedures for session execution, including pre-pass configuration, in-pass operations, and post-pass data handling. */
         }
@@ -474,11 +471,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_002_a> Near_RealTime_Health_Display {
             doc /* The Ground Segment shall provide near-real-time display of key spacecraft health parameters during each pass. */
         }
-
         requirement <R_GS_002_b> Limit_Checking_And_Alerts {
             doc /* The Ground Segment should implement telemetry limit checking and generate alerts for out-of-family parameters. */
         }
-
         requirement <R_GS_002_c> Anomaly_Ticketing_And_Log {
             doc /* The Ground Segment shall record anomalies, operator observations, and corrective actions in an operations log or ticketing mechanism. */
         }
@@ -512,15 +507,12 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_004_a> Structured_Data_Archive {
             doc /* The Ground Segment shall store all scientific and housekeeping data in a structured archive for the mission lifetime and for at least 2 years after end-of-mission. */
         }
-
         requirement <R_GS_004_b> Dataset_Metadata_And_Versioning {
             doc /* The Ground Segment shall generate dataset packages including required metadata fields and dataset version identifiers necessary for post-flight comparison to pre-flight tests and literature. */
         }
-
         requirement <R_GS_004_c> Data_Format_And_Range_Validation {
             doc /* The Ground Segment shall automatically validate received data against the defined dataset grammar, types, and permissible ranges, and shall flag invalid data for review and re-request if applicable. */
         }
-
         requirement <R_GS_004_d> Backup_And_Restore {
             doc /* The Ground Segment should implement backup and restore procedures for the mission archive to mitigate data loss. */
         }
@@ -552,7 +544,6 @@ package GroundSegmentLevelRequirementsPackage {
         }
     }
 
-
     requirement def <R_GS_007> GS_Prelaunch_Link_Verification specializes R_M_013, R_M_006 {
         doc /* The Ground Segment shall verify communication readiness prior to launch using link budgets and representative end-to-end tests with the spacecraft (or an RF representative). */
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
@@ -561,7 +552,7 @@ package GroundSegmentLevelRequirementsPackage {
             doc /* The Ground Segment shall perform pre-launch link-budget estimation and verification using representative orbital profiles and expected spacecraft RF parameters. */
         }
 
-        requirement <R_GS_007_b> EndToEnd_Comms_Test {
+        requirement <R_GS_007_b> EndToEnd_Communications_Test {
             doc /* The Ground Segment shall execute end-to-end communication tests prior to launch, demonstrating uplink commanding and downlink reception/decoding using representative configurations. */
         }
     }
