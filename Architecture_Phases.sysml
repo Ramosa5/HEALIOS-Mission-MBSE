@@ -545,67 +545,147 @@ package MissionPhases {
             }
         }
 
-        // Phase D: Qualification and Production
+        // Phase D: Qualification and Production (PFM Approach)
         then timeslice PhaseD {
             doc
-            /* Qualification and Production */
+            /* Qualification and Production Phase using a Proto-Flight Model (PFM) approach. 
+               The PFM serves as both the qualification unit and the flight unit. */
 
-            /* Deliberately left empty; the Phase D content is currently revised. Namely, Testing Campaign is under revision. */
+            part PhaseC_Baseline : PhaseBaseline {
+                doc /* Baseline established at the end of Phase C (CDR) */
+                attribute PhaseName redefines PhaseName = "Phase C";
+                out item BaselineReport redefines BaselineReport;
+            }
+
+            part PhaseD_Documentation : MissionDocumentation {
+                doc /* Documentation created throughout Phase D */
+                in item Report_Item : Report [0..*];
+            }
+
+            timeslice PFM_Development_And_Qualification {
+                doc /* From procurement to Qualification Review */
+
+                in item CDR_Baseline : Report;
+                out item Qualification_Evidence : Report [0..*];
+
+                action Procurement_Process {
+                    doc /* Procure flight-grade components and long-lead items */
+                    out item Flight_Components : String;
+                }
+
+                action PFM_Assembly {
+                    doc /* Integrate hardware components and load final Flight Software (FSW) */
+                    in item Flight_Components : String;
+                    out item ProtoFlight_Model : String;
+                }
+
+                action Ground_Segment_Preparation {
+                    doc /* Set up ground stations and control center infrastructure */
+                    out item Ground_Infrastucture : String;
+                }
+
+                action TRR {
+                    doc /* Test Readiness Review: Verify procedures and facility readiness */
+                    inout item ProtoFlight_Model : String;
+                    attribute ReadyForTest : Boolean;
+                }
+
+                action ProtoFlight_Testing_Campaign {
+                    doc /* Execute environmental (Vibe, TVAC, EMC) and functional tests at proto-flight levels */
+                    in item ProtoFlight_Model : String;
+                    out item Test_Reports : String;
+                }
+
+                flow CDR_Baseline to Procurement_Process;
+                flow Procurement_Process.Flight_Components to PFM_Assembly.Flight_Components;
+                flow PFM_Assembly.ProtoFlight_Model to TRR.ProtoFlight_Model;
+                flow TRR.ProtoFlight_Model to ProtoFlight_Testing_Campaign.ProtoFlight_Model;
+                
+                flow ProtoFlight_Testing_Campaign.Test_Reports to Qualification_Evidence;
+            }
+
+            first PFM_Development_And_Qualification then QR;
 
             snapshot QR : Report {
-                doc
-                /* Qualification Review (QR)
-                
-                QR held during the course of the phase and assesses the following:
-                
-                1) To confirm that the verification process has demonstrated that the design, including margins, meets the applicable requirements.
-                2) To verify that the verification record is complete at this and all lower levels in the customer‐supplier chain.
-                3) To verify the acceptability of all waivers and deviations.*/
-
+                doc /* Qualification Review: Proves the design is qualified based on PFM test results. */
                 attribute BaselineApproved : Boolean;
             }
 
-            first QR then AR;
+            first QR then PFM_Acceptance_Preparation;
+
+            timeslice PFM_Acceptance_Preparation {
+                doc /* Post-test activities to finalize the flight hardware and documentation */
+
+                inout item Acceptance_Evidence : Report [0..*];
+
+                action Resolve_Non_Conformances {
+                    doc /* Investigate and close out all NCRs and anomalies found during testing */
+                    inout item NCR_Closure_Reports : String;
+                }
+
+                action Flight_Hardware_Preparation {
+                    doc /* Remove test-only sensors, install final flight MLI, and perform final cleaning */
+                    inout item Flight_Config_Status : String;
+                }
+
+                action Finalise_Documentation {
+                    doc /* Compile the Acceptance Data Package (ADP/EIDP) including As-Built records */
+                    inout item ADP_Report : Report;
+                }
+
+                flow Resolve_Non_Conformances.NCR_Closure_Reports to PFM_Acceptance_Preparation.Acceptance_Evidence;
+                flow Flight_Hardware_Preparation.Flight_Config_Status to PFM_Acceptance_Preparation.Acceptance_Evidence;
+                flow Finalise_Documentation.ADP_Report to PFM_Acceptance_Preparation.Acceptance_Evidence;
+            }
+
+            first PFM_Acceptance_Preparation then AR;
 
             snapshot AR : Report {
-                doc
-                /* Acceptance Review 
-                
-                AR held at the end of the phase and assesses the following:
-
-                1) To confirm that the verification process has demonstrated that the product is free of workmanship errors and is ready for subsequent operational use.
-                2) To verify that the acceptance verification record is complete at this and all lower levels in the customer‐supplier chain.
-                3) To verify that all deliverable products are available per the approved deliverable items list.
-                4) To verify the “as‐built” product and its constituent components against
-                the required “as designed” product and its constituent components.
-                5) To verify the acceptability of all waivers and deviations.
-                6) To verify that the Acceptance Data Package is complete.
-                7) To authorize delivery of the product.
-                8) To release the certificate of acceptance. */
-
+                doc /* Acceptance Review: Confirms workmanship and accepts the physical PFM for flight. */
                 attribute BaselineApproved : Boolean;
             }
 
-            first AR then ORR;
+            first AR then Operational_Readiness_Process;
+
+            timeslice Operational_Readiness_Process {
+                doc /* Ground segment validation and final shipment */
+
+                out item Shipment_Manifest : String;
+
+                action Ground_Segment_Validation_And_Ops_Training {
+                    doc /* Final validation of the ground segment and mission rehearsals for operators */
+                }
+
+                action End_To_End_System_Test {
+                    doc /* Verify the integrated PFM can communicate and operate with the Ground Segment */
+                }
+
+                action Shipment_To_Launch_Site {
+                    doc /* Pack and transport the PFM to the launch facility */
+                    out item Manifest : String;
+                }
+
+                first Ground_Segment_Validation_And_Ops_Training then End_To_End_System_Test;
+                first End_To_End_System_Test then Shipment_To_Launch_Site;
+                
+                flow Shipment_To_Launch_Site.Manifest to Shipment_Manifest;
+            }
+
+            first Operational_Readiness_Process then ORR;
 
             snapshot ORR : Report {
-                doc
-                /* Operational Readiness Review 
-                
-                ORR held at the end of the phase and assesses the following:
-                 
-                1) To verify readiness of the operational procedures and their compatibility with the flight system.
-                2) To verify readiness of the operations teams.
-                3) To accept and release the ground segment for operations. */
-
+                doc /* Operational Readiness Review: Declares ground systems and teams ready for launch. */
                 attribute BaselineApproved : Boolean;
             }
+
+            // Connecting documentation to the main part
+            connect PFM_Development_And_Qualification.Qualification_Evidence to PhaseD_Documentation.Report_Item;
+            connect PFM_Acceptance_Preparation.Acceptance_Evidence to PhaseD_Documentation.Report_Item;
         }
 
         // Phase E: Utilization
         then timeslice PhaseE {
-            doc
-            /* Utilization */
+            doc /* Utilization */
 
             part PhaseE_Documentation : MissionDocumentation {
                 in item Report_Item : Report [0..*];
@@ -662,8 +742,7 @@ package MissionPhases {
             first PreLaunchActivities then FRR;
 
             snapshot FRR : Report {
-                doc
-                /* Flight Readiness Review 
+                doc /* Flight Readiness Review 
                 
                 The flight readiness review is conducted prior to launch. 
                 
@@ -675,8 +754,7 @@ package MissionPhases {
             first FRR then LRR;
 
             snapshot LRR : Report {
-                doc
-                /* Launch Readiness Review 
+                doc /* Launch Readiness Review 
                 
                 The launch readiness review is conducted just prior to launch. 
                 
@@ -711,7 +789,6 @@ package MissionPhases {
                     }
                     connect LaunchVehicle.Payload_Adapter to CubeSat_Dispenser.Mounting_Plate;
                     //connect CubeSat_Dispenser.Deployment_Slot to CubeSat.Deployment_Interface;
-
                 }
 
                 first Launch_Injection then Detumble_AOCS;
@@ -756,8 +833,7 @@ package MissionPhases {
             first Commissioning then CRR;
 
             snapshot CRR : Report {
-                doc
-                /* Commissioning Result Review 
+                doc /* Commissioning Result Review 
                 
                 The commissioning result review is held at the end of the commissioning as part of the in‐orbit stage verification. It allows declaring readiness for routine operations/utilization.*/
 
@@ -811,8 +887,7 @@ package MissionPhases {
             first End_Of_Mission_Preparation then ELR;
 
             snapshot ELR : Report {
-                doc
-                /* End-of-Life Review 
+                doc /* End-of-Life Review 
                 
                 ELR held at the completion of the mission and assesses the following:
                 
@@ -825,8 +900,7 @@ package MissionPhases {
 
         // Phase F: Disposal
         then timeslice PhaseF {
-            doc
-            /* Disposal */
+            doc /* Disposal */
 
             part PhaseF_Documentation : MissionDocumentation {
                 in item Report_Item : Report [0..*];
@@ -895,8 +969,7 @@ package MissionPhases {
             first DisposalOperations then MCR;
 
             snapshot MCR : Report {
-                doc
-                /* Mission Close-out Review 
+                doc /* Mission Close-out Review 
                 
                 MCR held at the end of this phase with the goal to ensure that all mission disposal activities are adequately completed.*/
 
