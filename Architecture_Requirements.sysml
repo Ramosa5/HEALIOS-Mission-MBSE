@@ -340,7 +340,6 @@ package SpaceSegmentRequirementPackage {
         doc /* The Space Segment shall undergo a Proto-Flight Model (PFM) test campaign. */
         subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
         
-
         requirement def <R_SS_016_a> PFM_Exclusions {
             doc /* The Space Segment PFM shall not be subjected to Life Testing, Burst Pressure, and Electrostatic Discharge (ESD) qualification. */
             subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
@@ -417,85 +416,72 @@ package GroundSegmentRequirementsPackage {
         doc /* The Ground Segment architecture shall prioritise the reuse of existing institutional ground station infrastructure (or relevant technology) where compliant with mission needs. */
 
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
-        
-}
+    }
 
      requirement def <R_GS_002> Bidirectional_Communication specializes R_M_014 {
         doc /* At least one ground station shall enable communication with the spacecraft. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
-        
     }
 
     requirement def <R_GS_003> Real_Time_Health_Monitoring specializes R_M_014 {
         doc /* The Ground Segment shall provide real-time monitoring of spacecraft health parameters during each visibility window. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_004> Secure_Commanding_Authentication specializes R_M_014 {
         doc /* The Ground Segment shall implement secure authentication for access to all commanding operations. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_005> Doppler_Compensation specializes R_M_014 {
         doc /* The Ground Segment shall apply Doppler compensation for both uplink and downlink during LEO passes. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_006> TLE_Based_Pass_Prediction specializes R_M_014 {
         doc /* The Ground Segment shall use pass prediction algorithms consistent with TLE-based orbital propagation models. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_007> Prelaunch_Link_Budget specializes R_M_014 {
         doc /* The Ground Segment shall perform link-budget estimation and verification prior to launch using simulated orbital profiles. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_008> IARU_Coordination specializes R_M_017 {
         doc /* If the use of radio amateur frequencies is foreseen, the CubeSat operators shall coordinate with the International Amateur Radio Union (IARU). */
-        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        stakeholder International_Amateur_Radio_Union;
-        stakeholder International_Telecommunication_Union;
         
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_009> Data_Archive specializes R_M_005 {
         doc /* The Ground Segment shall store all scientific and housekeeping data in a structured archive for mission lifetime for at least 2 years. */
         
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        
-        
     }
 
     requirement def <R_GS_010> Data_Format_And_Range_Validation specializes R_M_005 {
         doc /* The Ground Segment shall automatically check if the format of the data adheres to the accepted logical grammar and if the values of the data adhere to the accepted logical type and range. */
-        
+
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
     }
 
     requirement def <R_GS_011> HEALIOS_Operated_GS specializes R_M_006, R_M_009 {
         doc /* The ground station should be fully controlled and operated by the HEALIOS team. */
+        
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        
-        
-
     }
 
     requirement def <R_GS_012> MCC_Location specializes R_M_014 {
         doc /* The Mission Control Centre shall be located in at least one of the locations: HSB Hochschule Bremen - City University of Applied Sciences (Germany) and Gdańsk Univeristy of Technology (Poland). */
-        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
-
-        stakeholder Gdansk_University_of_Technology : GdanskUniversityOfTechnology ;
         
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;        
     }
 }
 

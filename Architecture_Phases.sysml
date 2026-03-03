@@ -7,7 +7,6 @@ package MissionPhases {
     private import ManagementEnvironment::*;
     private import LaunchEnvironment::*;
 
-
     occurrence def MissionLifecycle {
         doc
         /* Mission Lifecycle according to ECSS-M-ST-10C Rev.1 – Project planning and implementation (6 March 2009) */
