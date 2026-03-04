@@ -16,7 +16,7 @@ package MissionLevelRequirementsPackage{
     //private import SpaceSegmentLevelRequirementPackage::*;
     //private import GroundSegmentLevelRequirementsPackage::*;
     
-    requirement def <R_M_001> Self_Healing_Experiments { // NOT IN GROUND SEGMENT
+    requirement def <R_M_001> Self_Healing_Experiments { 
         doc /* The mission shall perform active self-healing experiments on designated PSC samples by applying a controlled reverse-bias voltage during orbital eclipse phases. */
 
         subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -70,7 +70,7 @@ package MissionLevelRequirementsPackage{
         frame concern Perovskite_TRL_Advancement_Concern references StakeholderConcernsPackage::Perovskite_TRL_Advancement_Concern;
     }
 
-    requirement def <R_M_004> Platform_Conformity { // NOT IN GROUND SEGMENT
+    requirement def <R_M_004> Platform_Conformity { // NOT IN GROUND SEGMENT // NOT IN GROUND SEGMENT
         doc /* The mission should utilise a 1U CubeSat platform, conformant to CubeSat Design Specification Rev. 14.1 (February 2022), which enables experiment performance. */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission; 
 
@@ -94,7 +94,7 @@ package MissionLevelRequirementsPackage{
         frame concern Programmatic_Compliance_Concern references StakeholderConcernsPackage::Programmatic_Compliance_Concern;
     }
 
-    requirement def <R_M_007> EOL_Plan { // NOT IN GROUND SEGMENT
+    requirement def <R_M_007> EOL_Plan {
         doc /* The mission documentation shall provide an EOL plan and update its relevance and applicability. */
         
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -102,7 +102,7 @@ package MissionLevelRequirementsPackage{
         frame concern Space_Debris_Mitigation_Concern references StakeholderConcernsPackage::Space_Debris_Mitigation_Concern;
     }
 
-    requirement def <R_M_008> Core_Team_Composition { // NOT IN SPACE SEGMENT // NOT IN GROUND SEGMENT 
+    requirement def <R_M_008> Core_Team_Composition { // NOT IN SPACE SEGMENT 
         doc /* The core mission team shall consist of at least 4 university students enrolled in a Master's or Bachelor's programme within an ESA Member State. */
         
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -113,7 +113,7 @@ package MissionLevelRequirementsPackage{
         frame concern Team_Composition_Concern references StakeholderConcernsPackage::Team_Composition_Concern;
     }
 
-    requirement def <R_M_009> Academic_Supervision { // NOT IN SPACE SEGMENT // NOT IN GROUND SEGMENT
+    requirement def <R_M_009> Academic_Supervision { // NOT IN SPACE SEGMENT 
         doc /* The project shall be supervised by at least 2 academic professors or lecturers who provide formal endorsement and access to university facilities. */
         
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -123,7 +123,7 @@ package MissionLevelRequirementsPackage{
         frame concern Team_Composition_Concern references StakeholderConcernsPackage::Team_Composition_Concern;
     }
 
-    requirement def <R_M_010> Academic_Integration { // NOT IN SPACE SEGMENT // NOT IN GROUND SEGMENT
+    requirement def <R_M_010> Academic_Integration { // NOT IN SPACE SEGMENT 
         doc /* The mission team shall identify specific thesis topics or academic credits associated with the project work packages. */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
@@ -132,7 +132,7 @@ package MissionLevelRequirementsPackage{
         frame concern Programmatic_Compliance_Concern references StakeholderConcernsPackage::Programmatic_Compliance_Concern;
     }
 
-    requirement def <R_M_011> Test_Facility_Usage { // NOT IN GROUND SEGMENT
+    requirement def <R_M_011> Test_Facility_Usage {  // NOT IN GROUND SEGMENT
         doc /* The mission documentation shall include the use of ESA environmental test facilities (e.g., Thermal Vacuum Chamber, Electrodynamic Shaker). */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
@@ -141,7 +141,7 @@ package MissionLevelRequirementsPackage{
         frame concern Component_Reliability_Concern references StakeholderConcernsPackage::Component_Reliability_Concern;
     }
 
-    requirement def <R_M_012> Educational_Return { // NOT IN SPACE SEGMENT // NOT IN GROUND SEGMENT
+    requirement def <R_M_012> Educational_Return { // NOT IN SPACE SEGMENT
         doc /* The mission shall demonstrate a clear educational return. */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
@@ -201,7 +201,7 @@ package MissionLevelRequirementsPackage{
 
     }
 
-    requirement def <R_M_019> FDIR_Implementation { // NOT IN GROUND SEGMENT
+    requirement def <R_M_019> FDIR_Implementation { 
         doc /* The mission shall implement a Fault Detection, Isolation, and Recovery (FDIR) strategy to enhance system reliability. */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
@@ -216,7 +216,7 @@ package MissionLevelRequirementsPackage{
         frame concern Command_Security_Concern references StakeholderConcernsPackage::Command_Security_Concern;
     }
 
-    requirement def <R_M_021> Autonomous_Operations { // NOT IN GROUND SEGMENT
+    requirement def <R_M_021> Autonomous_Operations { 
         doc /* The mission shall be capable of autonomous operation, ensuring continuous execution of mission phases, maintenance of system safety, and survival without requiring continuous intervention from the ground segment. */
         
         subject HEALIOS_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -554,6 +554,112 @@ package GroundSegmentLevelRequirementsPackage {
 
         requirement <R_GS_007_b> EndToEnd_Communications_Test {
             doc /* The Ground Segment shall execute end-to-end communication tests prior to launch, demonstrating uplink commanding and downlink reception/decoding using representative configurations. */
+        }
+    }
+
+     requirement def <R_GS_008> GS_Experiment_Support specializes R_M_001, R_M_013, R_M_005 {
+        doc /* The Ground Segment shall support the self-healing experiment by enabling downlink acquisition of experiment data products and by supporting ground-initiated experiment reconfiguration and software update operations. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_008_a> Experiment_Data_Interface {
+            doc /* The Ground Segment shall receive, decode, and store experiment telemetry and payload data through the defined spacecraft communication interface. */
+        }
+
+        requirement <R_GS_008_b> Experiment_Dataset_Packaging {
+            doc /* The Ground Segment shall package experiment datasets with identifiers, timestamps, and metadata sufficient to support post-flight comparison to pre-flight testing and literature. */
+        }
+
+        requirement <R_GS_008_c> Experiment_Reconfiguration_Traceability {
+            doc /* The Ground Segment shall support uplink of approved experiment configuration changes and shall record the applied configuration state and the time of application. */
+        }
+
+        requirement <R_GS_008_d> Software_Update_Operations_Support {
+            doc /* The Ground Segment shall support spacecraft software update operations by maintaining update packages, version identifiers, delivery procedures, and an update operations log. */
+        }
+    }
+
+    requirement def <R_GS_009> GS_End_Of_Life_Operations_Plan specializes R_M_007, R_M_013, R_M_014 {
+        doc /* The Ground Segment shall define and execute an end-of-life (EOL) operations plan to safely conclude mission operations, preserve mission data, and apply required end-state configurations. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_009_a> Spacecraft_EO_Ops_Procedures {
+            doc /* The Ground Segment shall define EOL commanding and communication procedures, including final contact attempts, final data downlink strategy, and end-state configuration command sequences if applicable. */
+        }
+
+        requirement <R_GS_009_b> Archive_Freeze_And_Preservation {
+            doc /* The Ground Segment shall preserve and freeze mission datasets at end-of-mission, including archive integrity checks, metadata completeness review, and backup generation. */
+        }
+
+        requirement <R_GS_009_c> Ground_System_Closure {
+            doc /* The Ground Segment shall define a closure plan for ground operations services, including decommissioning of operational accounts, revocation or retirement of cryptographic keys used for mission operations, and retention of operational logs. */
+        }
+    }
+
+    requirement def <R_GS_010> GS_Fault_And_Anomaly_Management specializes R_M_019, R_M_013 {
+        doc /* The Ground Segment shall support mission fault management by detecting anomalies from telemetry, recording events, and enabling execution of recovery procedures through commanding during ground contacts. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_010_a> Telemetry_Anomaly_Detection {
+            doc /* The Ground Segment shall support detection of telemetry anomalies through limit checks, consistency checks, and operator review during each visibility window. */
+        }
+
+        requirement <R_GS_010_b> Recovery_Procedure_Support {
+            doc /* The Ground Segment shall maintain and execute approved recovery procedures, including command sequences and verification steps, to support subsystem restart and safe state restoration. */
+        }
+
+        requirement <R_GS_010_c> Fault_History_Repository {
+            doc /* The Ground Segment shall maintain a fault and anomaly history repository, including event timestamps, observed symptoms, actions taken, and outcomes for later analysis. */
+        }
+    }
+
+    requirement def <R_GS_011> GS_Autonomous_Operations_Support specializes R_M_021, R_M_013 {
+        doc /* The Ground Segment shall support autonomous spacecraft operations by maintaining command planning and operational practices suitable for limited or interrupted ground contact. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_011_a> Loss_Of_Contact_Operational_Planning {
+            doc /* The Ground Segment shall maintain an operations concept and command planning approach that preserves spacecraft safety and experiment continuity in the event of missed contacts. */
+        }
+
+        requirement <R_GS_011_b> Command_Plan_Traceability {
+            doc /* The Ground Segment shall document and trace command plans and configuration changes such that spacecraft behavior can be reconstructed during autonomous operation periods. */
+        }
+
+        requirement <R_GS_011_c> Autonomy_Performance_Assessment {
+            doc /* The Ground Segment shall assess autonomous mode behavior using received telemetry and shall record any deviations and corrective planning actions. */
+        }
+    }
+
+    requirement def <R_GS_012> GS_Operations_Roles_And_Data_Access specializes R_M_008, R_M_009, R_M_010, R_M_005, R_M_020, R_M_012 {
+        doc /* The Ground Segment shall support operations by the HEALIOS student team and provide controlled access to mission data and operational tools for academic supervisors and thesis-related work. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_012_a> Student_Operations_Role {
+            doc /* The Ground Segment shall provide operational user roles and access rights enabling the HEALIOS student team to conduct nominal commanding and data handling activities under defined procedures. */
+        }
+
+        requirement <R_GS_012_b> Supervisor_Access {
+            doc /* The Ground Segment shall provide academic supervisors with access to mission data products and relevant operational records with privileges appropriate for supervision activities. */
+        }
+
+        requirement <R_GS_012_c> Data_Access_For_Academic_Work {
+            doc /* The Ground Segment shall provide controlled access to mission datasets and metadata required for thesis topics and academic analysis, including data export mechanisms and dataset version traceability. */
+        }
+    }
+
+    requirement def <R_GS_013> GS_National_Legislation_Compliance specializes R_M_017, R_M_005, R_M_020 {
+        doc /* The Ground Segment shall implement operational and data handling practices compliant with applicable national legislation of Germany and Poland, including access control, data retention, and operational logging. */
+        subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
+
+        requirement <R_GS_013_a> Data_Access_Compliance {
+            doc /* The Ground Segment shall enforce access control measures for mission datasets and operational tools in accordance with applicable national requirements. */
+        }
+
+        requirement <R_GS_013_b> Data_Retention_And_Deletion_Policy {
+            doc /* The Ground Segment shall define and apply a data retention and deletion policy for mission datasets and operational logs consistent with applicable national requirements. */
+        }
+
+        requirement <R_GS_013_c> Operations_Log_Retention {
+            doc /* The Ground Segment shall retain operational logs of commanding sessions and data deliveries to support compliance demonstration and incident investigation. */
         }
     }
 }
