@@ -50,7 +50,7 @@ package MissionLevelRequirementsPackage{
         }
     }
 
-    requirement def <R_M_002> Orbit_Definition { // NOT IN GROUND SEGMENT
+    requirement def <R_M_002> Orbit_Definition { 
             doc
             /* The mission shall be operated in the Low Earth Orbit (LEO). */
             
@@ -61,7 +61,7 @@ package MissionLevelRequirementsPackage{
             frame concern Component_Reliability_Concern references StakeholderConcernsPackage::Component_Reliability_Concern;
     }
 
-    requirement def <R_M_003> Mission_Duration { // NOT IN GROUND SEGMENT
+    requirement def <R_M_003> Mission_Duration { 
         doc /* The mission shall operate in orbit for a duration sufficient to generate statistically significant degradation and recovery data (Target: 1 Year). */
         
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
@@ -184,7 +184,7 @@ package MissionLevelRequirementsPackage{
         frame concern Amateur_Radio_Access_Concern references StakeholderConcernsPackage::Amateur_Radio_Access_Concern;
     }
 
-    requirement def <R_M_017> National_Legislation_Compliance { // NOT IN SPACE SEGMENT // NOT IN GROUND SEGMENT
+    requirement def <R_M_017> National_Legislation_Compliance { // NOT IN SPACE SEGMENT 
         doc /* The mission shall comply with national legislation of both Germany and Poland. */
         subject Healios_Mission references HealiosMissionInstancePackage::HEALIOS_Mission;
 
@@ -446,7 +446,7 @@ package GroundSegmentLevelRequirementsPackage {
     private import StakeholderConcernsPackage::*;
 
 
-    requirement def <R_GS_001> GS_Communications_Operations specializes R_M_013 {
+    requirement def <R_GS_001> GS_Communications_Operations specializes R_M_013, R_M_002 {
         doc /* The Ground Segment shall provide the operational capability to acquire, command, and receive telemetry from the spacecraft during scheduled visibility windows. */
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
 
@@ -500,7 +500,7 @@ package GroundSegmentLevelRequirementsPackage {
         }
     }
 
-    requirement def <R_GS_004> GS_Data_Management specializes R_M_005 {
+    requirement def <R_GS_004> GS_Data_Management specializes R_M_005, R_M_003 {
         doc /* The Ground Segment shall receive, validate, store, and package mission datasets with the format and metadata completeness required for analysis and publication. */
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
 
@@ -544,7 +544,7 @@ package GroundSegmentLevelRequirementsPackage {
         }
     }
 
-    requirement def <R_GS_007> GS_Prelaunch_Link_Verification specializes R_M_013, R_M_006 {
+    requirement def <R_GS_007> GS_Prelaunch_Link_Verification specializes R_M_013, R_M_006, R_M_002 {
         doc /* The Ground Segment shall verify communication readiness prior to launch using link budgets and representative end-to-end tests with the spacecraft (or an RF representative). */
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
 
