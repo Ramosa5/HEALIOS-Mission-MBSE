@@ -445,7 +445,6 @@ package GroundSegmentLevelRequirementsPackage {
     private import ConcernsDefinitionPackage::*;
     private import StakeholderConcernsPackage::*;
 
-
     requirement def <R_GS_001> GS_Communications_Operations specializes R_M_013, R_M_002 {
         doc /* The Ground Segment shall provide the operational capability to acquire, command, and receive telemetry from the spacecraft during scheduled visibility windows. */
         subject Ground_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Ground_Segment;
@@ -486,15 +485,12 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_003_a> Operator_Authentication {
             doc /* The Ground Segment shall require authenticated operator identity for all commanding actions. */
         }
-
         requirement <R_GS_003_b> Role_Based_Authorization {
             doc /* The Ground Segment shall enforce role-based access control for commanding functions and ground system configuration changes. */
         }
-
         requirement <R_GS_003_c> Key_Management_Procedures {
             doc /* The Ground Segment shall define and implement cryptographic key management procedures (generation, storage, rotation, revocation, and recovery) for secure commanding and related data handling. */
         }
-
         requirement <R_GS_003_d> Audit_Trail {
             doc /* The Ground Segment shall maintain an audit trail of commanding actions, operator sessions, and configuration changes, including timestamps and operator identity. */
         }
@@ -525,7 +521,6 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_005_a> Frequency_Use_Documentation {
             doc /* The Ground Segment shall maintain frequency use documentation and operational constraints required by the applicable regulatory framework. */
         }
-
         requirement <R_GS_005_b> Operator_Practices {
             doc /* The Ground Segment shall implement operator practices consistent with the applicable service rules (including amateur service rules if applicable). */
         }
@@ -538,7 +533,6 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_006_a> Facility_Rules_Compliance {
             doc /* Ground operations shall comply with facility safety rules and access constraints of the hosting institution(s). */
         }
-
         requirement <R_GS_006_b> RF_Safety_Practices {
             doc /* The Ground Segment shall define RF safety practices for transmitter operation, antenna access, and maintenance activities. */
         }
@@ -551,7 +545,6 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_007_a> Link_Budget_Estimation {
             doc /* The Ground Segment shall perform pre-launch link-budget estimation and verification using representative orbital profiles and expected spacecraft RF parameters. */
         }
-
         requirement <R_GS_007_b> EndToEnd_Communications_Test {
             doc /* The Ground Segment shall execute end-to-end communication tests prior to launch, demonstrating uplink commanding and downlink reception/decoding using representative configurations. */
         }
@@ -564,15 +557,12 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_008_a> Experiment_Data_Interface {
             doc /* The Ground Segment shall receive, decode, and store experiment telemetry and payload data through the defined spacecraft communication interface. */
         }
-
         requirement <R_GS_008_b> Experiment_Dataset_Packaging {
             doc /* The Ground Segment shall package experiment datasets with identifiers, timestamps, and metadata sufficient to support post-flight comparison to pre-flight testing and literature. */
         }
-
         requirement <R_GS_008_c> Experiment_Reconfiguration_Traceability {
             doc /* The Ground Segment shall support uplink of approved experiment configuration changes and shall record the applied configuration state and the time of application. */
         }
-
         requirement <R_GS_008_d> Software_Update_Operations_Support {
             doc /* The Ground Segment shall support spacecraft software update operations by maintaining update packages, version identifiers, delivery procedures, and an update operations log. */
         }
@@ -585,11 +575,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_009_a> Spacecraft_EO_Ops_Procedures {
             doc /* The Ground Segment shall define EOL commanding and communication procedures, including final contact attempts, final data downlink strategy, and end-state configuration command sequences if applicable. */
         }
-
         requirement <R_GS_009_b> Archive_Freeze_And_Preservation {
             doc /* The Ground Segment shall preserve and freeze mission datasets at end-of-mission, including archive integrity checks, metadata completeness review, and backup generation. */
         }
-
         requirement <R_GS_009_c> Ground_System_Closure {
             doc /* The Ground Segment shall define a closure plan for ground operations services, including decommissioning of operational accounts, revocation or retirement of cryptographic keys used for mission operations, and retention of operational logs. */
         }
@@ -602,11 +590,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_010_a> Telemetry_Anomaly_Detection {
             doc /* The Ground Segment shall support detection of telemetry anomalies through limit checks, consistency checks, and operator review during each visibility window. */
         }
-
         requirement <R_GS_010_b> Recovery_Procedure_Support {
             doc /* The Ground Segment shall maintain and execute approved recovery procedures, including command sequences and verification steps, to support subsystem restart and safe state restoration. */
         }
-
         requirement <R_GS_010_c> Fault_History_Repository {
             doc /* The Ground Segment shall maintain a fault and anomaly history repository, including event timestamps, observed symptoms, actions taken, and outcomes for later analysis. */
         }
@@ -619,11 +605,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_011_a> Loss_Of_Contact_Operational_Planning {
             doc /* The Ground Segment shall maintain an operations concept and command planning approach that preserves spacecraft safety and experiment continuity in the event of missed contacts. */
         }
-
         requirement <R_GS_011_b> Command_Plan_Traceability {
             doc /* The Ground Segment shall document and trace command plans and configuration changes such that spacecraft behavior can be reconstructed during autonomous operation periods. */
         }
-
         requirement <R_GS_011_c> Autonomy_Performance_Assessment {
             doc /* The Ground Segment shall assess autonomous mode behavior using received telemetry and shall record any deviations and corrective planning actions. */
         }
@@ -636,11 +620,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_012_a> Student_Operations_Role {
             doc /* The Ground Segment shall provide operational user roles and access rights enabling the HEALIOS student team to conduct nominal commanding and data handling activities under defined procedures. */
         }
-
         requirement <R_GS_012_b> Supervisor_Access {
             doc /* The Ground Segment shall provide academic supervisors with access to mission data products and relevant operational records with privileges appropriate for supervision activities. */
         }
-
         requirement <R_GS_012_c> Data_Access_For_Academic_Work {
             doc /* The Ground Segment shall provide controlled access to mission datasets and metadata required for thesis topics and academic analysis, including data export mechanisms and dataset version traceability. */
         }
@@ -653,11 +635,9 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_013_a> Data_Access_Compliance {
             doc /* The Ground Segment shall enforce access control measures for mission datasets and operational tools in accordance with applicable national requirements. */
         }
-
         requirement <R_GS_013_b> Data_Retention_And_Deletion_Policy {
             doc /* The Ground Segment shall define and apply a data retention and deletion policy for mission datasets and operational logs consistent with applicable national requirements. */
         }
-
         requirement <R_GS_013_c> Operations_Log_Retention {
             doc /* The Ground Segment shall retain operational logs of commanding sessions and data deliveries to support compliance demonstration and incident investigation. */
         }
