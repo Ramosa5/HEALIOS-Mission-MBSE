@@ -452,11 +452,20 @@ package GroundSegmentLevelRequirementsPackage {
         requirement <R_GS_001_b> Pass_Prediction_TLE {
             doc /* The Ground Segment shall generate and maintain pass predictions using orbit propagation consistent with TLE-based inputs, and shall update predictions when new TLE data becomes available. */
         }
+       requirement <R_GS_001_c> Ground_Antenna_System {
+            doc /* The Ground Segment shall provide an antenna system capable of tracking and receiving spacecraft radio signals during visibility windows in Low Earth Orbit (LEO). */
+        }
         requirement <R_GS_001_d> Beacon_Acquisition_Support {
             doc /* The Ground Segment shall support initial acquisition using the spacecraft beacon, including decoding, identification, and logging of beacon receptions. */
         }
         requirement <R_GS_001_e> Session_Execution_Procedures {
             doc /* The Ground Segment shall define and follow procedures for session execution, including pre-pass configuration, in-pass operations, and post-pass data handling. */
+        }
+        requirement <R_GS_001_f> RF_Frontend_Capability {
+            doc /* The Ground Segment shall provide RF front-end capability compatible with the spacecraft communication system, including the selected frequency band(s), modulation scheme, and data rates. */
+        }
+        requirement <R_GS_001_g> Link_Budget_Compliance {
+            doc /* The Ground Segment antenna and RF system shall provide sufficient link performance to maintain communication with the spacecraft in LEO consistent with the mission link budget and required link margin. */
         }
     }
 
