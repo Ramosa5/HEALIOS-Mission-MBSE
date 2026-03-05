@@ -8,11 +8,21 @@ package ElectricalPowerSystemPackage {
 
     abstract item def ElectricalPower;
 
+    item def DCPower specializes ElectricalPower {
+        attribute voltage : VV;
+        attribute current : EC;
+    }
+
+    item def ACPower specializes ElectricalPower {
+        attribute frequency : FrequencyValue;
+        attribute rmsVoltage : VV;
+    }
+
     port def TemperaturePort specializes DataBus {
         out temp : ISQ::TemperatureValue [1..*];
     }
 
-    port def MPPTControl :> DataBus {
+    port def MPPTControl specializes DataBus {
         in power : Wattage;
         in voltage : VV;
         in current : EC;
@@ -20,35 +30,35 @@ package ElectricalPowerSystemPackage {
 
     port def PowerBus {
         attribute voltage : VV;
-        out item power : ElectricalPower;
+        out item power : DCPower;
     }
 
     interface def PowerBusInterface5V {
         end port power_Source_Bus : PowerBus {
-            :>> voltage = 5 [V];
+            redefines voltage = 5 [V];
         }
 
-        end port power_Sink_Bus   : ~PowerBus {
-            :>> voltage = 5 [V];
+        end port power_Sink_Bus : ~PowerBus {
+            redefines voltage = 5 [V];
         }
 
-        flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
+        flow of DCPower from power_Source_Bus.power to power_Sink_Bus.power;
     }
 
     interface def PowerBusInterface3V3 {
         end port power_Source_Bus : PowerBus {
-            :>> voltage = 3.3 [V];
+            redefines voltage = 3.3 [V];
         }
         end port power_Sink_Bus   : ~PowerBus {
-            :>> voltage = 3.3 [V];
+            redefines voltage = 3.3 [V];
         }
 
-        flow of ElectricalPower from power_Source_Bus.power to power_Sink_Bus.power;
+        flow of DCPower from power_Source_Bus.power to power_Sink_Bus.power;
     } 
 
     connection def PowerBusConnection5V {
-        end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
-        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+        end part power_Source_Subsystem : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
+        end part power_Sink_Subsystem: PowerSinkSubsystem crosses power_Source_Subsystem.providing_Power_To;
 
         interface : PowerBusInterface5V
             connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
@@ -56,18 +66,18 @@ package ElectricalPowerSystemPackage {
 
     connection def PowerBusConnection3V3 {
         end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
-        end part power_Sink_Subsystem: PowerSinkSubsystem   crosses power_Source_Subsystem.providing_Power_To;
+        end part power_Sink_Subsystem: PowerSinkSubsystem crosses power_Source_Subsystem.providing_Power_To;
 
         interface : PowerBusInterface3V3
             connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
     }
 
-    part def PowerSourceSubsystem :> SS {
+    part def PowerSourceSubsystem specializes SS {
         ref part providing_Power_To [1..*] : PowerSinkSubsystem;
         port power_Bus : PowerBus;
     }
     
-    part def PowerSinkSubsystem :> SS {
+    part def PowerSinkSubsystem specializes SS {
         ref part provided_Power_By [1] : PowerSourceSubsystem;
         port power_Bus : ~PowerBus;
     }
@@ -113,7 +123,7 @@ package ElectricalPowerSystemPackage {
 
     part def Connector specializes GeneralElectricalComponent;
 
-    part def Battery :> GeneralElectricalComponent{
+    part def Battery specializes GeneralElectricalComponent{
         attribute battery_Size : ISQ::EnergyValue;
         port battery_Power_Bus : PowerBus;
         port heater_Power_Bus : PowerBus;
@@ -148,7 +158,7 @@ package ElectricalPowerSystemPackage {
         port voltage_Out : ISQ::SourceVoltageValue;
     }
 
-    part def ElectricalPowerSystem  :> PowerSourceSubsystem {
+    part def ElectricalPowerSystem  specializes PowerSourceSubsystem {
         port data_Bus : ~DataBus;
         port eps_Solar_Input : ~StellarEnvironment;
 
