@@ -49,7 +49,7 @@ package ElectricalPowerSystemPackage {
         end port power_Source_Bus : PowerBus {
             redefines voltage = 3.3 [V];
         }
-        end port power_Sink_Bus   : ~PowerBus {
+        end port power_Sink_Bus : ~PowerBus {
             redefines voltage = 3.3 [V];
         }
 
@@ -60,16 +60,14 @@ package ElectricalPowerSystemPackage {
         end part power_Source_Subsystem : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
         end part power_Sink_Subsystem: PowerSinkSubsystem crosses power_Source_Subsystem.providing_Power_To;
 
-        interface : PowerBusInterface5V
-            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
+        interface : PowerBusInterface5V connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
     }
 
     connection def PowerBusConnection3V3 {
         end part power_Source_Subsystem  : PowerSourceSubsystem crosses power_Sink_Subsystem.provided_Power_By;
         end part power_Sink_Subsystem: PowerSinkSubsystem crosses power_Source_Subsystem.providing_Power_To;
 
-        interface : PowerBusInterface3V3
-            connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
+        interface : PowerBusInterface3V3 connect power_Source_Subsystem.power_Bus to power_Sink_Subsystem.power_Bus;
     }
 
     part def PowerSourceSubsystem specializes SS {

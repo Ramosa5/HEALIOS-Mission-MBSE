@@ -299,10 +299,14 @@ package SpaceSegmentLevelRequirementPackage{
 
         subject Space_Segment references HealiosMissionInstancePackage::HEALIOS_Mission.HEALIOS_Space_Segment;
 
+        attribute CubeSat_Size : String = Space_Segment.CubeSat_Form_Factor;
         attribute Mass_Limit  : ISQ::MassValue = 2.0 [SI::kg];
         attribute Mass_Tolerance : ISQ::MassValue = 0.001 [SI::kg];
         attribute Actual_Mass : ISQ::MassValue = Space_Segment.Total_Mass;
 
+        assume constraint {
+            CubeSat_Size == "1U"
+        }
         require constraint {
             (Actual_Mass > 0.0 [SI::kg]) and
             (Actual_Mass <= Mass_Limit + Mass_Tolerance)
